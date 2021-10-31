@@ -1,16 +1,16 @@
-package com.sabisupplier.service.helper;
+package com.sabi.supplier.service.helper;
 
 
 import com.sabi.framework.exceptions.BadRequestException;
 import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.repositories.UserRepository;
 import com.sabi.framework.utils.CustomResponseCode;
-import com.sabisupplier.service.repositories.LGARepository;
-import com.sabisupplier.service.repositories.StateRepository;
-import com.sabisupplierscore.dto.request.CountryDto;
-import com.sabisupplierscore.dto.request.LGADto;
-import com.sabisupplierscore.dto.request.StateDto;
-import com.sabisupplierscore.models.State;
+import com.sabi.supplier.service.repositories.LGARepository;
+import com.sabi.supplier.service.repositories.StateRepository;
+import com.sabi.suppliers.core.dto.request.CountryDto;
+import com.sabi.suppliers.core.dto.request.LGADto;
+import com.sabi.suppliers.core.dto.request.StateDto;
+import com.sabi.suppliers.core.models.State;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -44,9 +44,10 @@ public class Validations {
         if (lgaDto.getName() == null || lgaDto.getName().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
 
-        State state = stateRepository.findById(lgaDto.getStateId())
+        State state = stateRepository.findById(lgaDto.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         " Enter a valid State id!"));
+
     }
 
 

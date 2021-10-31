@@ -1,10 +1,11 @@
-package com.sabisupplier.service.repositories;
+package com.sabi.supplier.service.repositories;
 
 
 
 
 
-import com.sabisupplierscore.models.LGA;
+
+import com.sabi.suppliers.core.models.LGA;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
