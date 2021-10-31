@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan(basePackages = "com.sabi")
+@ComponentScan(basePackages = "com.sabi.framework")
 @EntityScan(basePackages = {"com.sabisupplierscore.models"})
 @SpringBootApplication
 public class SabiSupplierServiceApplication {
