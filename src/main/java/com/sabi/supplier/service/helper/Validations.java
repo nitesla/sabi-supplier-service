@@ -6,11 +6,7 @@ import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.repositories.UserRepository;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.framework.utils.Utility;
-import com.sabi.supplier.service.repositories.LGARepository;
-import com.sabi.supplier.service.repositories.ProductRepository;
-import com.sabi.supplier.service.repositories.StateRepository;
-import com.sabi.supplier.service.repositories.SupplierCategoryRepository;
-import com.sabi.supplier.service.repositories.SupplierRepository;
+import com.sabi.supplier.service.repositories.*;
 import com.sabi.suppliers.core.dto.request.*;
 import com.sabi.suppliers.core.models.State;
 import com.sabi.suppliers.core.models.Supplier;
@@ -62,6 +58,9 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Credit Period cannot be empty");
         if (!Utility.isNumeric(request.getCreditPeriod().toString()))
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for Credit Period");
+        if (request.getCreditPeriod() < 1){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid request");
+        }
 
         if (request.getIsActive() == null )
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "IsActive cannot be empty");
@@ -197,14 +196,6 @@ public class Validations {
     public void validateProductCategory(ProductCategoryDto productCategoryDto){
         if (productCategoryDto.getName() == null || productCategoryDto.getName().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
-    }
-
-    public void validateSupplierCategory(SupplierCategoryDto supplierCategoryDto){
-        if (supplierCategoryDto.getName() == null || supplierCategoryDto.getName().isEmpty())
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
-        if (supplierCategoryDto.getCreditPeriod() < 1){
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid request");
-        }
     }
 }
 
