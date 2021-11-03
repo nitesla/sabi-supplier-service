@@ -70,7 +70,7 @@ public class ProductCategoryService {
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         ProductCategory product = productCategoryRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        "Requested product Id does not exist!"));
+                        "Requested product category Id does not exist!"));
         mapper.map(request, product);
         product.setUpdatedBy(userCurrent.getId());
         productCategoryRepository.save(product);
