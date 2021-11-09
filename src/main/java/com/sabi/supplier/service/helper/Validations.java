@@ -33,6 +33,9 @@ public class Validations {
     @Autowired
     private SupplierCategoryRepository supplierCategoryRepository;
 
+    @Autowired
+    private SupplierProductRepository supplierProductRepository;
+
 
 
     public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository) {
@@ -229,6 +232,27 @@ public class Validations {
                         " Enter a valid Supplier Category ID!"));
 
     }
+
+    public void validateSupplierGood(SupplierGoodDto supplierGoodDto) {
+        if (supplierGoodDto.getPrice() <= 0.0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Price cannot be Less that 0.0");
+        SupplierProduct supplierProduct = supplierProductRepository.findById(supplierGoodDto.getSupplierProductId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid supplier product id!"));
+        if (supplierGoodDto.getVariantId() == null) {
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "variant id cannot be empty");
+        }
+    }
+
+        public void validateSupplierProduct(SupplierProductDto supplierProductDto){
+            Product product = productRepository.findById(supplierProductDto.getProductId())
+                    .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                            " Enter a valid product id!"));
+            Supplier supplier = supplierRepository.findById(supplierProductDto.getSupplierId())
+                    .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                            " Enter a valid supplier id!"));
+        }
+
 
 
 }
