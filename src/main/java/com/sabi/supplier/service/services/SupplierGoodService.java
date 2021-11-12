@@ -9,12 +9,17 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.ProductVariantRepository;
 import com.sabi.supplier.service.repositories.SupplierGoodRepository;
+import com.sabi.supplier.service.repositories.SupplierProductRepository;
 import com.sabi.suppliers.core.dto.request.SupplierGoodDto;
 import com.sabi.suppliers.core.dto.response.SupplierGoodResponseDto;
+import com.sabi.suppliers.core.models.ProductVariant;
 import com.sabi.suppliers.core.models.SupplierGood;
+import com.sabi.suppliers.core.models.SupplierProduct;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,6 +30,7 @@ import java.util.List;
 @Service
 public class SupplierGoodService {
 
+    @Autowired
     private SupplierGoodRepository supplierGoodRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
@@ -71,12 +77,12 @@ public class SupplierGoodService {
         return mapper.map(supplier,SupplierGoodResponseDto.class);
     }
 
-    public Page<SupplierGood> findAll(Long supplierProductId, Long variantId, double price, PageRequest pageRequest ){
-        Page<SupplierGood> state = supplierGoodRepository.findSupplierGoods(supplierProductId,variantId,price,pageRequest);
-        if(state == null){
+    public Page<SupplierGood> findAll(Long supplierProductId, Long variantId, PageRequest pageRequest ){
+        Page<SupplierGood> supplierGoods = supplierGoodRepository.findSupplierGoods(supplierProductId,variantId,pageRequest);
+        if(supplierGoods == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
-        return state;
+        return supplierGoods;
     }
 
     public void enableDisEnable (EnableDisEnableDto request){

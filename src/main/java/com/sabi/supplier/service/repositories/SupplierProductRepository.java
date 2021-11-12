@@ -17,9 +17,15 @@ public interface SupplierProductRepository extends JpaRepository<SupplierProduct
 
     List<SupplierProduct> findByIsActive(Boolean isActive);
 
-    @Query("SELECT c FROM SupplierProduct c WHERE ((:supplierID IS NULL) OR (:supplierID IS NOT NULL AND c.supplierID = :supplierID))" +
-            " AND ((:productID IS NULL) OR (:productID IS NOT NULL AND c.productIDariantId = :productID))")
-    Page<SupplierProduct> findSupplierProducts(@Param("supplierID") Long SupplierID,
+    @Query("SELECT c FROM SupplierProduct c WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND c.supplierId = :supplierId))" +
+            " AND ((:productId IS NULL) OR (:productId IS NOT NULL AND c.productId = :productId))")
+    Page<SupplierProduct> findSupplierProducts(@Param("supplierId") Long SupplierId,
                                             @Param("productId") Long variantId,
                                             Pageable pageable);
+
+//    @Query("SELECT c FROM Country c WHERE ((:name IS NULL) OR (:name IS NOT NULL AND c.name = :name))" +
+//            " AND ((:code IS NULL) OR (:code IS NOT NULL AND c.code = :code))")
+//    Page<Country> findCountries(@Param("name") String name,
+//                                @Param("code") String code,
+//                                Pageable pageable);
 }

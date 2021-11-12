@@ -34,6 +34,9 @@ public class Validations {
     private SupplierCategoryRepository supplierCategoryRepository;
 
     @Autowired
+    private ProductVariantRepository productVariantRepository;
+
+    @Autowired
     private SupplierProductRepository supplierProductRepository;
 
 
@@ -239,9 +242,9 @@ public class Validations {
         SupplierProduct supplierProduct = supplierProductRepository.findById(supplierGoodDto.getSupplierProductId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         " Enter a valid supplier product id!"));
-        if (supplierGoodDto.getVariantId() == null) {
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "variant id cannot be empty");
-        }
+        ProductVariant variant = productVariantRepository.findById(supplierGoodDto.getVariantId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested product variant Id does not exist!"));
     }
 
         public void validateSupplierProduct(SupplierProductDto supplierProductDto){
@@ -253,7 +256,25 @@ public class Validations {
                             " Enter a valid supplier id!"));
         }
 
+    public void validateProductVariant(ProductVariantDto productVariantDto){
+        Product product = productRepository.findById(productVariantDto.getProductId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid product id!"));
+        String valName = productVariantDto.getName();
+        char valCharName = valName.charAt(0);
+        if (Character.isDigit(valCharName)){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name can not start with a number");
+        }
+        if (productVariantDto.getName() == null || productVariantDto.getName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
 
+        if (productVariantDto.getPicture() == null || productVariantDto.getPicture().isEmpty())
+        throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "picture cannot be empty");
+        if (productVariantDto.getPieceaPerRow() <= 0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Piece per row cannot be empty");
+        if (productVariantDto.getRowPerPack() <= 0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "row per pack cannot be empty");
+    }
 
 }
 

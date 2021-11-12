@@ -16,6 +16,7 @@ import com.sabi.suppliers.core.dto.response.SupplierProductResponseDto;
 import com.sabi.suppliers.core.models.SupplierProduct;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ import java.util.List;
 @Slf4j
 @Service
 public class SupplierProductService {
-
+    @Autowired
     private SupplierProductRepository supplierProductRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
