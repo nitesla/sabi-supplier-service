@@ -3,6 +3,9 @@ package com.sabi.supplier.service.helper;
 
 import com.sabi.framework.exceptions.BadRequestException;
 import com.sabi.framework.exceptions.NotFoundException;
+import com.sabi.framework.models.Role;
+import com.sabi.framework.models.User;
+import com.sabi.framework.repositories.RoleRepository;
 import com.sabi.framework.repositories.UserRepository;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.framework.utils.Utility;
@@ -38,6 +41,9 @@ public class Validations {
 
     @Autowired
     private SupplierProductRepository supplierProductRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
 
 
@@ -275,6 +281,30 @@ public class Validations {
         if (productVariantDto.getRowPerPack() <= 0)
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "row per pack cannot be empty");
     }
+
+    public void validateSupplierUser(SupplierUserDto supplierUserDto){
+        Role role = roleRepository.findById(supplierUserDto.getRoleId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid product id!"));
+        User user = userRepository.findById(supplierUserDto.getUserId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid supplier id!"));
+//        WareHouse wareHouse = wareHouseRepository.findById(supplierUserDto.getWareHouseId())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid supplier id!"));
+    }
+
+    public void validateSupplierRole(SupplierRoleDto supplierRoleDto){
+        Role role = roleRepository.findById(supplierRoleDto.getRoleId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid product id!"));
+//        P user = userRepository.findById(supplierRoleDto.getPartnerId())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid supplier id!"));
+//
+    }
+
+
 
 }
 
