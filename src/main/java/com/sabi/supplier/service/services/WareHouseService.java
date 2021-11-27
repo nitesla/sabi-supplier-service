@@ -10,7 +10,9 @@ import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.WareHouseRepository;
 import com.sabi.suppliers.core.dto.request.WareHouseRequest;
+import com.sabi.suppliers.core.dto.response.SupplierResponseDto;
 import com.sabi.suppliers.core.dto.response.WareHouseResponse;
+import com.sabi.suppliers.core.models.Supplier;
 import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -36,6 +38,7 @@ public class WareHouseService {
     }
 
     public WareHouseResponse createWareHouse(WareHouseRequest request){
+        validations.validateWareHouse( request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         WareHouse warehouse = mapper.map(request, WareHouse.class);
         boolean wareHouseExists = wareHouseRepository.existsByUserId(request.getUserId());
@@ -50,6 +53,7 @@ public class WareHouseService {
     }
 
     public WareHouseResponse updateWareHouse(WareHouseRequest request){
+        validations.validateWareHouse( request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         WareHouse wareHouse = wareHouseRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
@@ -61,12 +65,19 @@ public class WareHouseService {
         return mapper.map(wareHouse, WareHouseResponse.class);
     }
 
-    public Page<WareHouse> findWareHouse(long userId, PageRequest pageRequest){
+    public Page<WareHouse> findWareHouses(long userId, PageRequest pageRequest){
         Page<WareHouse> warehouse = wareHouseRepository.findWarehouse(userId, pageRequest);
         if(warehouse == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
         return warehouse;
+    }
+
+    public WareHouseResponse findWarehouse(long id){
+        WareHouse wareHouse = wareHouseRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested Warehouse Id does not exist!"));
+        return mapper.map(wareHouse, WareHouseResponse.class);
     }
 
     public void enableDisEnableState (EnableDisEnableDto request){

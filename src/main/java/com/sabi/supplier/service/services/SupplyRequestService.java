@@ -14,8 +14,10 @@ import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.SupplyRequestRepository;
 import com.sabi.suppliers.core.dto.request.SupplyRequestRequest;
 import com.sabi.suppliers.core.dto.response.SupplyRequestResponse;
+import com.sabi.suppliers.core.dto.response.WareHouseResponse;
 import com.sabi.suppliers.core.models.SupplyRequest;
 
+import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -42,6 +44,7 @@ public class SupplyRequestService {
     }
 
     public SupplyRequestResponse createSupplyRequest(SupplyRequestRequest request) {
+        validations.validateSupplyRequest(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplyRequest supplyRequest = mapper.map(request, SupplyRequest.class);
         boolean supplyRequestExists = supplyRequestRepository.existsByReferenceNo(request.getReferenceNo());
@@ -56,6 +59,7 @@ public class SupplyRequestService {
     }
 
     public SupplyRequestResponse updateSupplyRequest(SupplyRequestRequest request) {
+        validations.validateSupplyRequest(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplyRequest supplyRequest = supplyRequestRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
@@ -105,6 +109,13 @@ public class SupplyRequestService {
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
         return supplyRequest;
+    }
+
+    public SupplyRequestResponse findWarehouse(long id){
+        SupplyRequest supplyRequest = supplyRequestRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested Supply Request Id does not exist!"));
+        return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 
     public void enableDisEnableState(EnableDisEnableDto request) {
