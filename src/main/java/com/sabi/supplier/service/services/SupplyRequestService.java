@@ -14,10 +14,7 @@ import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.SupplyRequestRepository;
 import com.sabi.suppliers.core.dto.request.SupplyRequestRequest;
 import com.sabi.suppliers.core.dto.response.SupplyRequestResponse;
-import com.sabi.suppliers.core.dto.response.WareHouseResponse;
 import com.sabi.suppliers.core.models.SupplyRequest;
-
-import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -71,7 +68,7 @@ public class SupplyRequestService {
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 
-    public Page<SupplyRequest> findSupplyRequest(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice,
+    public Page<SupplyRequest> findSupplyRequests(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice,
                                                  Date startTime, Date endTime, String referenceNo,
                                                  String status, PageRequest pageRequest) {
         GenericSpecification<SupplyRequest> genericSpecification = new GenericSpecification<>();
@@ -104,14 +101,10 @@ public class SupplyRequestService {
 
         Page<SupplyRequest> supplyRequests = supplyRequestRepository.findAll(genericSpecification, pageRequest);
 
-        Page<SupplyRequest> supplyRequest = supplyRequestRepository.findSupplyRequest(productId, productName, askingQuantity, askingPrice, startTime, endTime, referenceNo, status, pageRequest);
-        if (supplyRequest == null) {
-            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
-        }
-        return supplyRequest;
+        return supplyRequests;
     }
 
-    public SupplyRequestResponse findWarehouse(long id){
+    public SupplyRequestResponse findSupplyRequest(long id){
         SupplyRequest supplyRequest = supplyRequestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supply Request Id does not exist!"));

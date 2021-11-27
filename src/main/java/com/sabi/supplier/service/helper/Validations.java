@@ -26,6 +26,7 @@ public class Validations {
     private ProductRepository productRepository;
     private ProductCategoryRepository productCategoryRepository;
     private ManufacturerRepository manufacturerRepository;
+    private final SupplyRequestRepository supplyRequestRepository;
 
     @Autowired
     private SupplierRepository supplierRepository;
@@ -35,13 +36,14 @@ public class Validations {
 
 
 
-    public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository) {
+    public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository, SupplyRequestRepository supplyRequestRepository) {
         this.stateRepository = stateRepository;
         this.lgaRepository = lgaRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.productCategoryRepository = productCategoryRepository;
         this.manufacturerRepository = manufacturerRepository;
+        this.supplyRequestRepository = supplyRequestRepository;
     }
 
     public void validateState(StateDto stateDto) {
@@ -239,6 +241,11 @@ public class Validations {
     public void validateSupplyRequest(SupplyRequestRequest request) {
         productRepository.findById(request.getProductId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid PRODUCT ID!"));
+    }
+
+    public void validateSupplyRequestResponse(SupplyRequestResponseRequest request) {
+        supplyRequestRepository.findById(request.getSupplyRequestId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Supply Request ID!"));
     }
 }
 
