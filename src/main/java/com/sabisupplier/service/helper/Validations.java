@@ -12,11 +12,12 @@ import com.sabisupplierscore.dto.request.LGADto;
 import com.sabisupplierscore.dto.request.StateDto;
 import com.sabisupplierscore.models.State;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @SuppressWarnings("All")
 @Slf4j
-@Service
+@Component
 public class Validations {
 
 
