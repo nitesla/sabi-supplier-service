@@ -1,4 +1,4 @@
-package com.sabisupplier.service.services;
+package com.sabi.supplier.service.services;
 
 import com.google.gson.Gson;
 import com.sabi.framework.dto.requestDto.EnableDisEnableDto;
@@ -7,11 +7,11 @@ import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
-import com.sabisupplier.service.helper.Validations;
-import com.sabisupplier.service.repositories.WareHouseRepository;
-import com.sabisupplierscore.dto.request.WareHouseRequest;
-import com.sabisupplierscore.dto.response.WareHouseResponse;
-import com.sabisupplierscore.models.WareHouse;
+import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.WareHouseRepository;
+import com.sabi.suppliers.core.dto.request.WareHouseRequest;
+import com.sabi.suppliers.core.dto.response.WareHouseResponse;
+import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -37,7 +37,7 @@ public class WareHouseService {
 
     public WareHouseResponse createWareHouse(WareHouseRequest request){
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
-        WareHouse warehouse = mapper.map(request,WareHouse.class);
+        WareHouse warehouse = mapper.map(request, WareHouse.class);
         boolean wareHouseExists = wareHouseRepository.existsByUserId(request.getUserId());
         if(wareHouseExists ){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " Warehouse already exist");
