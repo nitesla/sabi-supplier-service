@@ -1,4 +1,4 @@
-package com.sabisupplier.service.services;
+package com.sabi.supplier.service.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -8,13 +8,13 @@ import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
-import com.sabisupplier.service.helper.Validations;
-import com.sabisupplier.service.repositories.LGARepository;
-import com.sabisupplier.service.repositories.StateRepository;
-import com.sabisupplierscore.dto.request.LGADto;
-import com.sabisupplierscore.dto.response.LGAResponseDto;
-import com.sabisupplierscore.models.LGA;
-import com.sabisupplierscore.models.State;
+import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.LGARepository;
+import com.sabi.supplier.service.repositories.StateRepository;
+import com.sabi.suppliers.core.dto.request.LGADto;
+import com.sabi.suppliers.core.dto.response.LGAResponseDto;
+import com.sabi.suppliers.core.models.LGA;
+import com.sabi.suppliers.core.models.State;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;

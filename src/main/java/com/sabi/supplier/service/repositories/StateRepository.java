@@ -1,10 +1,6 @@
-package com.sabisupplier.service.repositories;
+package com.sabi.supplier.service.repositories;
 
-
-
-
-
-import com.sabisupplierscore.models.State;
+import com.sabi.suppliers.core.models.State;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
