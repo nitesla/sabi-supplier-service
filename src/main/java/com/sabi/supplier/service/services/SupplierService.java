@@ -13,14 +13,17 @@ import com.sabi.framework.repositories.UserRepository;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.Constants;
 import com.sabi.framework.utils.CustomResponseCode;
+import com.sabi.supplier.service.helper.SupplierConstant;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.SupplierLocationRepository;
 import com.sabi.supplier.service.repositories.SupplierRepository;
 import com.sabi.supplier.service.repositories.SupplierUserRepository;
 import com.sabi.suppliers.core.dto.request.CompleteSignUpDto;
+import com.sabi.suppliers.core.dto.request.PartnerAssetTypeRequest;
 import com.sabi.suppliers.core.dto.request.SupplierRequestDto;
 import com.sabi.suppliers.core.dto.request.SupplierSignUpRequestDto;
 import com.sabi.suppliers.core.dto.response.CompleteSignUpResponse;
+import com.sabi.suppliers.core.dto.response.PartnerSignUpResponse;
 import com.sabi.suppliers.core.dto.response.SupplierResponseDto;
 import com.sabi.suppliers.core.dto.response.SupplierSignUpResponse;
 import com.sabi.suppliers.core.models.Supplier;
@@ -32,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,18 +60,20 @@ public class SupplierService {
     private PreviousPasswordRepository previousPasswordRepository;
     private SupplierUserRepository supplierUserRepository;
     private SupplierLocationRepository supplierLocationRepository;
+    private PartnerSignUpService partnerSignUpService;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
 
     public SupplierService(SupplierRepository supplierRepository,UserRepository userRepository,PreviousPasswordRepository previousPasswordRepository,
-                           SupplierUserRepository supplierUserRepository,SupplierLocationRepository supplierLocationRepository,
+                           SupplierUserRepository supplierUserRepository,SupplierLocationRepository supplierLocationRepository,PartnerSignUpService partnerSignUpService,
                            ModelMapper mapper, ObjectMapper objectMapper, Validations validations) {
         this.supplierRepository = supplierRepository;
         this.userRepository = userRepository;
         this.previousPasswordRepository = previousPasswordRepository;
         this.supplierUserRepository = supplierUserRepository;
         this.supplierLocationRepository = supplierLocationRepository;
+        this.partnerSignUpService = partnerSignUpService;
         this.mapper = mapper;
         this.objectMapper = objectMapper;
         this.validations = validations;
@@ -156,7 +162,7 @@ public class SupplierService {
 
 
 
-    public CompleteSignUpResponse completeSignUp(CompleteSignUpDto request) {
+    public CompleteSignUpResponse completeSignUp(CompleteSignUpDto request) throws IOException {
         Supplier supplier = supplierRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested supplier Id does not exist!"));
@@ -164,6 +170,7 @@ public class SupplierService {
 
         supplier.setUpdatedBy(supplier.getUserId());
         supplier.setIsActive(true);
+        supplier.setDeliveryType(request.getDeliveryType());
         supplierRepository.save(supplier);
         log.debug("complete signup  - {}"+ new Gson().toJson(supplier));
 
@@ -186,9 +193,23 @@ public class SupplierService {
         user.setPasswordChangedOn(LocalDateTime.now());
         userRepository.save(user);
 
-//        if(request.getDeliveryType().equalsIgnoreCase(SupplierConstant.ME)){
-//
-//        }
+        if(request.getDeliveryType().equalsIgnoreCase(SupplierConstant.ME)){
+            request.setFirstName(user.getFirstName());
+            request.setLastName(user.getLastName());
+            request.setEmail(user.getEmail());
+            request.setPhone(user.getPhone());
+            request.setName(supplier.getName());
+            request.setPassword(request.getPassword());
+
+            request.getAssets().forEach(p -> {
+                PartnerAssetTypeRequest tran = PartnerAssetTypeRequest.builder()
+                        .assetTypeId(p.getAssetTypeId())
+                        .total(p.getTotal())
+                        .build();
+            });
+            PartnerSignUpResponse partnerSignUpResponse = partnerSignUpService.partnerSignUp(request);
+            log.info(" partner details " + partnerSignUpResponse);
+        }
 
         CompleteSignUpResponse response = CompleteSignUpResponse.builder()
                 .supplierId(supplier.getId())

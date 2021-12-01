@@ -12,7 +12,6 @@ import java.util.List;
  */
 
 @Repository
-//public interface SupplierLocationRepository extends JpaRepository<SupplierLocation, Long>, JpaSpecificationExecutor<SupplierLocation> {
 public interface SupplierLocationRepository extends JpaRepository<SupplierLocation, Long> {
 
     SupplierLocation findBySupplierIdAndStateId(Long supplierId, Long stateId);

@@ -44,7 +44,7 @@ public class PreferenceService {
         if(productExists != null){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "Preference already exist");
         }
-        Supplier savedSupplier = supplierRepository.findSupplierById(request.getSupplierId());
+        Supplier savedSupplier = supplierRepository.getOne(request.getSupplierId());
         if (savedSupplier == null) {
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                     "Requested supplier Id does not exist!");

@@ -11,7 +11,6 @@ import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.SupplierProductRepository;
 import com.sabi.suppliers.core.dto.request.SupplierProductDto;
-import com.sabi.suppliers.core.dto.response.SupplierGoodResponseDto;
 import com.sabi.suppliers.core.dto.response.SupplierProductResponseDto;
 import com.sabi.suppliers.core.models.SupplierProduct;
 import lombok.extern.slf4j.Slf4j;

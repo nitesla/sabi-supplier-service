@@ -100,34 +100,6 @@ public class SupplierLocationService {
     }
 
 
-    /** <summary>
-     * Find all Supplier Location
-     * </summary>
-     * <remarks>this method is responsible for getting all records in pagination</remarks>
-     */
-//    public Page<SupplierLocation> findAll(Long supplierID, Long stateID, PageRequest pageRequest ){
-//
-//        GenericSpecification<SupplierLocation> genericSpecification = new GenericSpecification<SupplierLocation>();
-//
-//        if (supplierID != null)
-//        {
-//            genericSpecification.add(new SearchCriteria("supplierID", supplierID, SearchOperation.EQUAL));
-//        }
-//
-//        if (stateID != null)
-//        {
-//            genericSpecification.add(new SearchCriteria("stateID", stateID, SearchOperation.EQUAL));
-//        }
-//
-//
-//
-//        Page<SupplierLocation> supplierLocation = supplierLocationRepository.findAll(genericSpecification,pageRequest);
-//            if(supplierLocation == null){
-//                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
-//            }
-//        return supplierLocation;
-//
-//    }
 
 
     /** <summary>
