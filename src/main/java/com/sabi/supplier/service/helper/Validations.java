@@ -45,6 +45,9 @@ public class Validations {
     @Autowired
     private RoleRepository roleRepository;
 
+//    @Autowired
+//    private
+
 
 
     public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository) {
@@ -303,6 +306,20 @@ public class Validations {
 //                        " Enter a valid supplier id!"));
 //
     }
+
+//    public void validateShipment(ShipmentDto shipmentDto) {
+//        Shipment shipment = .findById(shipmentDto.getWarehouseId())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid product id!"));
+//        if (shipmentDto.getName() == null || stateDto.getName().isEmpty())
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+//        if (shipmentDto.getName() == null || stateDto.getName().isEmpty())
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+//        if (shipmentDto.getName() == null || stateDto.getName().isEmpty())
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+//        if (shipmentDto.getName() == null || stateDto.getName().isEmpty())
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+//    }
 
 
 
