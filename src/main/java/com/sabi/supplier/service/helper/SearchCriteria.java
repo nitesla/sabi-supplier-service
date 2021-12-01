@@ -4,10 +4,10 @@ public class SearchCriteria {
 
     private String key;
     private Object value;
-    private com.sabi.supplier.service.helper.SearchOperation operation;
+    private SearchOperation operation;
 
 
-    public SearchCriteria(String key, Object value, com.sabi.supplier.service.helper.SearchOperation operation) {
+    public SearchCriteria(String key, Object value, SearchOperation operation) {
         this.key = key;
         this.value = value;
         this.operation = operation;
@@ -29,11 +29,11 @@ public class SearchCriteria {
         this.value = value;
     }
 
-    public com.sabi.supplier.service.helper.SearchOperation getOperation() {
+    public SearchOperation getOperation() {
         return operation;
     }
 
-    public void setOperation(com.sabi.supplier.service.helper.SearchOperation operation) {
+    public void setOperation(SearchOperation operation) {
         this.operation = operation;
     }
 }
