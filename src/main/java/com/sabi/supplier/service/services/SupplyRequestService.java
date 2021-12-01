@@ -49,7 +49,7 @@ public class SupplyRequestService {
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " SupplyRequest already exist");
         }
         supplyRequest.setCreatedBy(userCurrent.getId());
-        supplyRequest.setIsActive(true);
+        supplyRequest.setIsActive(false);
         supplyRequest = supplyRequestRepository.save(supplyRequest);
         log.debug("Create new State - {}" + new Gson().toJson(supplyRequest));
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
@@ -77,7 +77,7 @@ public class SupplyRequestService {
             genericSpecification.add(new SearchCriteria("productId", productId, SearchOperation.EQUAL));
         }
 
-        if (productName != null) {
+        if (productName != null && !productName.isEmpty()) {
             genericSpecification.add(new SearchCriteria("productName", productName, SearchOperation.MATCH));
         }
         if (askingQuantity != null) {
@@ -92,10 +92,10 @@ public class SupplyRequestService {
         if (endTime != null) {
             genericSpecification.add(new SearchCriteria("endTime", endTime, SearchOperation.EQUAL));
         }
-        if (referenceNo != null) {
+        if (referenceNo != null && !referenceNo.isEmpty()) {
             genericSpecification.add(new SearchCriteria("referenceNo", referenceNo, SearchOperation.MATCH));
         }
-        if (status != null) {
+        if (status != null && !status.isEmpty()) {
             genericSpecification.add(new SearchCriteria("status", status, SearchOperation.EQUAL));
         }
 
