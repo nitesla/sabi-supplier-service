@@ -3,6 +3,9 @@ package com.sabi.supplier.service.helper;
 
 import com.sabi.framework.exceptions.BadRequestException;
 import com.sabi.framework.exceptions.NotFoundException;
+import com.sabi.framework.models.Role;
+import com.sabi.framework.models.User;
+import com.sabi.framework.repositories.RoleRepository;
 import com.sabi.framework.repositories.UserRepository;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.framework.utils.Utility;
@@ -32,6 +35,15 @@ public class Validations {
 
     @Autowired
     private SupplierCategoryRepository supplierCategoryRepository;
+
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
+
+    @Autowired
+    private SupplierProductRepository supplierProductRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
 
 
@@ -133,8 +145,8 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid request");
         }
 
-        if (request.getIsActive() == null )
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "IsActive cannot be empty");
+//        if (request.getIsActive() == null )
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "IsActive cannot be empty");
 
     }
 
@@ -229,6 +241,69 @@ public class Validations {
                         " Enter a valid Supplier Category ID!"));
 
     }
+
+    public void validateSupplierGood(SupplierGoodDto supplierGoodDto) {
+        if (supplierGoodDto.getPrice() <= 0.0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Price cannot be Less that 0.0");
+        SupplierProduct supplierProduct = supplierProductRepository.findById(supplierGoodDto.getSupplierProductId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid supplier product id!"));
+        ProductVariant variant = productVariantRepository.findById(supplierGoodDto.getVariantId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested product variant Id does not exist!"));
+    }
+
+        public void validateSupplierProduct(SupplierProductDto supplierProductDto){
+            Product product = productRepository.findById(supplierProductDto.getProductId())
+                    .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                            " Enter a valid product id!"));
+            Supplier supplier = supplierRepository.findById(supplierProductDto.getSupplierId())
+                    .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                            " Enter a valid supplier id!"));
+        }
+
+    public void validateProductVariant(ProductVariantDto productVariantDto){
+        Product product = productRepository.findById(productVariantDto.getProductId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid product id!"));
+        String valName = productVariantDto.getName();
+        char valCharName = valName.charAt(0);
+        if (Character.isDigit(valCharName)){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name can not start with a number");
+        }
+        if (productVariantDto.getName() == null || productVariantDto.getName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+
+        if (productVariantDto.getPicture() == null || productVariantDto.getPicture().isEmpty())
+        throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "picture cannot be empty");
+        if (productVariantDto.getPieceaPerRow() <= 0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Piece per row cannot be empty");
+        if (productVariantDto.getRowPerPack() <= 0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "row per pack cannot be empty");
+    }
+
+    public void validateSupplierUser(SupplierUserDto supplierUserDto){
+        Role role = roleRepository.findById(supplierUserDto.getRoleId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid product id!"));
+        User user = userRepository.findById(supplierUserDto.getUserId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid supplier id!"));
+//        WareHouse wareHouse = wareHouseRepository.findById(supplierUserDto.getWareHouseId())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid supplier id!"));
+    }
+
+    public void validateSupplierRole(SupplierRoleDto supplierRoleDto){
+        Role role = roleRepository.findById(supplierRoleDto.getRoleId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid product id!"));
+//        P user = userRepository.findById(supplierRoleDto.getPartnerId())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid supplier id!"));
+//
+    }
+
 
 
 }
