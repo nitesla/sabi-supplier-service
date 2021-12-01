@@ -145,8 +145,8 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid request");
         }
 
-        if (request.getIsActive() == null )
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "IsActive cannot be empty");
+//        if (request.getIsActive() == null )
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "IsActive cannot be empty");
 
     }
 
