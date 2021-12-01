@@ -1,6 +1,5 @@
 package com.sabi.supplier.service.repositories;
 
-import com.sabi.suppliers.core.models.Country;
 import com.sabi.suppliers.core.models.SupplierGood;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

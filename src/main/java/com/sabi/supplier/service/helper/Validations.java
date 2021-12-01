@@ -29,6 +29,9 @@ public class Validations {
     private ProductRepository productRepository;
     private ProductCategoryRepository productCategoryRepository;
     private ManufacturerRepository manufacturerRepository;
+    private final SupplyRequestRepository supplyRequestRepository;
+    private final WareHouseRepository wareHouseRepository;
+    private final WareHouseUserRepository wareHouseUserRepository;
 
     @Autowired
     private SupplierRepository supplierRepository;
@@ -50,13 +53,16 @@ public class Validations {
 
 
 
-    public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository) {
+    public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository, SupplyRequestRepository supplyRequestRepository, WareHouseRepository wareHouseRepository, WareHouseUserRepository wareHouseUserRepository) {
         this.stateRepository = stateRepository;
         this.lgaRepository = lgaRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.productCategoryRepository = productCategoryRepository;
         this.manufacturerRepository = manufacturerRepository;
+        this.supplyRequestRepository = supplyRequestRepository;
+        this.wareHouseRepository = wareHouseRepository;
+        this.wareHouseUserRepository = wareHouseUserRepository;
     }
 
     public void validateState(StateDto stateDto) {
@@ -323,6 +329,39 @@ public class Validations {
 
 
 
+    public void validateWareHouseUser(WareHouseUserRequest request) {
+        userRepository.findById(request.getUserId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid USER ID!"));
+        wareHouseRepository.findById(request.getWareHouseId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Warehouse ID!"));
+    }
+
+    public void validateSupplyRequest(SupplyRequestRequest request) {
+        productRepository.findById(request.getProductId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid PRODUCT ID!"));
+        wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(()-> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Warehouse ID!"));
+
+    }
+
+    public void validateSupplyRequestResponse(SupplyRequestResponseRequest request) {
+        supplyRequestRepository.findById(request.getSupplyRequestId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Supply Request ID!"));
+    }
+
+    public void validateWareHouse(WareHouseRequest request) {
+        productRepository.findById(request.getProductId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Product ID!"));
+        supplierRepository.findById(request.getSupplierId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Supplier ID!"));
+        //todo confirm warehouse userId validation
+        stateRepository.findById(request.getStateId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid State ID!"));
+        userRepository.findById(request.getUserId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid USER ID!"));
+        lgaRepository.findById(request.getLgaId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid LGA ID!"));
+    }
 }
 
 

@@ -8,9 +8,6 @@ import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
-import com.sabi.supplier.service.helper.GenericSpecification;
-import com.sabi.supplier.service.helper.SearchCriteria;
-import com.sabi.supplier.service.helper.SearchOperation;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.SupplierLocationRepository;
 import com.sabi.suppliers.core.dto.request.SupplierLocationRequestDto;
@@ -18,8 +15,6 @@ import com.sabi.suppliers.core.dto.response.SupplierLocationResponseDto;
 import com.sabi.suppliers.core.models.SupplierLocation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,7 +55,7 @@ public class SupplierLocationService {
         validations.validateSupplierLocation(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplierLocation supplierLocation = mapper.map(request,SupplierLocation.class);
-        SupplierLocation supplierLocationExist = supplierLocationRepository.findBySupplierIDAndStateID(request.getSupplierID(), request.getStateID());
+        SupplierLocation supplierLocationExist = supplierLocationRepository.findBySupplierIdAndStateId(request.getSupplierID(), request.getStateID());
         if(supplierLocationExist !=null){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " Supplier Location already exist");
         }
@@ -105,34 +100,6 @@ public class SupplierLocationService {
     }
 
 
-    /** <summary>
-     * Find all Supplier Location
-     * </summary>
-     * <remarks>this method is responsible for getting all records in pagination</remarks>
-     */
-    public Page<SupplierLocation> findAll(Long supplierID, Long stateID, PageRequest pageRequest ){
-
-        GenericSpecification<SupplierLocation> genericSpecification = new GenericSpecification<SupplierLocation>();
-
-        if (supplierID != null)
-        {
-            genericSpecification.add(new SearchCriteria("supplierID", supplierID, SearchOperation.EQUAL));
-        }
-
-        if (stateID != null)
-        {
-            genericSpecification.add(new SearchCriteria("stateID", stateID, SearchOperation.EQUAL));
-        }
-
-
-
-        Page<SupplierLocation> supplierLocation = supplierLocationRepository.findAll(genericSpecification,pageRequest);
-            if(supplierLocation == null){
-                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
-            }
-        return supplierLocation;
-
-    }
 
 
     /** <summary>
