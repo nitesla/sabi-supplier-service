@@ -11,5 +11,7 @@ import java.util.List;
 public interface WareHouseRepository extends JpaRepository<WareHouse, Long>, JpaSpecificationExecutor<WareHouse> {
     List<WareHouse> findByIsActive(Boolean isActive);
 
+    WareHouse findWareHouseById(Long id);
+
     Boolean existsByAddress(String address);
 }

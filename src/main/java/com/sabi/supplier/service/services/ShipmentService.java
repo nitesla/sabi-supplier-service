@@ -11,9 +11,11 @@ import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ShipmentRepository;
 import com.sabi.supplier.service.repositories.StateRepository;
+import com.sabi.supplier.service.repositories.WareHouseRepository;
 import com.sabi.suppliers.core.dto.request.ShipmentDto;
 import com.sabi.suppliers.core.dto.response.ShipmentResponseDto;
 import com.sabi.suppliers.core.models.Shipment;
+import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,7 @@ public class ShipmentService {
     private final Validations validations;
 
     @Autowired
-//    private WarehouseRepository warehouseRepository;
+    private WareHouseRepository warehouseRepository;
 
     public ShipmentService(ModelMapper mapper, ObjectMapper objectMapper, Validations validations) {
         this.mapper = mapper;
@@ -50,20 +52,15 @@ public class ShipmentService {
      */
 
     public ShipmentResponseDto createShipment(ShipmentDto request) {
+        validations.validateShipment(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Shipment shipment = mapper.map(request,Shipment.class);
         Shipment shipmentExists = shipmentRepository.findShipmentById(request.getWarehouseId());
-        log.info("Shipment request :::::::::::::::::::: " +shipmentExists);
-
+        log.info("Shipment fetched from DB :::::::::::::::::::: " +shipmentExists);
         if(shipmentExists != null){
-            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "shipment item already exist");
+            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "shipment already exist");
         }
         log.info("Shipment request :::::::::::::::::::: " +request);
-//        Warehouse savedWarehouse = warehouseRepository.findShipmentById(request.getWarehouseId());
-//        if (savedWarehouse == null) {
-//            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-//                    "Requested warehouse Id does not exist!");
-//        }
         shipment.setCreatedBy(userCurrent.getId());
         shipment.setIsActive(true);
         shipment = shipmentRepository.save(shipment);
@@ -82,16 +79,11 @@ public class ShipmentService {
      */
 
     public ShipmentResponseDto updateShipment(ShipmentDto request) {
-//        validations.validateShipment(request);
+        validations.validateShipment(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Shipment state = shipmentRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested shipment Id does not exist!"));
-//        Warehouse savedWarehouse = warehouseRepository.findShipmentById(request.getWarehouseId());
-//        if (savedWarehouse == null) {
-//            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-//                    "Requested warehouse Id does not exist!");
-//        }
         mapper.map(request, state);
         state.setUpdatedBy(userCurrent.getId());
         shipmentRepository.save(state);

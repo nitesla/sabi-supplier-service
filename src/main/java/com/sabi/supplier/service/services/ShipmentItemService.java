@@ -43,6 +43,7 @@ public class ShipmentItemService {
     }
 
     public ShipmentItemResponseDto createShipmentItem(ShipmentItemDto request) {
+        validations.validateShipmentItem(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         ShipmentItem shipmentItem = mapper.map(request,ShipmentItem.class);
         ShipmentItem productExists = repository.findShipmentItemById(request.getShipmentId());
@@ -64,7 +65,7 @@ public class ShipmentItemService {
     }
 
     public ShipmentItemResponseDto updateShipmentItem(ShipmentItemDto request) {
-//        validations.validateProduct(request);
+        validations.validateShipmentItem(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         ShipmentItem shipmentItem = repository.findShipmentItemById(request.getId());
         if (shipmentItem == null){
