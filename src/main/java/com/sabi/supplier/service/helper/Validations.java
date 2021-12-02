@@ -52,6 +52,9 @@ public class Validations {
     @Autowired
     private ShipmentRepository shipmentRepository;
 
+    @Autowired
+    private SupplierGoodRepository supplierGoodRepository;
+
 
 
     public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository, SupplyRequestRepository supplyRequestRepository, WareHouseRepository wareHouseRepository, WareHouseUserRepository wareHouseUserRepository) {
@@ -459,6 +462,23 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
         if (shipmentDto.getTotalAmount() == null || shipmentDto.getStatus().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+    }
+
+    public void validateStock(StockDto request) {
+        supplierGoodRepository.findById(request.getSupplyGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid supplier goods ID!"));
+        userRepository.findById(request.getUserId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid shipment ID!"));
+        if (request.getActionDate() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, " action date can not be empty");
+        if (request.getAction() == null || request.getAction().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "action can not be empty");
+        if (request.getInitialQuantity() < 1)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Initia quantity not be empty");
+        if (request.getQuantity() < 1)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
+        if (request.getFinalQuantity() < 1)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "final quantity can not be empty");
     }
 
 

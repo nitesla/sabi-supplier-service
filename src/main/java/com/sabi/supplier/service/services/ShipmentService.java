@@ -56,11 +56,9 @@ public class ShipmentService {
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Shipment shipment = mapper.map(request,Shipment.class);
         Shipment shipmentExists = shipmentRepository.findShipmentById(request.getWarehouseId());
-        log.info("Shipment fetched from DB :::::::::::::::::::: " +shipmentExists);
         if(shipmentExists != null){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "shipment already exist");
         }
-        log.info("Shipment request :::::::::::::::::::: " +request);
         shipment.setCreatedBy(userCurrent.getId());
         shipment.setIsActive(true);
         shipment = shipmentRepository.save(shipment);
