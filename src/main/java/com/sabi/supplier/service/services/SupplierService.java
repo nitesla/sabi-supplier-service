@@ -8,13 +8,18 @@ import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.PreviousPasswords;
 import com.sabi.framework.models.User;
+import com.sabi.framework.notification.requestDto.NotificationRequestDto;
+import com.sabi.framework.notification.requestDto.RecipientRequest;
 import com.sabi.framework.repositories.PreviousPasswordRepository;
 import com.sabi.framework.repositories.UserRepository;
+import com.sabi.framework.service.NotificationService;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.Constants;
 import com.sabi.framework.utils.CustomResponseCode;
+import com.sabi.framework.utils.Utility;
 import com.sabi.supplier.service.helper.SupplierConstant;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.LGARepository;
 import com.sabi.supplier.service.repositories.SupplierLocationRepository;
 import com.sabi.supplier.service.repositories.SupplierRepository;
 import com.sabi.supplier.service.repositories.SupplierUserRepository;
@@ -26,12 +31,15 @@ import com.sabi.suppliers.core.dto.response.CompleteSignUpResponse;
 import com.sabi.suppliers.core.dto.response.PartnerSignUpResponse;
 import com.sabi.suppliers.core.dto.response.SupplierResponseDto;
 import com.sabi.suppliers.core.dto.response.SupplierSignUpResponse;
+import com.sabi.suppliers.core.models.LGA;
 import com.sabi.suppliers.core.models.Supplier;
 import com.sabi.suppliers.core.models.SupplierLocation;
 import com.sabi.suppliers.core.models.SupplierUser;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,20 +68,25 @@ public class SupplierService {
     private PreviousPasswordRepository previousPasswordRepository;
     private SupplierUserRepository supplierUserRepository;
     private SupplierLocationRepository supplierLocationRepository;
+    private LGARepository lgaRepository;
     private PartnerSignUpService partnerSignUpService;
+    private NotificationService notificationService;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
 
     public SupplierService(SupplierRepository supplierRepository,UserRepository userRepository,PreviousPasswordRepository previousPasswordRepository,
-                           SupplierUserRepository supplierUserRepository,SupplierLocationRepository supplierLocationRepository,PartnerSignUpService partnerSignUpService,
+                           SupplierUserRepository supplierUserRepository,SupplierLocationRepository supplierLocationRepository,LGARepository lgaRepository,
+                           PartnerSignUpService partnerSignUpService,NotificationService notificationService,
                            ModelMapper mapper, ObjectMapper objectMapper, Validations validations) {
         this.supplierRepository = supplierRepository;
         this.userRepository = userRepository;
         this.previousPasswordRepository = previousPasswordRepository;
         this.supplierUserRepository = supplierUserRepository;
         this.supplierLocationRepository = supplierLocationRepository;
+        this.lgaRepository = lgaRepository;
         this.partnerSignUpService = partnerSignUpService;
+        this.notificationService = notificationService;
         this.mapper = mapper;
         this.objectMapper = objectMapper;
         this.validations = validations;
@@ -85,7 +98,7 @@ public class SupplierService {
 
 
     public SupplierSignUpResponse supplierSignUp(SupplierSignUpRequestDto request) {
-
+        validations.validateSupplier(request);
         User user = mapper.map(request,User.class);
 
         User exist = userRepository.findByEmailOrPhone(request.getEmail(),request.getPhone());
@@ -163,6 +176,7 @@ public class SupplierService {
 
 
     public CompleteSignUpResponse completeSignUp(CompleteSignUpDto request) throws IOException {
+        validations.validateCompleteSignUp(request);
         Supplier supplier = supplierRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested supplier Id does not exist!"));
@@ -199,8 +213,8 @@ public class SupplierService {
             request.setEmail(user.getEmail());
             request.setPhone(user.getPhone());
             request.setName(supplier.getName());
-            request.setPassword(request.getPassword());
-
+            String generatePassword= Utility.passwordGeneration();
+            request.setPassword(generatePassword);
             request.getAssets().forEach(p -> {
                 PartnerAssetTypeRequest tran = PartnerAssetTypeRequest.builder()
                         .assetTypeId(p.getAssetTypeId())
@@ -209,6 +223,28 @@ public class SupplierService {
             });
             PartnerSignUpResponse partnerSignUpResponse = partnerSignUpService.partnerSignUp(request);
             log.info(" partner details " + partnerSignUpResponse);
+
+
+            String msg = "Hello " + " " + user.getFirstName() + " " + user.getLastName() + "<br/>"
+                    + "Username :" + " "+ user.getUsername() + "<br/>"
+                    + "Default password :" + " "+ generatePassword + "<br/>"
+                    + " You have been profiled as a logistic partner,kindly login with the username and password" + "<br/>";
+
+            NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
+            User emailRecipient = userRepository.getOne(user.getId());
+            notificationRequestDto.setMessage(msg);
+            List<RecipientRequest> recipient = new ArrayList<>();
+            recipient.add(RecipientRequest.builder()
+                    .email(emailRecipient.getEmail())
+                    .build());
+            notificationRequestDto.setRecipient(recipient);
+            notificationService.emailNotificationRequest(notificationRequestDto);
+
+//            SmsRequest smsRequest = SmsRequest.builder()
+//                    .message(msg)
+//                    .phoneNumber(emailRecipient.getPhone())
+//                    .build();
+//            notificationService.smsNotificationRequest(smsRequest);
         }
 
         CompleteSignUpResponse response = CompleteSignUpResponse.builder()
@@ -232,17 +268,11 @@ public class SupplierService {
 
 
 
-
-
-
-
-
     /** <summary>
      * Supplier update
      * </summary>
      * <remarks>this method is responsible for updating already existing Supplier</remarks>
      */
-
     public SupplierResponseDto updateSupplier(SupplierRequestDto request) {
         validations.validateSupplier(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
@@ -270,6 +300,31 @@ public class SupplierService {
     }
 
 
+    public Page<Supplier> findAll(String name, PageRequest pageRequest ){
+        Page<Supplier> supplierProperties = supplierRepository.findALLSupplier(name,pageRequest);
+        if(supplierProperties == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
+        }
+        supplierProperties.getContent().forEach(supplier ->{
+            LGA lga = lgaRepository.getOne(supplier.getLgaId());
+            supplier.setLga(lga.getName());
+        });
+        return supplierProperties;
+
+    }
+
+
+    public List<Supplier> getAll(Boolean isActive){
+        List<Supplier> supplierProperties = supplierRepository.findByIsActive(isActive);
+        for (Supplier sup : supplierProperties
+                ) {
+            LGA lga = lgaRepository.getOne(sup.getLgaId());
+            sup.setLga(lga.getName());
+
+        }
+        return supplierProperties;
+
+    }
 
 
     /** <summary>
