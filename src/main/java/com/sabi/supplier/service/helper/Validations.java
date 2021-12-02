@@ -49,6 +49,9 @@ public class Validations {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private ShipmentRepository shipmentRepository;
+
 
 
     public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository, SupplyRequestRepository supplyRequestRepository, WareHouseRepository wareHouseRepository, WareHouseUserRepository wareHouseUserRepository) {
@@ -412,10 +415,51 @@ public class Validations {
         if(request.getActivationUrl()== null || request.getActivationUrl().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Activation url cannot be empty");
 
-
     }
 
+    public void validateShipmentItem(ShipmentItemDto request) {
+        supplierRepository.findById(request.getSupplierRequestId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid supplier ID!"));
+        shipmentRepository.findById(request.getShipmentId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid shipment ID!"));
+        if (request.getAcceptedQuality() < 1)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, " accepted quantity can not be empty");
+        if (request.getDeliveryDate() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "delivery date can not be empty");
+        if (request.getPrice() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "price can not be empty");
+        if (request.getQuantity() < 1)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
+        if (request.getStatus() == null || request.getStatus().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+    }
 
+    public void validateShipment(ShipmentDto shipmentDto) {
+        WareHouse wareHouse = wareHouseRepository.findWareHouseById(shipmentDto.getWarehouseId());
+        if (wareHouse == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,"Enter a valid warehouse id!");
+        }
+        if (shipmentDto.getDeliveryDate() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Delivery date can not be empty");
+        if (shipmentDto.getExpectedDeliveryDate() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "expected date can not be empty");
+        if (shipmentDto.getLogisticPartnerId() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "end date can not be empty");
+        if (shipmentDto.getLogisticPartnerName() == null || shipmentDto.getLogisticPartnerName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "logistic partner name can not be empty");
+        if (shipmentDto.getPhoneNumber() == null || shipmentDto.getPhoneNumber().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Phonenumber can not be empty");
+        if (shipmentDto.getQuantity() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
+        if (shipmentDto.getTotalAmount() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "total amount not be empty");
+        if (shipmentDto.getVehicle() == null || shipmentDto.getVehicle().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "vehicle can not be empty");
+        if (shipmentDto.getStatus() == null || shipmentDto.getStatus().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+        if (shipmentDto.getTotalAmount() == null || shipmentDto.getStatus().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+    }
 
 
 
