@@ -322,7 +322,7 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Delivery date can not be empty");
         if (shipmentDto.getExpectedDeliveryDate() == null)
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "expected date can not be empty");
-        if (shipmentDto.getLogisticPartnerId() == null)
+        if (shipmentDto.getLogisticPartnerId() == null || shipmentDto.getLogisticPartnerId().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "end date can not be empty");
         if (shipmentDto.getLogisticPartnerName() == null || shipmentDto.getLogisticPartnerName().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "logistic partner name can not be empty");
