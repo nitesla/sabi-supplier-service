@@ -15,7 +15,6 @@ import com.sabi.suppliers.core.models.Preference;
 import com.sabi.suppliers.core.models.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @SuppressWarnings("ALL")
@@ -25,12 +24,11 @@ public class PreferenceService {
 
     private final SupplierRepository supplierRepository;
     private final ModelMapper mapper;
-    @Autowired
     private Validations validations;
-    @Autowired
     private PreferenceRepository repository;
 
-    public PreferenceService(SupplierRepository supplierRepository, ModelMapper mapper, Validations validations, PreferenceRepository repository) {
+    public PreferenceService(SupplierRepository supplierRepository, ModelMapper mapper, Validations validations,
+                             PreferenceRepository repository) {
         this.supplierRepository = supplierRepository;
         this.mapper = mapper;
         this.validations = validations;
@@ -59,7 +57,6 @@ public class PreferenceService {
     }
 
     public PreferenceResponseDto updatePreference(PreferenceDto request) {
-//        validations.validateProduct(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Preference preference = repository.findBySupplierId(request.getSupplierId());
         if (preference == null){
