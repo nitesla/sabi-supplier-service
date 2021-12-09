@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -68,9 +67,9 @@ public class WareHouseService {
 
     public Page<WareHouse> findWareHouses(Long productId, Long supplierId, Long stateId, String address,
                                           String contactPerson, String contactPhone, String contactEmail,
-                                          String longitude, String latitude, Long warehouseUserId,
+                                          String longitude, String latitude,
                                           Long userId, Long lgaId, Long productCount, String name,
-                                          BigDecimal productCost, Boolean isActive, PageRequest pageRequest) {
+                                          Boolean isActive, PageRequest pageRequest) {
         GenericSpecification<WareHouse> genericSpecification = new GenericSpecification<>();
 
         if (productId != null) {
@@ -101,9 +100,6 @@ public class WareHouseService {
         if (latitude != null && !latitude.isEmpty()) {
             genericSpecification.add(new SearchCriteria("latitude", latitude, SearchOperation.EQUAL));
         }
-        if (warehouseUserId != null) {
-            genericSpecification.add(new SearchCriteria("warehouseUserId", warehouseUserId, SearchOperation.EQUAL));
-        }
         if (userId != null) {
             genericSpecification.add(new SearchCriteria("userId", userId, SearchOperation.EQUAL));
         }
@@ -115,9 +111,6 @@ public class WareHouseService {
         }
         if (name != null && !name.isEmpty()) {
             genericSpecification.add(new SearchCriteria("name", name, SearchOperation.MATCH));
-        }
-        if (productCost != null) {
-            genericSpecification.add(new SearchCriteria("productCost", productCost, SearchOperation.EQUAL));
         }
         if (isActive != null) {
             genericSpecification.add(new SearchCriteria("isActive", isActive, SearchOperation.EQUAL));
