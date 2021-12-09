@@ -58,11 +58,12 @@ public class SupplierRoleService {
         coreValidations.validateRole(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Role role = mapper.map(request,Role.class);
-        Role roleExist = roleRepository.findByNameAndClientId(request.getName(),userCurrent.getClientId());
+        SupplierUser supplierUser = supplierUserRepository.findByUserId(userCurrent.getId());
+        Role roleExist = roleRepository.findByNameAndClientId(request.getName(),supplierUser.getSupplierId());
         if(roleExist !=null){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " Role already exist");
         }
-        SupplierUser supplierUser = supplierUserRepository.findByUserId(userCurrent.getId());
+
         role.setClientId(supplierUser.getSupplierId());
         role.setCreatedBy(userCurrent.getId());
         role.setIsActive(true);
