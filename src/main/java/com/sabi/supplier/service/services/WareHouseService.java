@@ -11,12 +11,15 @@ import com.sabi.supplier.service.helper.GenericSpecification;
 import com.sabi.supplier.service.helper.SearchCriteria;
 import com.sabi.supplier.service.helper.SearchOperation;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.StateRepository;
 import com.sabi.supplier.service.repositories.WareHouseRepository;
 import com.sabi.suppliers.core.dto.request.WareHouseRequest;
 import com.sabi.suppliers.core.dto.response.WareHouseResponse;
+import com.sabi.suppliers.core.models.State;
 import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,8 @@ public class WareHouseService {
 
     private final Validations validations;
     private final ModelMapper mapper;
+    @Autowired
+    private StateRepository stateRepository;
 
     public WareHouseService(WareHouseRepository wareHouseRepository, Validations validations, ModelMapper mapper) {
         this.wareHouseRepository = wareHouseRepository;
@@ -117,6 +122,11 @@ public class WareHouseService {
         }
 
         Page<WareHouse> wareHouses = wareHouseRepository.findAll(genericSpecification, pageRequest);
+        wareHouses.forEach(wareHouse ->{
+            State stateExist = stateRepository.getOne(wareHouse.getStateId());
+            wareHouse.setStateName(stateExist.getName());
+        });
+
 
         return wareHouses;
     }
@@ -125,6 +135,8 @@ public class WareHouseService {
         WareHouse wareHouse = wareHouseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supply Request Id does not exist!"));
+        State state = stateRepository.getOne(wareHouse.getStateId());
+        wareHouse.setStateName(state.getName());
         return mapper.map(wareHouse, WareHouseResponse.class);
     }
 
@@ -138,7 +150,7 @@ public class WareHouseService {
         wareHouseRepository.save(wareHouse);
     }
 
-    public List<WareHouse> getAll(Boolean isActive) {
-        return wareHouseRepository.findByIsActive(isActive);
+    public List<WareHouse> getAll(Boolean isActive,Long supplierId) {
+        return wareHouseRepository.findByIsActive(isActive, supplierId);
     }
 }

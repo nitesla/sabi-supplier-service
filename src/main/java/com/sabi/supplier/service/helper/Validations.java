@@ -30,9 +30,9 @@ public class Validations {
     private ProductRepository productRepository;
     private ProductCategoryRepository productCategoryRepository;
     private ManufacturerRepository manufacturerRepository;
-    private final SupplyRequestRepository supplyRequestRepository;
-    private final WareHouseRepository wareHouseRepository;
-    private final WareHouseUserRepository wareHouseUserRepository;
+    private  SupplyRequestRepository supplyRequestRepository;
+    private  WareHouseRepository wareHouseRepository;
+    private  WareHouseUserRepository wareHouseUserRepository;
 
     @Autowired
     private SupplierRepository supplierRepository;
@@ -54,6 +54,7 @@ public class Validations {
 
     @Autowired
     private SupplierGoodRepository supplierGoodRepository;
+
 
 
 
@@ -479,6 +480,44 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
         if (request.getFinalQuantity() < 1)
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "final quantity can not be empty");
+    }
+
+    public void validateWarehouseGoods(WarehouseGoodsDto request) {
+        wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Warehouse ID!"));
+    supplierGoodRepository.findById(request.getSupplyGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Supplier Goods ID!"));
+    if (request.getQty() < 1){
+        throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
+    }
+    if (request.getQtyAvaliable() < 1){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity avaliable  can not be empty");
+    }
+        if (request.getQtySold() < 1){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity sold can not be empty");
+        }
+    }
+
+    public void validateInventory(InventoryDto request) {
+        wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Warehouse ID!"));
+        supplierGoodRepository.findById(request.getSupplierGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Supplier Goods ID!"));
+        if (request.getDeliveryAddress() == null || request.getDeliveryAddress().isEmpty()){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "delivery address can not be empty");
+        }
+        if (request.getName() == null || request.getName().isEmpty()){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "name can not be empty");
+        }
+        String valName = request.getName();
+        char valCharName = valName.charAt(0);
+        if (Character.isDigit(valCharName)){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name can not start with a number");
+        }
+        if (request.getStatus() == null || request.getStatus().isEmpty()){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+        }
+
     }
 
 

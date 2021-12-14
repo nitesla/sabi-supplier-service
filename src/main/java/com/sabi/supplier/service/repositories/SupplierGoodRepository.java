@@ -18,8 +18,8 @@ public interface SupplierGoodRepository extends JpaRepository<SupplierGood, Long
     List<SupplierGood> findByIsActive(Boolean isActive);
 
     @Query("SELECT c FROM SupplierGood c WHERE ((:supplierProductId IS NULL) OR (:supplierProductId IS NOT NULL AND c.supplierProductId = :supplierProductId))" +
-            " AND ((:variantId IS NULL) OR (:variantId IS NOT NULL AND c.variantId = :variantId))"
-//            "AND ((:price IS NULL) OR (:price IS NOT NULL AND c.price = :price))"
+            " AND ((:variantId IS NULL) OR (:variantId IS NOT NULL AND c.variantId = :variantId))" +
+            "AND ((:price IS NULL) OR (:price IS NOT NULL AND c.price = :price))"
     )
     Page<SupplierGood> findSupplierGoods(@Param("supplierProductId") Long supplierProductId,
                                         @Param("variantId") Long variantId,

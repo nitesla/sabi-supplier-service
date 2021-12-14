@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -68,47 +69,56 @@ public class SupplyRequestService {
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 
-    public Page<SupplyRequest> findSupplyRequests(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice,
-                                                 Date startTime, Date endTime, String referenceNo,
-                                                 String status, PageRequest pageRequest) {
-        GenericSpecification<SupplyRequest> genericSpecification = new GenericSpecification<>();
-
-        if (productId != null) {
-            genericSpecification.add(new SearchCriteria("productId", productId, SearchOperation.EQUAL));
-        }
-
-        if (productName != null && !productName.isEmpty()) {
-            genericSpecification.add(new SearchCriteria("productName", productName, SearchOperation.MATCH));
-        }
-        if (askingQuantity != null) {
-            genericSpecification.add(new SearchCriteria("askingQuantity", askingQuantity, SearchOperation.EQUAL));
-        }
-        if (askingPrice != null) {
-            genericSpecification.add(new SearchCriteria("askingPrice", askingPrice, SearchOperation.EQUAL));
-        }
-        if (startTime != null) {
-            genericSpecification.add(new SearchCriteria("startTime", startTime, SearchOperation.EQUAL));
-        }
-        if (endTime != null) {
-            genericSpecification.add(new SearchCriteria("endTime", endTime, SearchOperation.EQUAL));
-        }
-        if (referenceNo != null && !referenceNo.isEmpty()) {
-            genericSpecification.add(new SearchCriteria("referenceNo", referenceNo, SearchOperation.MATCH));
-        }
-        if (status != null && !status.isEmpty()) {
-            genericSpecification.add(new SearchCriteria("status", status, SearchOperation.EQUAL));
-        }
-
-        Page<SupplyRequest> supplyRequests = supplyRequestRepository.findAll(genericSpecification, pageRequest);
-
-        return supplyRequests;
-    }
-
+//    public Page<SupplyRequest> findSupplyRequests(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice,
+//                                                 Date startTime, Date endTime, String referenceNo,
+//                                                 String status, PageRequest pageRequest) {
+//        GenericSpecification<SupplyRequest> genericSpecification = new GenericSpecification<>();
+//
+//        if (productId != null) {
+//            genericSpecification.add(new SearchCriteria("productId", productId, SearchOperation.EQUAL));
+//        }
+//
+//        if (productName != null && !productName.isEmpty()) {
+//            genericSpecification.add(new SearchCriteria("productName", productName, SearchOperation.MATCH));
+//        }
+//        if (askingQuantity != null) {
+//            genericSpecification.add(new SearchCriteria("askingQuantity", askingQuantity, SearchOperation.EQUAL));
+//        }
+//        if (askingPrice != null) {
+//            genericSpecification.add(new SearchCriteria("askingPrice", askingPrice, SearchOperation.EQUAL));
+//        }
+//        if (startTime != null) {
+//            genericSpecification.add(new SearchCriteria("startTime", startTime, SearchOperation.EQUAL));
+//        }
+//        if (endTime != null) {
+//            genericSpecification.add(new SearchCriteria("endTime", endTime, SearchOperation.EQUAL));
+//        }
+//        if (referenceNo != null && !referenceNo.isEmpty()) {
+//            genericSpecification.add(new SearchCriteria("referenceNo", referenceNo, SearchOperation.MATCH));
+//        }
+//        if (status != null && !status.isEmpty()) {
+//            genericSpecification.add(new SearchCriteria("status", status, SearchOperation.EQUAL));
+//        }
+//
+//        Page<SupplyRequest> supplyRequests = supplyRequestRepository.findAll(genericSpecification, pageRequest);
+//
+//        return supplyRequests;
+//    }
+//
     public SupplyRequestResponse findSupplyRequest(long id){
         SupplyRequest supplyRequest = supplyRequestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supply Request Id does not exist!"));
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
+    }
+
+    public Page<SupplyRequest> findAll(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice, Date startTime, Date endTime,String referenceNo,String status,Long warehouseId,Long supplierId,PageRequest pageRequest ){
+        Page<SupplyRequest> stocks = supplyRequestRepository.findSupplyRequests(productId,productName,askingQuantity,askingPrice,startTime,endTime,referenceNo,status,warehouseId,supplierId,pageRequest);
+        if(stocks == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
+        }
+        return stocks;
+
     }
 
     public void enableDisEnableState(EnableDisEnableDto request) {
