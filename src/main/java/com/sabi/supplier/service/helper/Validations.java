@@ -111,7 +111,7 @@ public class Validations {
 
         ProductCategory productCategory = productCategoryRepository.findById(productDto.getProductCategoryId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        " Enter a valid product id!"));
+                        " Enter a valid product category id!"));
         Manufacturer manufacturer = manufacturerRepository.findById(productDto.getManufacturerId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         " Enter a valid manufacturer id!"));
