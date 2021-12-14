@@ -30,9 +30,15 @@ public class Validations {
     private ProductRepository productRepository;
     private ProductCategoryRepository productCategoryRepository;
     private ManufacturerRepository manufacturerRepository;
-    private final SupplyRequestRepository supplyRequestRepository;
-    private final WareHouseRepository wareHouseRepository;
-    private final WareHouseUserRepository wareHouseUserRepository;
+
+    @Autowired
+    private SupplyRequestRepository supplyRequestRepository;
+
+    @Autowired
+    private WareHouseRepository wareHouseRepository;
+
+    @Autowired
+    private WareHouseUserRepository wareHouseUserRepository;
 
     @Autowired
     private SupplierRepository supplierRepository;
@@ -57,16 +63,13 @@ public class Validations {
 
 
 
-    public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository, SupplyRequestRepository supplyRequestRepository, WareHouseRepository wareHouseRepository, WareHouseUserRepository wareHouseUserRepository) {
+    public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository) {
         this.stateRepository = stateRepository;
         this.lgaRepository = lgaRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.productCategoryRepository = productCategoryRepository;
         this.manufacturerRepository = manufacturerRepository;
-        this.supplyRequestRepository = supplyRequestRepository;
-        this.wareHouseRepository = wareHouseRepository;
-        this.wareHouseUserRepository = wareHouseUserRepository;
     }
 
     public void validateState(StateDto stateDto) {
