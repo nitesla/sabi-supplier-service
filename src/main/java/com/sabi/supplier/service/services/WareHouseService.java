@@ -31,22 +31,22 @@ import java.util.List;
 @Service
 @Slf4j
 public class WareHouseService {
-    private final WareHouseRepository wareHouseRepository;
 
+    private final WareHouseRepository wareHouseRepository;
     private final Validations validations;
     private final ModelMapper mapper;
-    private StateRepository stateRepository;
-    @Autowired
-    private LGARepository lgaRepository;
+    private final StateRepository stateRepository;
+    private final LGARepository lgaRepository;
+    private final WareHouseUserRepository wareHouseUserRepository;
 
-    @Autowired
-    private WareHouseUserRepository wareHouseUserRepository;
-
-    public WareHouseService(StateRepository stateRepository,WareHouseRepository wareHouseRepository, Validations validations, ModelMapper mapper) {
+    public WareHouseService(StateRepository stateRepository,WareHouseRepository wareHouseRepository,LGARepository lgaRepository,
+                            WareHouseUserRepository wareHouseUserRepository,Validations validations, ModelMapper mapper) {
         this.stateRepository = stateRepository;
+        this.lgaRepository = lgaRepository;
         this.wareHouseRepository = wareHouseRepository;
         this.validations = validations;
         this.mapper = mapper;
+        this.wareHouseUserRepository = wareHouseUserRepository;
     }
 
     public WareHouseResponse createWareHouse(WareHouseRequest request) {
