@@ -116,8 +116,8 @@ public class StockService {
      * </summary>
      * <remarks>this method is responsible for getting all records in pagination</remarks>
      */
-    public Page<Stock> findAll(Long supplierGoodId,String action,Long userId, PageRequest pageRequest ){
-        Page<Stock> stocks = stockRepository.findStocks(supplierGoodId,action,userId,pageRequest);
+    public Page<Stock> findAll(Long wareHouseGoodId,String action,Long userId, PageRequest pageRequest ){
+        Page<Stock> stocks = stockRepository.findStocks(wareHouseGoodId,action,userId,pageRequest);
         if(stocks == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
