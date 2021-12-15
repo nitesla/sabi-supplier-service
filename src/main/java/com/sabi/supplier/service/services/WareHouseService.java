@@ -13,13 +13,13 @@ import com.sabi.supplier.service.helper.SearchOperation;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.StateRepository;
 import com.sabi.supplier.service.repositories.WareHouseRepository;
+import com.sabi.supplier.service.repositories.WareHouseUserRepository;
 import com.sabi.suppliers.core.dto.request.WareHouseRequest;
 import com.sabi.suppliers.core.dto.response.WareHouseResponse;
 import com.sabi.suppliers.core.models.State;
 import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -33,13 +33,11 @@ public class WareHouseService {
 
     private final Validations validations;
     private final ModelMapper mapper;
-    @Autowired
     private StateRepository stateRepository;
-
-    @Autowired
     private WareHouseUserRepository wareHouseUserRepository;
 
-    public WareHouseService(WareHouseRepository wareHouseRepository, Validations validations, ModelMapper mapper) {
+    public WareHouseService(StateRepository stateRepository,WareHouseRepository wareHouseRepository, Validations validations, ModelMapper mapper) {
+        this.stateRepository = stateRepository;
         this.wareHouseRepository = wareHouseRepository;
         this.validations = validations;
         this.mapper = mapper;
@@ -140,11 +138,9 @@ public class WareHouseService {
                         "Requested WareHouse Id does not exist!"));
         WareHouseResponse wareHouseResponse = mapper.map(wareHouse, WareHouseResponse.class);
         wareHouseResponse.setWareHouseUserCount(getWareHouseUsers(id));
-        return wareHouseResponse;
-                        "Requested Supply Request Id does not exist!"));
         State state = stateRepository.getOne(wareHouse.getStateId());
-        wareHouse.setStateName(state.getName());
-        return mapper.map(wareHouse, WareHouseResponse.class);
+        wareHouseResponse.setStateName(state.getName());
+        return wareHouseResponse;
     }
 
     public void enableDisEnableState(EnableDisEnableDto request) {
@@ -157,8 +153,8 @@ public class WareHouseService {
         wareHouseRepository.save(wareHouse);
     }
 
-    public List<WareHouse> getAll(Boolean isActive) {
-        List<WareHouse> wareHouses = wareHouseRepository.findByIsActive(isActive);
+    public List<WareHouse> getAll(Boolean isActive,Long supplierId) {
+        List<WareHouse> wareHouses = wareHouseRepository.findByIsActive(isActive,supplierId);
         for (WareHouse request : wareHouses) {
             request.setWareHouseUserCount(getWareHouseUsers(request.getId()));
         }
