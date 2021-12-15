@@ -5,6 +5,7 @@ import com.sabi.framework.dto.requestDto.EnableDisEnableDto;
 import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.User;
+import com.sabi.framework.repositories.UserRepository;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.GenericSpecification;
@@ -17,6 +18,7 @@ import com.sabi.suppliers.core.dto.response.WareHouseUserResponse;
 import com.sabi.suppliers.core.models.WareHouseUser;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,9 @@ public class WareHouseUserService {
 
     private final Validations validations;
     private final ModelMapper mapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public WareHouseUserService(WareHouseUserRepository wareHouseUserRepository, Validations validations, ModelMapper mapper) {
         this.wareHouseUserRepository = wareHouseUserRepository;
@@ -87,7 +92,17 @@ public class WareHouseUserService {
         WareHouseUser wareHouseUser = wareHouseUserRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested wareHouseUser Id does not exist!"));
-        return mapper.map(wareHouseUser, WareHouseUserResponse.class);
+        WareHouseUserResponse wareHouseUserResponse = mapper.map(wareHouseUser, WareHouseUserResponse.class);
+
+        if (wareHouseUserResponse.getUserId() != null) {
+            User user = userRepository.getOne(wareHouseUserResponse.getUserId());
+            wareHouseUserResponse.setWareHouseUserName(user.getLastName() + " " + user.getFirstName());
+            wareHouseUserResponse.setEmail(user.getEmail());
+            wareHouseUserResponse.setPhone(user.getPhone());
+        }
+
+        return wareHouseUserResponse;
+
     }
 
     public void enableDisEnableState (EnableDisEnableDto request){
