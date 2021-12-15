@@ -36,6 +36,9 @@ public class WareHouseService {
     @Autowired
     private StateRepository stateRepository;
 
+    @Autowired
+    private WareHouseUserRepository wareHouseUserRepository;
+
     public WareHouseService(WareHouseRepository wareHouseRepository, Validations validations, ModelMapper mapper) {
         this.wareHouseRepository = wareHouseRepository;
         this.validations = validations;
@@ -134,6 +137,10 @@ public class WareHouseService {
     public WareHouseResponse findWareHouse(long id) {
         WareHouse wareHouse = wareHouseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested WareHouse Id does not exist!"));
+        WareHouseResponse wareHouseResponse = mapper.map(wareHouse, WareHouseResponse.class);
+        wareHouseResponse.setWareHouseUserCount(getWareHouseUsers(id));
+        return wareHouseResponse;
                         "Requested Supply Request Id does not exist!"));
         State state = stateRepository.getOne(wareHouse.getStateId());
         wareHouse.setStateName(state.getName());
@@ -150,7 +157,20 @@ public class WareHouseService {
         wareHouseRepository.save(wareHouse);
     }
 
-    public List<WareHouse> getAll(Boolean isActive,Long supplierId) {
-        return wareHouseRepository.findByIsActive(isActive, supplierId);
+    public List<WareHouse> getAll(Boolean isActive) {
+        List<WareHouse> wareHouses = wareHouseRepository.findByIsActive(isActive);
+        for (WareHouse request : wareHouses) {
+            request.setWareHouseUserCount(getWareHouseUsers(request.getId()));
+        }
+
+        return wareHouses;
+    }
+
+
+    public Integer getWareHouseUsers(Long wareHouseId){
+        Integer userCount = wareHouseUserRepository.countByWareHouseId(wareHouseId);
+
+        return userCount;
+
     }
 }

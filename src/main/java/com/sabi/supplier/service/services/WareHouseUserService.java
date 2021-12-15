@@ -14,7 +14,6 @@ import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.WareHouseUserRepository;
 import com.sabi.suppliers.core.dto.request.WareHouseUserRequest;
 import com.sabi.suppliers.core.dto.response.WareHouseUserResponse;
-import com.sabi.suppliers.core.models.WareHouse;
 import com.sabi.suppliers.core.models.WareHouseUser;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -63,13 +62,23 @@ public class WareHouseUserService {
         mapper.map(request, wareHouseUser);
         wareHouseUser.setUpdatedBy(userCurrent.getId());
         wareHouseUserRepository.save(wareHouseUser);
-        log.debug("State record updated - {}"+ new Gson().toJson(wareHouseUser));
+        log.debug("WareHouse User record updated - {}"+ new Gson().toJson(wareHouseUser));
         return mapper.map(wareHouseUser, WareHouseUserResponse.class);
     }
 
-    public Page<WareHouseUser> findWareHouseUsers(Long userId, PageRequest pageRequest){
+    public WareHouseUserResponse deleteWareHouseUser(Long id){
+        WareHouseUser wareHouseUser = wareHouseUserRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested WareHouseUser Id does not exist!"));
+        wareHouseUserRepository.deleteById(wareHouseUser.getId());
+        log.debug("WareHouse User Deleted - {}"+ new Gson().toJson(wareHouseUser));
+        return mapper.map(wareHouseUser, WareHouseUserResponse.class);
+    }
+
+    public Page<WareHouseUser> findWareHouseUsers(Long userId, Long wareHouseId, PageRequest pageRequest){
         GenericSpecification<WareHouseUser> genericSpecification = new GenericSpecification<>();
         if(userId != null) genericSpecification.add(new SearchCriteria("userId", userId, SearchOperation.EQUAL));
+        if(wareHouseId != null) genericSpecification.add(new SearchCriteria("wareHouseId", wareHouseId, SearchOperation.EQUAL));
         Page<WareHouseUser> wareHouseUser = wareHouseUserRepository.findAll(genericSpecification, pageRequest);
         return wareHouseUser;
     }

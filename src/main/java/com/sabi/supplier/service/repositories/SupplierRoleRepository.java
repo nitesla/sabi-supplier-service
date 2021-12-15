@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SupplierRoleRespository extends JpaRepository<SupplierRole,Long> {
+public interface SupplierRoleRepository extends JpaRepository<SupplierRole,Long> {
 
     SupplierRole findByRoleId (Long roleId);
     SupplierRole findBySupplierId(Long partnerId);
