@@ -466,7 +466,7 @@ public class Validations {
     }
 
     public void validateStock(StockDto request) {
-        supplierGoodRepository.findById(request.getSupplyGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+        supplierGoodRepository.findById(request.getSupplierGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid supplier goods ID!"));
         userRepository.findById(request.getUserId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid shipment ID!"));
@@ -482,10 +482,10 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "final quantity can not be empty");
     }
 
-    public void validateWarehouseGoods(WarehouseGoodsDto request) {
+    public void validateWarehouseGood(WarehouseGoodDto request) {
         wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid Warehouse ID!"));
-    supplierGoodRepository.findById(request.getSupplyGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+    supplierGoodRepository.findById(request.getSupplierGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid Supplier Goods ID!"));
     if (request.getQty() < 1){
         throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");

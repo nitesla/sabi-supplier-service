@@ -1,6 +1,5 @@
 package com.sabi.supplier.service.repositories;
 
-import com.sabi.suppliers.core.models.State;
 import com.sabi.suppliers.core.models.Stock;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +18,11 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     List<Stock> findByIsActive(Boolean isActive);
 
-    @Query("SELECT c FROM Stock c WHERE ((:supplyGoodId IS NULL) OR (:supplyGoodId IS NOT NULL AND c.supplyGoodId = :supplyGoodId))" +
+    @Query("SELECT c FROM Stock c WHERE ((:supplierGoodId IS NULL) OR (:supplierGoodId IS NOT NULL AND c.supplierGoodId = :supplierGoodId))" +
             " AND ((:action IS NULL) OR (:action IS NOT NULL AND c.action = :action))" +
             " AND ((:userId IS NULL) OR (:userId IS NOT NULL AND c.userId = :userId))"
     )
-    Page<Stock> findStocks(@Param("supplyGoodId") Long supplyGoodId,
+    Page<Stock> findStocks(@Param("supplierGoodId") Long supplierGoodId,
                                   @Param("action") String action,
                                   @Param("userId") Long userId,
 //                                        @Param("price") double price,
