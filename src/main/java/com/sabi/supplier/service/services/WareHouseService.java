@@ -22,7 +22,6 @@ import com.sabi.suppliers.core.models.State;
 import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -32,22 +31,22 @@ import java.util.List;
 @Service
 @Slf4j
 public class WareHouseService {
-    private final WareHouseRepository wareHouseRepository;
 
+    private final WareHouseRepository wareHouseRepository;
     private final Validations validations;
     private final ModelMapper mapper;
-    @Autowired
-    private StateRepository stateRepository;
-    @Autowired
-    private LGARepository lgaRepository;
+    private final StateRepository stateRepository;
+    private final LGARepository lgaRepository;
+    private final WareHouseUserRepository wareHouseUserRepository;
 
-    @Autowired
-    private WareHouseUserRepository wareHouseUserRepository;
-
-    public WareHouseService(WareHouseRepository wareHouseRepository, Validations validations, ModelMapper mapper) {
+    public WareHouseService(StateRepository stateRepository,WareHouseRepository wareHouseRepository,LGARepository lgaRepository,
+                            WareHouseUserRepository wareHouseUserRepository,Validations validations, ModelMapper mapper) {
+        this.stateRepository = stateRepository;
+        this.lgaRepository = lgaRepository;
         this.wareHouseRepository = wareHouseRepository;
         this.validations = validations;
         this.mapper = mapper;
+        this.wareHouseUserRepository = wareHouseUserRepository;
     }
 
     public WareHouseResponse createWareHouse(WareHouseRequest request) {
@@ -159,7 +158,7 @@ public class WareHouseService {
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         WareHouse wareHouse = wareHouseRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        "Requested wareHouse Id does not exist!"));
+                        "Requested State Id does not exist!"));
         wareHouse.setIsActive(request.isActive());
         wareHouse.setUpdatedBy(userCurrent.getId());
         wareHouseRepository.save(wareHouse);
