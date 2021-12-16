@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Service
 @Slf4j
 public class WareHouseUserService {
@@ -84,8 +85,19 @@ public class WareHouseUserService {
         GenericSpecification<WareHouseUser> genericSpecification = new GenericSpecification<>();
         if(userId != null) genericSpecification.add(new SearchCriteria("userId", userId, SearchOperation.EQUAL));
         if(wareHouseId != null) genericSpecification.add(new SearchCriteria("wareHouseId", wareHouseId, SearchOperation.EQUAL));
-        Page<WareHouseUser> wareHouseUser = wareHouseUserRepository.findAll(genericSpecification, pageRequest);
-        return wareHouseUser;
+        Page<WareHouseUser> wareHouseUsers = wareHouseUserRepository.findAll(genericSpecification, pageRequest);
+
+        if(wareHouseUsers == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
+        }
+        wareHouseUsers.getContent().forEach(ware ->{
+                User user = userRepository.getOne(ware.getUserId());
+                ware.setWareHouseUserName(user.getLastName() + " " + user.getFirstName());
+                ware.setEmail(user.getEmail());
+                ware.setPhone(user.getPhone());
+        });
+
+        return wareHouseUsers;
     }
 
     public WareHouseUserResponse findWareHouseUser(long id){

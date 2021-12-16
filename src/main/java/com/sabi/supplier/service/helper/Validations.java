@@ -310,8 +310,8 @@ public class Validations {
     public void validateSupplyRequest(SupplyRequestRequest request) {
         productRepository.findById(request.getProductId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid PRODUCT ID!"));
-        wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(()-> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                " Enter a valid Warehouse ID!"));
+//        wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(()-> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                " Enter a valid Warehouse ID!"));
 
     }
 
