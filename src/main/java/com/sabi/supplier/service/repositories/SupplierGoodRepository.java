@@ -15,13 +15,16 @@ public interface SupplierGoodRepository extends JpaRepository<SupplierGood, Long
 
     SupplierGood findSupplierGoodById(Long supplierGoodId);
 
-    List<SupplierGood> findByIsActive(Boolean isActive);
+    @Query("SELECT s FROM SupplierGood s WHERE ((:isActive IS NULL) OR (:isActive IS NOT NULL AND s.isActive = :isActive))" +
+            " AND ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND s.supplierId = :supplierId))")
+    List<SupplierGood> findByIsActive(@Param("isActive")Boolean isActive,
+                                      @Param("supplierId")Long supplierId);
 
-    @Query("SELECT c FROM SupplierGood c WHERE ((:supplierProductId IS NULL) OR (:supplierProductId IS NOT NULL AND c.supplierProductId = :supplierProductId))" +
-            " AND ((:variantId IS NULL) OR (:variantId IS NOT NULL AND c.variantId = :variantId))" +
-            "AND ((:price IS NULL) OR (:price IS NOT NULL AND c.price = :price))"
+    @Query("SELECT c FROM SupplierGood c WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND c.supplierId = :supplierId))" +
+            " AND ((:variantId IS NULL) OR (:variantId IS NOT NULL AND c.variantId = :variantId))"
+//            "AND ((:price IS NULL) OR (:price IS NOT NULL AND c.price = :price))"
     )
-    Page<SupplierGood> findSupplierGoods(@Param("supplierProductId") Long supplierProductId,
+    Page<SupplierGood> findSupplierGoods(@Param("supplierId") Long supplierId,
                                         @Param("variantId") Long variantId,
 //                                        @Param("price") double price,
                                 Pageable pageable);

@@ -93,8 +93,8 @@ public class SupplierGoodService {
     }
 
 
-    public List<SupplierGood> getAll(Boolean isActive){
-        List<SupplierGood> states = supplierGoodRepository.findByIsActive(isActive);
+    public List<SupplierGood> getAll(Boolean isActive,Long supplierId){
+        List<SupplierGood> states = supplierGoodRepository.findByIsActive(isActive,supplierId);
         return states;
 
     }
