@@ -132,8 +132,8 @@ public class CountryService {
     }
 
 
-    public List<Country> getAll(Boolean isActive){
-        List<Country> countries = countryRepository.findByIsActive(isActive);
+    public List<Country> getAll(String name, String code){
+        List<Country> countries = countryRepository.findAllByNameAndCode(name,code);
         return countries;
 
     }

@@ -9,9 +9,11 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.CountryRepository;
 import com.sabi.supplier.service.repositories.StateRepository;
 import com.sabi.suppliers.core.dto.request.StateDto;
 import com.sabi.suppliers.core.dto.response.StateResponseDto;
+import com.sabi.suppliers.core.models.Country;
 import com.sabi.suppliers.core.models.State;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -35,12 +37,15 @@ public class StateService {
 
 
     private StateRepository stateRepository;
+    private CountryRepository countryRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
 
-    public StateService(StateRepository stateRepository, ModelMapper mapper, ObjectMapper objectMapper,Validations validations) {
+    public StateService(StateRepository stateRepository,CountryRepository countryRepository,
+                        ModelMapper mapper, ObjectMapper objectMapper,Validations validations) {
         this.stateRepository = stateRepository;
+        this.countryRepository = countryRepository;
         this.mapper = mapper;
         this.objectMapper = objectMapper;
         this.validations = validations;
@@ -133,6 +138,16 @@ public class StateService {
 
     }
 
+    public List<State> getAllByCountryId(Long countryId){
+        List<State> states = stateRepository.findByCountryId(countryId);
+        for (State tran : states
+                ) {
+            Country country = countryRepository.getOne(tran.getCountryId());
+            tran.setCountryName(country.getName());
+        }
+        return states;
+
+    }
 
     public List<State> getAll(Boolean isActive){
         List<State> states = stateRepository.findByIsActive(isActive);

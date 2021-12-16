@@ -155,6 +155,18 @@ public class LGAService {
     }
 
 
+    public List<LGA> getAllByStateId(Long stateId){
+        List<LGA> lga = lgaRepository.findByStateId(stateId);
+        for (LGA tran : lga
+                ) {
+            State state = stateRepository.getOne(tran.getStateId());
+            tran.setStateName(state.getName());
+        }
+        return lga;
+
+    }
+
+
     public List<LGA> getAll(Boolean isActive){
         List<LGA> lga = lgaRepository.findByIsActive(isActive);
         return lga;

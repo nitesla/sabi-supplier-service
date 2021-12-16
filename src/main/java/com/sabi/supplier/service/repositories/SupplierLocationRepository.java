@@ -2,7 +2,6 @@ package com.sabi.supplier.service.repositories;
 
 import com.sabi.suppliers.core.models.SupplierLocation;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,9 +12,9 @@ import java.util.List;
  */
 
 @Repository
-public interface SupplierLocationRepository extends JpaRepository<SupplierLocation, Long>, JpaSpecificationExecutor<SupplierLocation> {
+public interface SupplierLocationRepository extends JpaRepository<SupplierLocation, Long> {
 
-    SupplierLocation findBySupplierIDAndStateID(Long supplierId, Long stateId);
+    SupplierLocation findBySupplierIdAndStateId(Long supplierId, Long stateId);
 
     List<SupplierLocation> findByIsActive(Boolean isActive);
 

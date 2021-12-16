@@ -2,7 +2,11 @@ package com.sabi.supplier.service.helper;
 
 
 import com.sabi.framework.exceptions.BadRequestException;
+import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
+import com.sabi.framework.models.Role;
+import com.sabi.framework.models.User;
+import com.sabi.framework.repositories.RoleRepository;
 import com.sabi.framework.repositories.UserRepository;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.framework.utils.Utility;
@@ -26,15 +30,34 @@ public class Validations {
     private ProductRepository productRepository;
     private ProductCategoryRepository productCategoryRepository;
     private ManufacturerRepository manufacturerRepository;
-    private final SupplyRequestRepository supplyRequestRepository;
-    private final WareHouseRepository wareHouseRepository;
-    private final WareHouseUserRepository wareHouseUserRepository;
+    private  SupplyRequestRepository supplyRequestRepository;
+    private  WareHouseRepository wareHouseRepository;
+    private  WareHouseUserRepository wareHouseUserRepository;
 
     @Autowired
     private SupplierRepository supplierRepository;
 
     @Autowired
     private SupplierCategoryRepository supplierCategoryRepository;
+
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
+
+    @Autowired
+    private SupplierProductRepository supplierProductRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private ShipmentRepository shipmentRepository;
+
+    @Autowired
+    private SupplierGoodRepository supplierGoodRepository;
+
+    @Autowired
+    private WareHouseGoodRepository wareHouseGoodRepository;
+
 
 
 
@@ -139,8 +162,8 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid request");
         }
 
-        if (request.getIsActive() == null )
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "IsActive cannot be empty");
+//        if (request.getIsActive() == null )
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "IsActive cannot be empty");
 
     }
 
@@ -236,6 +259,46 @@ public class Validations {
 
     }
 
+    public void validateSupplierGood(SupplierGoodDto supplierGoodDto) {
+        if (supplierGoodDto.getPrice() <= 0.0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Price cannot be Less that 0.0");
+        SupplierProduct supplierProduct = supplierProductRepository.findById(supplierGoodDto.getSupplierProductId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid supplier product id!"));
+        ProductVariant variant = productVariantRepository.findById(supplierGoodDto.getVariantId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested product variant Id does not exist!"));
+    }
+
+        public void validateSupplierProduct(SupplierProductDto supplierProductDto){
+            Product product = productRepository.findById(supplierProductDto.getProductId())
+                    .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                            " Enter a valid product id!"));
+            Supplier supplier = supplierRepository.findById(supplierProductDto.getSupplierId())
+                    .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                            " Enter a valid supplier id!"));
+        }
+
+    public void validateProductVariant(ProductVariantDto productVariantDto){
+        Product product = productRepository.findById(productVariantDto.getProductId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid product id!"));
+        String valName = productVariantDto.getName();
+        char valCharName = valName.charAt(0);
+        if (Character.isDigit(valCharName)){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name can not start with a number");
+        }
+        if (productVariantDto.getName() == null || productVariantDto.getName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+
+        if (productVariantDto.getPicture() == null || productVariantDto.getPicture().isEmpty())
+        throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "picture cannot be empty");
+        if (productVariantDto.getPieceaPerRow() <= 0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Piece per row cannot be empty");
+        if (productVariantDto.getRowPerPack() <= 0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "row per pack cannot be empty");
+    }
+
 
     public void validateWareHouseUser(WareHouseUserRequest request) {
         userRepository.findById(request.getUserId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
@@ -247,8 +310,8 @@ public class Validations {
     public void validateSupplyRequest(SupplyRequestRequest request) {
         productRepository.findById(request.getProductId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid PRODUCT ID!"));
-        wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(()-> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                " Enter a valid Warehouse ID!"));
+//        wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(()-> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                " Enter a valid Warehouse ID!"));
 
     }
 
@@ -271,10 +334,197 @@ public class Validations {
                 " Enter a valid LGA ID!"));
     }
 
-    public void validatesupplierBank(SupplierBankRequest request) {
-        supplierRepository.findById(request.getSupplierId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                " Enter a valid Supplier ID!"));
+
+    public void validateSupplierUser(SupplierUserDto request){
+        if (request.getFirstName() == null || request.getFirstName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "First name cannot be empty");
+        if (request.getFirstName().length() < 2 || request.getFirstName().length() > 100)// NAME LENGTH*********
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid first name  length");
+
+        if (request.getLastName() == null || request.getLastName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Last name cannot be empty");
+        if (request.getLastName().length() < 2 || request.getLastName().length() > 100)// NAME LENGTH*********
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid last name  length");
+
+        if (request.getEmail() == null || request.getEmail().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "email cannot be empty");
+        if (!Utility.validEmail(request.getEmail().trim()))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid Email Address");
+        User user = userRepository.findByEmail(request.getEmail());
+        if(user !=null){
+            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " Email already exist");
+        }
+        if (request.getPhone() == null || request.getPhone().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Phone number cannot be empty");
+        if (request.getPhone().length() < 8 || request.getPhone().length() > 14)// NAME LENGTH*********
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid phone number  length");
+        if (!Utility.isNumeric(request.getPhone()))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for phone number ");
+        User userExist = userRepository.findByPhone(request.getPhone());
+        if(userExist !=null){
+            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "  user phone already exist");
+        }
+        if(request.getRoleId() == null){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Role id cannot be empty");
+        }
+
+        Role role = roleRepository.findById(request.getRoleId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid role id!"));
     }
+
+
+    public void validateSupplier(SupplierSignUpRequestDto request){
+        if (request.getFirstName() == null || request.getFirstName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "First name cannot be empty");
+        if (request.getFirstName().length() < 2 || request.getFirstName().length() > 100)// NAME LENGTH*********
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid first name  length");
+        if (request.getLastName() == null || request.getLastName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Last name cannot be empty");
+        if (request.getLastName().length() < 2 || request.getLastName().length() > 100)// NAME LENGTH*********
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid last name  length");
+
+        if (request.getEmail() == null || request.getEmail().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "email cannot be empty");
+        if (!Utility.validEmail(request.getEmail().trim()))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid Email Address");
+        if (request.getPhone() == null || request.getPhone().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Phone number cannot be empty");
+        if (request.getPhone().length() < 8 || request.getPhone().length() > 14)// NAME LENGTH*********
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid phone number  length");
+        if (!Utility.isNumeric(request.getPhone()))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for phone number ");
+        if (request.getName() == null || request.getName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+    }
+
+
+
+    public void validateCompleteSignUp(CompleteSignUpDto request){
+        if(request.getDeliveryType() == null || request.getDeliveryType().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Delivery type cannot be empty");
+
+        if (request.getDeliveryType() != null || !request.getDeliveryType().isEmpty()) {
+
+            if (!SupplierConstant.ME.equals(request.getDeliveryType())
+                    && !SupplierConstant.SABI.equals(request.getDeliveryType()) && !SupplierConstant.MY_PARTNER.equals(request.getDeliveryType()))
+                throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid User category type");
+        }
+    }
+
+
+
+    public void validateSupplierUserActivation (SupplierUserActivation request){
+        if (request.getEmail() == null || request.getEmail().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Email cannot be empty");
+        if (!Utility.validEmail(request.getEmail().trim()))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid Email Address");
+        if(request.getActivationUrl()== null || request.getActivationUrl().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Activation url cannot be empty");
+
+    }
+
+    public void validateShipmentItem(ShipmentItemDto request) {
+        supplierRepository.findById(request.getSupplierRequestId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid supplier ID!"));
+        shipmentRepository.findById(request.getShipmentId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid shipment ID!"));
+        if (request.getAcceptedQuality() < 1)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, " accepted quantity can not be empty");
+        if (request.getDeliveryDate() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "delivery date can not be empty");
+        if (request.getPrice() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "price can not be empty");
+        if (request.getQuantity() < 1)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
+        if (request.getStatus() == null || request.getStatus().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+    }
+
+    public void validateShipment(ShipmentDto shipmentDto) {
+        WareHouse wareHouse = wareHouseRepository.findWareHouseById(shipmentDto.getWarehouseId());
+        if (wareHouse == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,"Enter a valid warehouse id!");
+        }
+        if (shipmentDto.getDeliveryDate() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Delivery date can not be empty");
+        if (shipmentDto.getExpectedDeliveryDate() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "expected date can not be empty");
+        if (shipmentDto.getLogisticPartnerId() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "end date can not be empty");
+        if (shipmentDto.getLogisticPartnerName() == null || shipmentDto.getLogisticPartnerName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "logistic partner name can not be empty");
+        if (shipmentDto.getPhoneNumber() == null || shipmentDto.getPhoneNumber().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Phonenumber can not be empty");
+        if (shipmentDto.getQuantity() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
+        if (shipmentDto.getTotalAmount() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "total amount not be empty");
+        if (shipmentDto.getVehicle() == null || shipmentDto.getVehicle().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "vehicle can not be empty");
+        if (shipmentDto.getStatus() == null || shipmentDto.getStatus().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+        if (shipmentDto.getTotalAmount() == null || shipmentDto.getStatus().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+    }
+
+    public void validateStock(StockDto request) {
+        wareHouseGoodRepository.findById(request.getWareHouseGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid supplier goods ID!"));
+        userRepository.findById(request.getUserId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid shipment ID!"));
+        if (request.getActionDate() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, " action date can not be empty");
+        if (request.getAction() == null || request.getAction().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "action can not be empty");
+        if (request.getInitialQuantity() < 1)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Initia quantity not be empty");
+        if (request.getQuantity() < 1)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
+        if (request.getFinalQuantity() < 1)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "final quantity can not be empty");
+    }
+
+    public void validateWarehouseGood(WareHouseGoodDto request) {
+        wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Warehouse ID!"));
+    supplierGoodRepository.findById(request.getSupplierGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Supplier Goods ID!"));
+    if (request.getQty() < 1){
+        throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
+    }
+    if (request.getQtyAvaliable() < 1){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity avaliable  can not be empty");
+    }
+        if (request.getQtySold() < 1){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity sold can not be empty");
+        }
+    }
+
+    public void validateInventory(InventoryDto request) {
+        wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Warehouse ID!"));
+        supplierGoodRepository.findById(request.getSupplierGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Supplier Goods ID!"));
+        if (request.getDeliveryAddress() == null || request.getDeliveryAddress().isEmpty()){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "delivery address can not be empty");
+        }
+        if (request.getName() == null || request.getName().isEmpty()){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "name can not be empty");
+        }
+        String valName = request.getName();
+        char valCharName = valName.charAt(0);
+        if (Character.isDigit(valCharName)){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name can not start with a number");
+        }
+        if (request.getStatus() == null || request.getStatus().isEmpty()){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+        }
+
+    }
+
+
+
 }
 
 
