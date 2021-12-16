@@ -11,15 +11,17 @@ import com.sabi.supplier.service.helper.GenericSpecification;
 import com.sabi.supplier.service.helper.SearchCriteria;
 import com.sabi.supplier.service.helper.SearchOperation;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.LGARepository;
 import com.sabi.supplier.service.repositories.StateRepository;
 import com.sabi.supplier.service.repositories.WareHouseRepository;
+import com.sabi.supplier.service.repositories.WareHouseUserRepository;
 import com.sabi.suppliers.core.dto.request.WareHouseRequest;
 import com.sabi.suppliers.core.dto.response.WareHouseResponse;
+import com.sabi.suppliers.core.models.LGA;
 import com.sabi.suppliers.core.models.State;
 import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -29,17 +31,22 @@ import java.util.List;
 @Service
 @Slf4j
 public class WareHouseService {
-    private final WareHouseRepository wareHouseRepository;
 
+    private final WareHouseRepository wareHouseRepository;
     private final Validations validations;
     private final ModelMapper mapper;
-    @Autowired
-    private StateRepository stateRepository;
+    private final StateRepository stateRepository;
+    private final LGARepository lgaRepository;
+    private final WareHouseUserRepository wareHouseUserRepository;
 
-    public WareHouseService(WareHouseRepository wareHouseRepository, Validations validations, ModelMapper mapper) {
+    public WareHouseService(StateRepository stateRepository,WareHouseRepository wareHouseRepository,LGARepository lgaRepository,
+                            WareHouseUserRepository wareHouseUserRepository,Validations validations, ModelMapper mapper) {
+        this.stateRepository = stateRepository;
+        this.lgaRepository = lgaRepository;
         this.wareHouseRepository = wareHouseRepository;
         this.validations = validations;
         this.mapper = mapper;
+        this.wareHouseUserRepository = wareHouseUserRepository;
     }
 
     public WareHouseResponse createWareHouse(WareHouseRequest request) {
@@ -53,7 +60,7 @@ public class WareHouseService {
         wareHouse.setCreatedBy(userCurrent.getId());
         wareHouse.setIsActive(false);
         wareHouse = wareHouseRepository.save(wareHouse);
-        log.debug("Create new State - {}" + new Gson().toJson(wareHouse));
+        log.debug("Create new WareHouse - {}" + new Gson().toJson(wareHouse));
         return mapper.map(wareHouse, WareHouseResponse.class);
     }
 
@@ -66,7 +73,7 @@ public class WareHouseService {
         mapper.map(request, wareHouse);
         wareHouse.setUpdatedBy(userCurrent.getId());
         wareHouseRepository.save(wareHouse);
-        log.debug("State record updated - {}" + new Gson().toJson(wareHouse));
+        log.debug("wareHouse record updated - {}" + new Gson().toJson(wareHouse));
         return mapper.map(wareHouse, WareHouseResponse.class);
     }
 
@@ -125,6 +132,9 @@ public class WareHouseService {
         wareHouses.forEach(wareHouse ->{
             State stateExist = stateRepository.getOne(wareHouse.getStateId());
             wareHouse.setStateName(stateExist.getName());
+            LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
+            wareHouse.setLgaName(lga.getName());
+            wareHouse.setWareHouseUserCount(getWareHouseUsers(wareHouse.getId()));
         });
 
 
@@ -134,10 +144,14 @@ public class WareHouseService {
     public WareHouseResponse findWareHouse(long id) {
         WareHouse wareHouse = wareHouseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        "Requested Supply Request Id does not exist!"));
+                        "Requested WareHouse Id does not exist!"));
+        WareHouseResponse wareHouseResponse = mapper.map(wareHouse, WareHouseResponse.class);
+        wareHouseResponse.setWareHouseUserCount(getWareHouseUsers(id));
         State state = stateRepository.getOne(wareHouse.getStateId());
-        wareHouse.setStateName(state.getName());
-        return mapper.map(wareHouse, WareHouseResponse.class);
+        wareHouseResponse.setStateName(state.getName());
+        LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
+        wareHouseResponse.setLgaName(lga.getName());
+        return wareHouseResponse;
     }
 
     public void enableDisEnableState(EnableDisEnableDto request) {
@@ -150,7 +164,20 @@ public class WareHouseService {
         wareHouseRepository.save(wareHouse);
     }
 
-    public List<WareHouse> getAll(Boolean isActive,Long supplierId) {
-        return wareHouseRepository.findByIsActive(isActive, supplierId);
+    public List<WareHouse> getAll(Boolean isActive, Long supplierId) {
+        List<WareHouse> wareHouses = wareHouseRepository.findByIsActive(isActive, supplierId);
+        for (WareHouse request : wareHouses) {
+            request.setWareHouseUserCount(getWareHouseUsers(request.getId()));
+        }
+
+        return wareHouses;
+    }
+
+
+    public Integer getWareHouseUsers(Long wareHouseId){
+        Integer userCount = wareHouseUserRepository.countByWareHouseId(wareHouseId);
+
+        return userCount;
+
     }
 }

@@ -3,16 +3,15 @@ package com.sabi.supplier.service.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.sabi.framework.dto.requestDto.EnableDisEnableDto;
-import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
-import com.sabi.supplier.service.repositories.WarehouseGoodsRepository;
-import com.sabi.suppliers.core.dto.request.WarehouseGoodsDto;
-import com.sabi.suppliers.core.dto.response.WarehouseGoodsResponseDto;
-import com.sabi.suppliers.core.models.WarehouseGoods;
+import com.sabi.supplier.service.repositories.WareHouseGoodRepository;
+import com.sabi.suppliers.core.dto.request.WareHouseGoodDto;
+import com.sabi.suppliers.core.dto.response.WareHouseGoodResponseDto;
+import com.sabi.suppliers.core.models.WareHouseGood;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +23,10 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class WarehouseGoodsService {
+public class WareHouseGoodService {
 
     @Autowired
-    private WarehouseGoodsRepository repository;
+    private WareHouseGoodRepository repository;
     @Autowired
     private ModelMapper mapper;
     @Autowired
@@ -41,19 +40,19 @@ public class WarehouseGoodsService {
      * <remarks>this method is responsible for creation of new warehouse goods</remarks>
      */
 
-    public WarehouseGoodsResponseDto createWarehouseGoods(WarehouseGoodsDto request) {
-        validations.validateWarehouseGoods(request);
+    public WareHouseGoodResponseDto createWarehouseGood(WareHouseGoodDto request) {
+        validations.validateWarehouseGood(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
-        WarehouseGoods warehouseGoods = mapper.map(request,WarehouseGoods.class);
-//        WarehouseGoods wareHouseGoodsExist = request.findByName(request.getName());
+        WareHouseGood warehouseGood = mapper.map(request,WareHouseGood.class);
+//        WareHouseGood wareHouseGoodsExist = request.findByName(request.getName());
 //        if(wareHouseGoodsExist !=null){
 //            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " Country already exist");
 //        }
-        warehouseGoods.setCreatedBy(userCurrent.getId());
-        warehouseGoods.setIsActive(true);
-        warehouseGoods = repository.save(warehouseGoods);
-        log.debug("Create new Country - {}"+ new Gson().toJson(warehouseGoods));
-        return mapper.map(warehouseGoods, WarehouseGoodsResponseDto.class);
+        warehouseGood.setCreatedBy(userCurrent.getId());
+        warehouseGood.setIsActive(true);
+        warehouseGood = repository.save(warehouseGood);
+        log.debug("Create new Country - {}"+ new Gson().toJson(warehouseGood));
+        return mapper.map(warehouseGood, WareHouseGoodResponseDto.class);
     }
 
 
@@ -64,17 +63,17 @@ public class WarehouseGoodsService {
      * <remarks>this method is responsible for updating already existing warehouse goods</remarks>
      */
 
-    public WarehouseGoodsResponseDto updateWarehouseGoods(WarehouseGoodsDto request) {
-        validations.validateWarehouseGoods(request);
+    public WareHouseGoodResponseDto updateWarehouseGood(WareHouseGoodDto request) {
+        validations.validateWarehouseGood(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
-        WarehouseGoods country = repository.findById(request.getId())
+        WareHouseGood country = repository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        "Requested warehouse goods Id does not exist!"));
+                        "Requested warehouse good Id does not exist!"));
         mapper.map(request, country);
         country.setUpdatedBy(userCurrent.getId());
         repository.save(country);
         log.debug("Country record updated - {}"+ new Gson().toJson(country));
-        return mapper.map(country, WarehouseGoodsResponseDto.class);
+        return mapper.map(country, WareHouseGoodResponseDto.class);
     }
 
 
@@ -85,11 +84,11 @@ public class WarehouseGoodsService {
      * </summary>
      * <remarks>this method is responsible for getting a single record</remarks>
      */
-    public WarehouseGoodsResponseDto findWarehouseGoods(Long id){
-        WarehouseGoods country  = repository.findById(id)
+    public WareHouseGoodResponseDto findWarehouseGood(Long id){
+        WareHouseGood country  = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested warehouse goods Id does not exist!"));
-        return mapper.map(country,WarehouseGoodsResponseDto.class);
+        return mapper.map(country,WareHouseGoodResponseDto.class);
     }
 
 
@@ -99,8 +98,8 @@ public class WarehouseGoodsService {
      * </summary>
      * <remarks>this method is responsible for getting all records in pagination</remarks>
      */
-    public Page<WarehouseGoods> findAll(Long warehouseId, Long supplyGoodId,Long supplierId, PageRequest pageRequest ){
-        Page<WarehouseGoods> country = repository.findWarehouseGoods(warehouseId,supplyGoodId,supplierId,pageRequest);
+    public Page<WareHouseGood> findAll(Long warehouseId, Long supplierGoodId,Long supplierId, PageRequest pageRequest ){
+        Page<WareHouseGood> country = repository.findWarehouseGood(warehouseId,supplierGoodId,supplierId,pageRequest);
         if(country == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
@@ -116,18 +115,18 @@ public class WarehouseGoodsService {
      */
     public void enableDisEnableWarehouseGoods (EnableDisEnableDto request){
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
-        WarehouseGoods warehouseGoods = repository.findById(request.getId())
+        WareHouseGood warehouseGood = repository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested  warehouse goods Id does not exist!"));
-        warehouseGoods.setIsActive(request.isActive());
-        warehouseGoods.setUpdatedBy(userCurrent.getId());
-        repository.save(warehouseGoods);
+        warehouseGood.setIsActive(request.isActive());
+        warehouseGood.setUpdatedBy(userCurrent.getId());
+        repository.save(warehouseGood);
 
     }
 
 
-    public List<WarehouseGoods> getAll(boolean isActive){
-        List<WarehouseGoods> countries = repository.findByIsActive(isActive);
+    public List<WareHouseGood> getAll(boolean isActive){
+        List<WareHouseGood> countries = repository.findByIsActive(isActive);
         return countries;
 
     }
