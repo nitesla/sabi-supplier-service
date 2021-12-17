@@ -262,9 +262,9 @@ public class Validations {
     public void validateSupplierGood(SupplierGoodDto supplierGoodDto) {
         if (supplierGoodDto.getPrice() <= 0.0)
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Price cannot be Less that 0.0");
-        SupplierProduct supplierProduct = supplierProductRepository.findById(supplierGoodDto.getSupplierId())
+        Supplier supplier = supplierRepository.findById(supplierGoodDto.getSupplierId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        " Enter a valid supplier product id!"));
+                        " Enter a valid supplier id!"));
         ProductVariant variant = productVariantRepository.findById(supplierGoodDto.getVariantId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested product variant Id does not exist!"));
@@ -310,8 +310,14 @@ public class Validations {
     public void validateSupplyRequest(SupplyRequestRequest request) {
         productRepository.findById(request.getProductId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid PRODUCT ID!"));
-//        wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(()-> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-//                " Enter a valid Warehouse ID!"));
+        if (request.getWarehouseId() != null) {
+            wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    " Enter a valid Warehouse ID!"));
+        }
+        if (request.getStatus() == null || request.getStatus().isEmpty() )
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Delivery Status cannot be empty");
+        if (!("Awaiting Shippment".equalsIgnoreCase(request.getStatus()) || "Shipped".equalsIgnoreCase(request.getStatus()) || "Cancelled".equalsIgnoreCase(request.getStatus()) ||"Opened".equalsIgnoreCase(request.getStatus())||"Accepted".equalsIgnoreCase(request.getStatus())||"Rejected".equalsIgnoreCase(request.getStatus())))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Enter the correct Delivery Status");
 
     }
 
@@ -470,7 +476,7 @@ public class Validations {
 
     public void validateStock(StockDto request) {
         wareHouseGoodRepository.findById(request.getWareHouseGoodId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                " Enter a valid supplier goods ID!"));
+                " Enter a valid warehousr good ID!"));
         userRepository.findById(request.getUserId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid shipment ID!"));
         if (request.getActionDate() == null)
@@ -499,6 +505,9 @@ public class Validations {
         if (request.getQtySold() < 1){
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity sold can not be empty");
         }
+        if (request.getPrice() < 1){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "price can not be empty");
+        }
     }
 
     public void validateInventory(InventoryDto request) {
@@ -520,7 +529,50 @@ public class Validations {
         if (request.getStatus() == null || request.getStatus().isEmpty()){
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
         }
+    }
 
+    public void validateShipmentAndShipmentItem(ShipmentShipmentItemDto request){
+
+        WareHouse wareHouse = wareHouseRepository.findWareHouseById(request.getWarehouseId());
+        if (wareHouse == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,"Enter a valid warehouse id!");
+        }
+        if (request.getDeliveryDate() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Delivery date can not be empty");
+        if (request.getExpectedDeliveryDate() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "expected date can not be empty");
+        if (request.getLogisticPartnerId() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "end date can not be empty");
+        if (request.getLogisticPartnerName() == null || request.getLogisticPartnerName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "logistic partner name can not be empty");
+        if (request.getPhoneNumber() == null || request.getPhoneNumber().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Phonenumber can not be empty");
+        if (request.getQuantity() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
+        if (request.getTotalAmount() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "total amount not be empty");
+        if (request.getVehicle() == null || request.getVehicle().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "vehicle can not be empty");
+        if (request.getStatus() == null || request.getStatus().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+        if (request.getTotalAmount() == null || request.getStatus().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+//        request.getShipmentItemDtoList().forEach(shipmentItemDto -> {
+//            supplierRepository.findById(shipmentItemDto.getSupplierRequestId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                    " Enter a valid supplier ID!"));
+//            shipmentRepository.findById(shipmentItemDto.getShipmentId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                    " Enter a valid shipment ID!"));
+//            if (shipmentItemDto.getAcceptedQuality() < 1)
+//                throw new BadRequestException(CustomResponseCode.BAD_REQUEST, " accepted quantity can not be empty");
+//            if (shipmentItemDto.getDeliveryDate() == null)
+//                throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "delivery date can not be empty");
+//            if (shipmentItemDto.getPrice() == null)
+//                throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "price can not be empty");
+//            if (shipmentItemDto.getQuantity() < 1)
+//                throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
+//            if (shipmentItemDto.getStatus() == null || shipmentItemDto.getStatus().isEmpty())
+//                throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+//        });
     }
 
 

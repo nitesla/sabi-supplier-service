@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -62,6 +63,25 @@ public class ShipmentItemService {
         ShipmentItemResponseDto productResponseDto =  mapper.map(shipmentItem, ShipmentItemResponseDto.class);
         return productResponseDto;
 
+    }
+
+    public  List<ShipmentItemResponseDto> createShipmentItems(List<ShipmentItemDto> requests) {
+        List<ShipmentItemResponseDto> responseDtos = new ArrayList<>();
+        User userCurrent = TokenService.getCurrentUserFromSecurityContext();
+        requests.forEach(request->{
+            validations.validateShipmentItem(request);
+            ShipmentItem orderItem = mapper.map(request,ShipmentItem.class);
+            ShipmentItem exist = repository.findShipmentItemById(request.getShipmentId());
+            if(exist !=null){
+                throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " shipment item already exist");
+            }
+            orderItem.setCreatedBy(userCurrent.getId());
+            orderItem.setIsActive(true);
+            orderItem = repository.save(orderItem);
+            log.debug("Create new asset picture - {}"+ new Gson().toJson(orderItem));
+            responseDtos.add(mapper.map(orderItem, ShipmentItemResponseDto.class));
+        });
+        return responseDtos;
     }
 
     public ShipmentItemResponseDto updateShipmentItem(ShipmentItemDto request) {

@@ -13,8 +13,12 @@ import com.sabi.supplier.service.repositories.ShipmentRepository;
 import com.sabi.supplier.service.repositories.StateRepository;
 import com.sabi.supplier.service.repositories.WareHouseRepository;
 import com.sabi.suppliers.core.dto.request.ShipmentDto;
+import com.sabi.suppliers.core.dto.request.ShipmentShipmentItemDto;
+import com.sabi.suppliers.core.dto.response.ShipmentItemResponseDto;
 import com.sabi.suppliers.core.dto.response.ShipmentResponseDto;
+import com.sabi.suppliers.core.dto.response.ShipmentShipmentResponseDto;
 import com.sabi.suppliers.core.models.Shipment;
+import com.sabi.suppliers.core.models.ShipmentItem;
 import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -24,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -32,6 +37,8 @@ public class ShipmentService {
 
     @Autowired
     private ShipmentRepository shipmentRepository;
+    @Autowired
+    private ShipmentItemService shipmentItemService;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
@@ -66,6 +73,31 @@ public class ShipmentService {
         ShipmentResponseDto productResponseDto =  mapper.map(shipment, ShipmentResponseDto.class);
         return productResponseDto;
 
+    }
+
+    public ShipmentShipmentResponseDto createShipmentItems(ShipmentShipmentItemDto request) {
+        List<ShipmentItemResponseDto> responseDtos = new ArrayList<>();
+        validations.validateShipmentAndShipmentItem(request);
+        User userCurrent = TokenService.getCurrentUserFromSecurityContext();
+        Shipment order = mapper.map(request,Shipment.class);
+        ShipmentItem orderItem = mapper.map(request, ShipmentItem.class);
+
+        Shipment shipmentExists = shipmentRepository.findShipmentById(request.getWarehouseId());
+        if(shipmentExists != null){
+            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "shipment already exist");
+        }
+        order.setCreatedBy(userCurrent.getId());
+        order.setIsActive(true);
+        order = shipmentRepository.save(order);
+        log.debug("Create new shipment - {}"+ new Gson().toJson(order));
+        ShipmentShipmentResponseDto orderResponseDto = mapper.map(order, ShipmentShipmentResponseDto.class);
+        log.info("request sent ::::::::::::::::::::::::::::::::: " + request.getShipmentItemDtoList());
+        responseDtos = shipmentItemService.createShipmentItems(request.getShipmentItemDtoList());
+        List<ShipmentItemResponseDto> finalResponseDtos = responseDtos;
+        responseDtos.forEach(orderItemResponseDto -> {
+            orderResponseDto.setShipmentItemResponseDtoList(finalResponseDtos);
+        });
+        return orderResponseDto;
     }
 
 
