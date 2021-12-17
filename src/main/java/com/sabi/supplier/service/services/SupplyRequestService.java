@@ -7,25 +7,26 @@ import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
-import com.sabi.supplier.service.helper.GenericSpecification;
-import com.sabi.supplier.service.helper.SearchCriteria;
-import com.sabi.supplier.service.helper.SearchOperation;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.SupplyRequestRepository;
+import com.sabi.supplier.service.repositories.SupplyRequestResponseRepository;
 import com.sabi.suppliers.core.dto.request.SupplyRequestRequest;
+import com.sabi.suppliers.core.dto.request.SupplyRequestResponseRequest;
 import com.sabi.suppliers.core.dto.response.SupplyRequestResponse;
 import com.sabi.suppliers.core.models.SupplyRequest;
+import com.sabi.suppliers.core.models.SupplyRequestResponseEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("All")
 @Service
 @Slf4j
 public class SupplyRequestService {
@@ -34,6 +35,12 @@ public class SupplyRequestService {
 
     private final Validations validations;
     private final ModelMapper mapper;
+
+    @Autowired
+    private SupplyRequestResponseRepository supplyRequestResponseRepository;
+
+    @Autowired
+    private SupplyRequestResponseService supplyRequestResponseService;
 
     public SupplyRequestService(SupplyRequestRepository supplyRequestRepository, Validations validations, ModelMapper mapper) {
         this.supplyRequestRepository = supplyRequestRepository;
@@ -62,49 +69,61 @@ public class SupplyRequestService {
         SupplyRequest supplyRequest = supplyRequestRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested SupplyRequest Id does not exist!"));
-        mapper.map(request, supplyRequest);
         supplyRequest.setUpdatedBy(userCurrent.getId());
-        supplyRequestRepository.save(supplyRequest);
+        SupplyRequestResponseEntity supplyRequestResponse = new SupplyRequestResponseEntity();
+        SupplyRequestResponseRequest supplyRequestResponseRequest = new SupplyRequestResponseRequest();
+
+        if(supplyRequest.getStatus() != request.getStatus())
+        {
+            if (request.getStatus().equalsIgnoreCase("Pending") || supplyRequest.getStatus().equalsIgnoreCase("Pending")) {
+                supplyRequestResponse = supplyRequestResponseRepository.findBySupplyRequestId(supplyRequest.getId());
+                if (supplyRequestResponse == null) {
+                    supplyRequestResponseRequest.setSupplyRequestId(supplyRequest.getId());
+                    supplyRequestResponseRequest.setUserId(userCurrent.getId());
+                    supplyRequestResponseRequest.setResponseDate(supplyRequest.getUpdatedDate().now());
+                    supplyRequestResponseRequest.setStatus(request.getStatus());
+                    supplyRequestResponseRequest.setRejectReason(request.getRejectReason());
+                    supplyRequestResponseService.createSupplyRequestResponse(supplyRequestResponseRequest);
+                }
+            }else if(request.getStatus().equalsIgnoreCase("Rejected")){
+                supplyRequestResponse = supplyRequestResponseRepository.findBySupplyRequestId(supplyRequest.getId());
+                    supplyRequestResponseRequest.setSupplyRequestId(supplyRequest.getId());
+                    supplyRequestResponseRequest.setUserId(userCurrent.getId());
+                    supplyRequestResponseRequest.setResponseDate(supplyRequest.getUpdatedDate().now());
+                    supplyRequestResponseRequest.setStatus(request.getStatus());
+                    supplyRequestResponseRequest.setRejectReason(request.getRejectReason());
+                    supplyRequestResponseRequest.setId(supplyRequestResponse.getId());
+                    supplyRequestResponseService.updateSupplyRequestResponse(supplyRequestResponseRequest);
+            }
+            if(request.getStatus().equalsIgnoreCase("Accepted")) {
+                supplyRequestResponse = supplyRequestResponseRepository.findBySupplyRequestId(supplyRequest.getId());
+                if (supplyRequestResponse != null) {
+                    supplyRequestResponseRequest.setSupplyRequestId(supplyRequest.getId());
+                    supplyRequestResponseRequest.setUserId(userCurrent.getId());
+                    supplyRequestResponseRequest.setResponseDate(supplyRequest.getUpdatedDate().now());
+                    supplyRequestResponseRequest.setStatus(request.getStatus());
+                    supplyRequestResponseRequest.setRejectReason(request.getRejectReason());
+                    supplyRequestResponseRequest.setId(supplyRequestResponse.getId());
+                    supplyRequestResponseService.updateSupplyRequestResponse(supplyRequestResponseRequest);
+                }
+            }
+        }
+
+        if (request.getStatus().equalsIgnoreCase("Rejected")){
+            request.setStatus("Pending");
+            request.setWarehouseId(0l);
+            mapper.map(request, supplyRequest);
+        }else {
+            mapper.map(request, supplyRequest);
+        }
+            supplyRequestRepository.save(supplyRequest);
         log.debug("State record updated - {}" + new Gson().toJson(supplyRequest));
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 
-//    public Page<SupplyRequest> findSupplyRequests(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice,
-//                                                 Date startTime, Date endTime, String referenceNo,
-//                                                 String status, PageRequest pageRequest) {
-//        GenericSpecification<SupplyRequest> genericSpecification = new GenericSpecification<>();
-//
-//        if (productId != null) {
-//            genericSpecification.add(new SearchCriteria("productId", productId, SearchOperation.EQUAL));
-//        }
-//
-//        if (productName != null && !productName.isEmpty()) {
-//            genericSpecification.add(new SearchCriteria("productName", productName, SearchOperation.MATCH));
-//        }
-//        if (askingQuantity != null) {
-//            genericSpecification.add(new SearchCriteria("askingQuantity", askingQuantity, SearchOperation.EQUAL));
-//        }
-//        if (askingPrice != null) {
-//            genericSpecification.add(new SearchCriteria("askingPrice", askingPrice, SearchOperation.EQUAL));
-//        }
-//        if (startTime != null) {
-//            genericSpecification.add(new SearchCriteria("startTime", startTime, SearchOperation.EQUAL));
-//        }
-//        if (endTime != null) {
-//            genericSpecification.add(new SearchCriteria("endTime", endTime, SearchOperation.EQUAL));
-//        }
-//        if (referenceNo != null && !referenceNo.isEmpty()) {
-//            genericSpecification.add(new SearchCriteria("referenceNo", referenceNo, SearchOperation.MATCH));
-//        }
-//        if (status != null && !status.isEmpty()) {
-//            genericSpecification.add(new SearchCriteria("status", status, SearchOperation.EQUAL));
-//        }
-//
-//        Page<SupplyRequest> supplyRequests = supplyRequestRepository.findAll(genericSpecification, pageRequest);
-//
-//        return supplyRequests;
-//    }
-//
+
+
+
     public SupplyRequestResponse findSupplyRequest(long id){
         SupplyRequest supplyRequest = supplyRequestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
