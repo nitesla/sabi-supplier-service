@@ -112,8 +112,8 @@ public class SupplyRequestService {
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 
-    public Page<SupplyRequest> findAll(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice, Date startTime, Date endTime,String referenceNo,String status,Long warehouseId,Long supplierId,PageRequest pageRequest ){
-        Page<SupplyRequest> stocks = supplyRequestRepository.findSupplyRequests(productId,productName,askingQuantity,askingPrice,startTime,endTime,referenceNo,status,warehouseId,supplierId,pageRequest);
+    public Page<SupplyRequest> findAll(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice, Date startTime, Date endTime,String referenceNo,String status,Long warehouseId,Long supplierId,Boolean unassigned,PageRequest pageRequest ){
+        Page<SupplyRequest> stocks = supplyRequestRepository.findSupplyRequests(productId,productName,askingQuantity,askingPrice,startTime,endTime,referenceNo,status,warehouseId,supplierId,unassigned,pageRequest);
         if(stocks == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
