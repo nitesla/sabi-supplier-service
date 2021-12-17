@@ -83,19 +83,19 @@ public class SupplierGoodService {
 
     public void enableDisEnable (EnableDisEnableDto request){
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
-        SupplierGood state = supplierGoodRepository.findById(request.getId())
+        SupplierGood goods = supplierGoodRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested supplier goods Id does not exist!"));
-        state.setIsActive(request.isActive());
-        state.setUpdatedBy(userCurrent.getId());
-        supplierGoodRepository.save(state);
+        goods.setIsActive(request.isActive());
+        goods.setUpdatedBy(userCurrent.getId());
+        supplierGoodRepository.save(goods);
 
     }
 
 
     public List<SupplierGood> getAll(Boolean isActive,Long supplierId){
-        List<SupplierGood> states = supplierGoodRepository.findByIsActive(isActive,supplierId);
-        return states;
+        List<SupplierGood> goods = supplierGoodRepository.findByIsActive(isActive,supplierId);
+        return goods;
 
     }
 }

@@ -10,7 +10,6 @@ import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ShipmentRepository;
-import com.sabi.supplier.service.repositories.StateRepository;
 import com.sabi.supplier.service.repositories.WareHouseRepository;
 import com.sabi.suppliers.core.dto.request.ShipmentDto;
 import com.sabi.suppliers.core.dto.request.ShipmentShipmentItemDto;
@@ -19,7 +18,6 @@ import com.sabi.suppliers.core.dto.response.ShipmentResponseDto;
 import com.sabi.suppliers.core.dto.response.ShipmentShipmentResponseDto;
 import com.sabi.suppliers.core.models.Shipment;
 import com.sabi.suppliers.core.models.ShipmentItem;
-import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
