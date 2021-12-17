@@ -262,7 +262,7 @@ public class Validations {
     public void validateSupplierGood(SupplierGoodDto supplierGoodDto) {
         if (supplierGoodDto.getPrice() <= 0.0)
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Price cannot be Less that 0.0");
-        SupplierProduct supplierProduct = supplierProductRepository.findById(supplierGoodDto.getSupplierProductId())
+        SupplierProduct supplierProduct = supplierProductRepository.findById(supplierGoodDto.getSupplierId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         " Enter a valid supplier product id!"));
         ProductVariant variant = productVariantRepository.findById(supplierGoodDto.getVariantId())
