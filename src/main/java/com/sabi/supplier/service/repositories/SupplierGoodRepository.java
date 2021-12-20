@@ -21,11 +21,7 @@ public interface SupplierGoodRepository extends JpaRepository<SupplierGood, Long
                                       @Param("supplierId")Long supplierId);
 
     @Query("SELECT c FROM SupplierGood c WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND c.supplierId = :supplierId))" +
-            " AND ((:variantId IS NULL) OR (:variantId IS NOT NULL AND c.variantId = :variantId))"
-//            "AND ((:price IS NULL) OR (:price IS NOT NULL AND c.price = :price))"
-    )
+            " AND ((:variantId IS NULL) OR (:variantId IS NOT NULL AND c.variantId = :variantId))")
     Page<SupplierGood> findSupplierGoods(@Param("supplierId") Long supplierId,
-                                        @Param("variantId") Long variantId,
-//                                        @Param("price") double price,
-                                Pageable pageable);
+                                        @Param("variantId") Long variantId,Pageable pageable);
 }
