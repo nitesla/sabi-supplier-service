@@ -576,7 +576,10 @@ public class Validations {
     }
 
 
-
+    public void validatesupplierBank(SupplierBankRequest request) {
+        supplierRepository.findById(request.getSupplierId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid Supplier ID!"));
+    }
 }
 
 
