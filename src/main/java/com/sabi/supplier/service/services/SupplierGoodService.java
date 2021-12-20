@@ -9,9 +9,11 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.ProductVariantRepository;
 import com.sabi.supplier.service.repositories.SupplierGoodRepository;
 import com.sabi.suppliers.core.dto.request.SupplierGoodDto;
 import com.sabi.suppliers.core.dto.response.SupplierGoodResponseDto;
+import com.sabi.suppliers.core.models.ProductVariant;
 import com.sabi.suppliers.core.models.SupplierGood;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,6 +30,8 @@ public class SupplierGoodService {
 
     @Autowired
     private SupplierGoodRepository supplierGoodRepository;
+    @Autowired
+    private ProductVariantRepository variantRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
@@ -42,10 +46,12 @@ public class SupplierGoodService {
         validations.validateSupplierGood(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplierGood supplierGood = mapper.map(request,SupplierGood.class);
-        SupplierGood supplierGoodExist = supplierGoodRepository.findSupplierGoodById(request.getId());
+        SupplierGood supplierGoodExist = supplierGoodRepository.findByVariantId(request.getVariantId());
         if(supplierGoodExist !=null){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " Supplier goods already exist");
         }
+        ProductVariant productVariant = variantRepository.getOne(request.getVariantId());
+        supplierGood.setVariantName(productVariant.getName());
         supplierGood.setCreatedBy(userCurrent.getId());
         supplierGood.setIsActive(true);
         supplierGood = supplierGoodRepository.save(supplierGood);

@@ -3,14 +3,17 @@ package com.sabi.supplier.service.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.sabi.framework.dto.requestDto.EnableDisEnableDto;
+import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.ProductVariantRepository;
 import com.sabi.supplier.service.repositories.WareHouseGoodRepository;
 import com.sabi.suppliers.core.dto.request.WareHouseGoodDto;
 import com.sabi.suppliers.core.dto.response.WareHouseGoodResponseDto;
+import com.sabi.suppliers.core.models.ProductVariant;
 import com.sabi.suppliers.core.models.WareHouseGood;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -44,14 +47,15 @@ public class WareHouseGoodService {
         validations.validateWarehouseGood(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         WareHouseGood warehouseGood = mapper.map(request,WareHouseGood.class);
-//        WareHouseGood wareHouseGoodsExist = request.findByName(request.getName());
-//        if(wareHouseGoodsExist !=null){
-//            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " Country already exist");
-//        }
+        WareHouseGood wareHouseGoodsExist = repository.findBySupplierGoodId(request.getSupplierGoodId());
+        if (wareHouseGoodsExist != null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    " Warehouse goods already exist");
+        }
         warehouseGood.setCreatedBy(userCurrent.getId());
         warehouseGood.setIsActive(true);
         warehouseGood = repository.save(warehouseGood);
-        log.debug("Create new Country - {}"+ new Gson().toJson(warehouseGood));
+        log.debug("Create new warehouse goods - {}"+ new Gson().toJson(warehouseGood));
         return mapper.map(warehouseGood, WareHouseGoodResponseDto.class);
     }
 
@@ -66,14 +70,14 @@ public class WareHouseGoodService {
     public WareHouseGoodResponseDto updateWarehouseGood(WareHouseGoodDto request) {
         validations.validateWarehouseGood(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
-        WareHouseGood country = repository.findById(request.getId())
+        WareHouseGood wareHouseGood = repository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested warehouse good Id does not exist!"));
-        mapper.map(request, country);
-        country.setUpdatedBy(userCurrent.getId());
-        repository.save(country);
-        log.debug("Country record updated - {}"+ new Gson().toJson(country));
-        return mapper.map(country, WareHouseGoodResponseDto.class);
+        mapper.map(request, wareHouseGood);
+        wareHouseGood.setUpdatedBy(userCurrent.getId());
+        repository.save(wareHouseGood);
+        log.debug("warehouse goods record updated - {}"+ new Gson().toJson(wareHouseGood));
+        return mapper.map(wareHouseGood, WareHouseGoodResponseDto.class);
     }
 
 
