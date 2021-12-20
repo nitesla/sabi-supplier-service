@@ -69,16 +69,17 @@ public class ShipmentItemService {
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         requests.forEach(request->{
             validations.validateShipmentItem(request);
-            ShipmentItem orderItem = mapper.map(request,ShipmentItem.class);
+            ShipmentItem shipmentItem = mapper.map(request,ShipmentItem.class);
             ShipmentItem exist = repository.findShipmentItemById(request.getShipmentId());
             if(exist !=null){
                 throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " shipment item already exist");
             }
-            orderItem.setCreatedBy(userCurrent.getId());
-            orderItem.setIsActive(true);
-            orderItem = repository.save(orderItem);
-            log.debug("Create new asset picture - {}"+ new Gson().toJson(orderItem));
-            responseDtos.add(mapper.map(orderItem, ShipmentItemResponseDto.class));
+            shipmentItem.setCreatedBy(userCurrent.getId());
+            shipmentItem.setStatus("Awaiting shipment");
+            shipmentItem.setIsActive(true);
+            shipmentItem = repository.save(shipmentItem);
+            log.debug("Create new asset picture - {}"+ new Gson().toJson(shipmentItem));
+            responseDtos.add(mapper.map(shipmentItem, ShipmentItemResponseDto.class));
         });
         return responseDtos;
     }
