@@ -77,7 +77,7 @@ public class ShipmentService {
         validations.validateShipmentAndShipmentItem(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Shipment order = mapper.map(request,Shipment.class);
-        ShipmentItem orderItem = mapper.map(request, ShipmentItem.class);
+        ShipmentItem shipmentItem = mapper.map(request, ShipmentItem.class);
 
         Shipment shipmentExists = shipmentRepository.findShipmentById(request.getWarehouseId());
         if(shipmentExists != null){
