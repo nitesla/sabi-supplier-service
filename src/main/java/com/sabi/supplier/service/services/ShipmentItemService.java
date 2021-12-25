@@ -10,10 +10,12 @@ import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ShipmentItemRepository;
 import com.sabi.supplier.service.repositories.ShipmentRepository;
+import com.sabi.supplier.service.repositories.SupplyRequestRepository;
 import com.sabi.suppliers.core.dto.request.ShipmentItemDto;
 import com.sabi.suppliers.core.dto.response.ShipmentItemResponseDto;
 import com.sabi.suppliers.core.models.Shipment;
 import com.sabi.suppliers.core.models.ShipmentItem;
+import com.sabi.suppliers.core.models.SupplyRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,8 @@ public class ShipmentItemService {
     private ShipmentItemRepository repository;
     @Autowired
     private ShipmentRepository shipmentRepository;
+    @Autowired
+    private SupplyRequestRepository supplyRequestRepository;
 
     public ShipmentItemService(ModelMapper mapper, Validations validations, ShipmentItemRepository repository) {
         this.mapper = mapper;
@@ -76,6 +80,13 @@ public class ShipmentItemService {
             }
             shipmentItem.setCreatedBy(userCurrent.getId());
             shipmentItem.setStatus("Awaiting shipment");
+            SupplyRequest supplyRequest = supplyRequestRepository.findSupplyRequestById(request.getSupplierRequestId());
+            if (supplyRequest == null) {
+                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "supply request Id does not exist!");
+            }
+            supplyRequest.setStatus("Awaiting shipment");
+            supplyRequestRepository.save(supplyRequest);
             shipmentItem.setIsActive(true);
             shipmentItem = repository.save(shipmentItem);
             log.debug("Create new asset picture - {}"+ new Gson().toJson(shipmentItem));
