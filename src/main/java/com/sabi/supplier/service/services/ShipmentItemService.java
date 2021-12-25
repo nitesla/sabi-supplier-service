@@ -156,8 +156,8 @@ public class ShipmentItemService {
 
 
     public List<ShipmentItem> getAll(Boolean isActive){
-        List<ShipmentItem> states = repository.findByIsActive(isActive);
-        return states;
+        List<ShipmentItem> shipment = repository.findByIsActive(isActive);
+        return shipment;
 
     }
 }

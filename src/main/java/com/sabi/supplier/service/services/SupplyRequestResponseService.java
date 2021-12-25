@@ -10,7 +10,6 @@ import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.SupplyRequestResponseRepository;
 import com.sabi.suppliers.core.dto.request.SupplyRequestResponseRequest;
-import com.sabi.suppliers.core.dto.response.SupplyRequestResponse;
 import com.sabi.suppliers.core.dto.response.SupplyRequestResponseResponse;
 import com.sabi.suppliers.core.models.SupplyRequestResponseEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +43,7 @@ public class SupplyRequestResponseService {
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " supplyRequestResponse already exist");
         }
         supplyRequestResponse.setCreatedBy(userCurrent.getId());
-        supplyRequestResponse.setIsActive(false);
+        supplyRequestResponse.setIsActive(true);
         supplyRequestResponse = supplyRequestResponseRepository.save(supplyRequestResponse);
         log.debug("Create new State - {}" + new Gson().toJson(supplyRequestResponse));
         return mapper.map(supplyRequestResponse, SupplyRequestResponseResponse.class);
@@ -85,7 +84,7 @@ public class SupplyRequestResponseService {
         supplyRequestResponseRepository.save(supplyRequestResponse);
     }
 
-    public List<SupplyRequestResponse> getAll(Boolean isActive) {
+    public List<SupplyRequestResponseEntity> getAll(Boolean isActive) {
         return supplyRequestResponseRepository.findByIsActive(isActive);
     }
 
