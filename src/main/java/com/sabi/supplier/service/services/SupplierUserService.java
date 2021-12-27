@@ -176,10 +176,10 @@ public class SupplierUserService {
 
 
     public Page<User> findByClientId(String firstName, String phone, String email, String username,
-                                     Long roleId, String lastName, PageRequest pageRequest ){
+                                     Long roleId,Boolean isActive, String lastName, PageRequest pageRequest ){
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplierUser supplier = supplierUserRepository.findByUserId(userCurrent.getId());
-        Page<User> users = userRepository.findByClientId(firstName,phone,email,username,roleId,supplier.getSupplierId(),lastName,pageRequest);
+        Page<User> users = userRepository.findByClientId(firstName,phone,email,username,roleId,supplier.getSupplierId(),isActive,lastName,pageRequest);
         if(users == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
