@@ -76,6 +76,8 @@ public class SupplierGoodService {
         SupplierGood supplier = supplierGoodRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supplier goods Id does not exist!"));
+        ProductVariant productVariant = variantRepository.getOne(supplier.getVariantId());
+        supplier.setVariantName(productVariant.getName());
         return mapper.map(supplier,SupplierGoodResponseDto.class);
     }
 
@@ -84,6 +86,10 @@ public class SupplierGoodService {
         if(supplierGoods == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
+        supplierGoods.forEach(supplierGood -> {
+            ProductVariant productVariant = variantRepository.getOne(supplierGood.getVariantId());
+            supplierGood.setVariantName(productVariant.getName());
+        });
         return supplierGoods;
     }
 
