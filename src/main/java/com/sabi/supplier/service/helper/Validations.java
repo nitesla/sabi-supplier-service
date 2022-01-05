@@ -243,8 +243,6 @@ public class Validations {
         if (!Utility.isNumeric(request.getDiscountProvided().toString()))
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for Discount Provided");
 
-        if (request.getIsActive() == null )
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "IsActive cannot be empty");
 
 
 
