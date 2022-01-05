@@ -85,8 +85,10 @@ public class SupplyRequestService {
                     supplyRequestResponseRequest.setRejectReason(request.getRejectReason());
                     supplyRequestResponseService.createSupplyRequestResponse(supplyRequestResponseRequest);
                 }
-            }else if(request.getStatus().equalsIgnoreCase("Rejected")){
+            }
+            if(request.getStatus().equalsIgnoreCase("Rejected")){
                 supplyRequestResponse = supplyRequestResponseRepository.findBySupplyRequestId(supplyRequest.getId());
+                if (supplyRequestResponse != null) {
                     supplyRequestResponseRequest.setSupplyRequestId(supplyRequest.getId());
                     supplyRequestResponseRequest.setUserId(userCurrent.getId());
                     supplyRequestResponseRequest.setResponseDate(supplyRequest.getUpdatedDate().now());
@@ -94,6 +96,14 @@ public class SupplyRequestService {
                     supplyRequestResponseRequest.setRejectReason(request.getRejectReason());
                     supplyRequestResponseRequest.setId(supplyRequestResponse.getId());
                     supplyRequestResponseService.updateSupplyRequestResponse(supplyRequestResponseRequest);
+                }else if (supplyRequestResponse == null){
+                    supplyRequestResponseRequest.setSupplyRequestId(supplyRequest.getId());
+                    supplyRequestResponseRequest.setUserId(userCurrent.getId());
+                    supplyRequestResponseRequest.setResponseDate(supplyRequest.getUpdatedDate().now());
+                    supplyRequestResponseRequest.setStatus(request.getStatus());
+                    supplyRequestResponseRequest.setRejectReason(request.getRejectReason());
+                    supplyRequestResponseService.createSupplyRequestResponse(supplyRequestResponseRequest);
+                }
             }
             if(request.getStatus().equalsIgnoreCase("Accepted")) {
                 supplyRequestResponse = supplyRequestResponseRepository.findBySupplyRequestId(supplyRequest.getId());
