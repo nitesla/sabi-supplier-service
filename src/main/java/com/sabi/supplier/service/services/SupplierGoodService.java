@@ -9,9 +9,11 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.ProductVariantRepository;
 import com.sabi.supplier.service.repositories.SupplierGoodRepository;
 import com.sabi.suppliers.core.dto.request.SupplierGoodDto;
 import com.sabi.suppliers.core.dto.response.SupplierGoodResponseDto;
+import com.sabi.suppliers.core.models.ProductVariant;
 import com.sabi.suppliers.core.models.SupplierGood;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,6 +30,8 @@ public class SupplierGoodService {
 
     @Autowired
     private SupplierGoodRepository supplierGoodRepository;
+    @Autowired
+    private ProductVariantRepository variantRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
@@ -42,10 +46,12 @@ public class SupplierGoodService {
         validations.validateSupplierGood(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplierGood supplierGood = mapper.map(request,SupplierGood.class);
-        SupplierGood supplierGoodExist = supplierGoodRepository.findSupplierGoodById(request.getId());
+        SupplierGood supplierGoodExist = supplierGoodRepository.findByVariantId(request.getVariantId());
         if(supplierGoodExist !=null){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " Supplier goods already exist");
         }
+        ProductVariant productVariant = variantRepository.getOne(request.getVariantId());
+        supplierGood.setVariantName(productVariant.getName());
         supplierGood.setCreatedBy(userCurrent.getId());
         supplierGood.setIsActive(true);
         supplierGood = supplierGoodRepository.save(supplierGood);
@@ -70,6 +76,8 @@ public class SupplierGoodService {
         SupplierGood supplier = supplierGoodRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supplier goods Id does not exist!"));
+        ProductVariant productVariant = variantRepository.getOne(supplier.getVariantId());
+        supplier.setVariantName(productVariant.getName());
         return mapper.map(supplier,SupplierGoodResponseDto.class);
     }
 
@@ -78,24 +86,28 @@ public class SupplierGoodService {
         if(supplierGoods == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
+        supplierGoods.forEach(supplierGood -> {
+            ProductVariant productVariant = variantRepository.getOne(supplierGood.getVariantId());
+            supplierGood.setVariantName(productVariant.getName());
+        });
         return supplierGoods;
     }
 
     public void enableDisEnable (EnableDisEnableDto request){
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
-        SupplierGood state = supplierGoodRepository.findById(request.getId())
+        SupplierGood goods = supplierGoodRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested supplier goods Id does not exist!"));
-        state.setIsActive(request.isActive());
-        state.setUpdatedBy(userCurrent.getId());
-        supplierGoodRepository.save(state);
+        goods.setIsActive(request.isActive());
+        goods.setUpdatedBy(userCurrent.getId());
+        supplierGoodRepository.save(goods);
 
     }
 
 
-    public List<SupplierGood> getAll(Boolean isActive){
-        List<SupplierGood> states = supplierGoodRepository.findByIsActive(isActive);
-        return states;
+    public List<SupplierGood> getAll(Boolean isActive,Long supplierId){
+        List<SupplierGood> goods = supplierGoodRepository.findByIsActive(isActive,supplierId);
+        return goods;
 
     }
 }
