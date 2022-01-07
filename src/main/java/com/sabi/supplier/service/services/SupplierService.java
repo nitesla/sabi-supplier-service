@@ -19,10 +19,7 @@ import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.framework.utils.Utility;
 import com.sabi.supplier.service.helper.SupplierConstant;
 import com.sabi.supplier.service.helper.Validations;
-import com.sabi.supplier.service.repositories.LGARepository;
-import com.sabi.supplier.service.repositories.SupplierLocationRepository;
-import com.sabi.supplier.service.repositories.SupplierRepository;
-import com.sabi.supplier.service.repositories.SupplierUserRepository;
+import com.sabi.supplier.service.repositories.*;
 import com.sabi.suppliers.core.dto.request.CompleteSignUpDto;
 import com.sabi.suppliers.core.dto.request.PartnerAssetTypeRequest;
 import com.sabi.suppliers.core.dto.request.SupplierRequestDto;
@@ -31,10 +28,7 @@ import com.sabi.suppliers.core.dto.response.CompleteSignUpResponse;
 import com.sabi.suppliers.core.dto.response.PartnerSignUpResponse;
 import com.sabi.suppliers.core.dto.response.SupplierResponseDto;
 import com.sabi.suppliers.core.dto.response.SupplierSignUpResponse;
-import com.sabi.suppliers.core.models.LGA;
-import com.sabi.suppliers.core.models.Supplier;
-import com.sabi.suppliers.core.models.SupplierLocation;
-import com.sabi.suppliers.core.models.SupplierUser;
+import com.sabi.suppliers.core.models.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +63,7 @@ public class SupplierService {
     private SupplierUserRepository supplierUserRepository;
     private SupplierLocationRepository supplierLocationRepository;
     private LGARepository lgaRepository;
+    private StateRepository stateRepository;
     private PartnerSignUpService partnerSignUpService;
     private NotificationService notificationService;
     private final ModelMapper mapper;
@@ -77,7 +72,7 @@ public class SupplierService {
 
     public SupplierService(SupplierRepository supplierRepository,UserRepository userRepository,PreviousPasswordRepository previousPasswordRepository,
                            SupplierUserRepository supplierUserRepository,SupplierLocationRepository supplierLocationRepository,LGARepository lgaRepository,
-                           PartnerSignUpService partnerSignUpService,NotificationService notificationService,
+                           StateRepository stateRepository,PartnerSignUpService partnerSignUpService,NotificationService notificationService,
                            ModelMapper mapper, ObjectMapper objectMapper, Validations validations) {
         this.supplierRepository = supplierRepository;
         this.userRepository = userRepository;
@@ -85,6 +80,7 @@ public class SupplierService {
         this.supplierUserRepository = supplierUserRepository;
         this.supplierLocationRepository = supplierLocationRepository;
         this.lgaRepository = lgaRepository;
+        this.stateRepository = stateRepository;
         this.partnerSignUpService = partnerSignUpService;
         this.notificationService = notificationService;
         this.mapper = mapper;
@@ -296,7 +292,32 @@ public class SupplierService {
         Supplier supplier = supplierRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supplier Id does not exist!"));
-        return mapper.map(supplier,SupplierResponseDto.class);
+        State state = stateRepository.getOne(supplier.getStateId());
+
+        LGA lga = lgaRepository.getOne(supplier.getLgaId());
+
+        SupplierResponseDto supplierResponseDto = SupplierResponseDto.builder()
+                .address(supplier.getAddress())
+                .contactEmail(supplier.getContactEmail())
+                .contactPerson(supplier.getContactPerson())
+                .contactPhone(supplier.getContactPhone())
+                .createdBy(supplier.getCreatedBy())
+                .createdDate(supplier.getCreatedDate())
+                .updatedBy(supplier.getUpdatedBy())
+                .updatedDate(supplier.getUpdatedDate())
+                .deliveryType(supplier.getDeliveryType())
+                .discountProvided(supplier.getDiscountProvided())
+                .email(supplier.getEmail())
+                .id(supplier.getId())
+                .isActive(supplier.getIsActive())
+                .lgaId(supplier.getLgaId())
+                .lga(lga.getName())
+                .stateId(supplier.getStateId())
+                .state(state.getName())
+                .supplierCategoryID(supplier.getSupplierCategoryId())
+                .build();
+        return supplierResponseDto;
+
     }
 
 
@@ -307,7 +328,9 @@ public class SupplierService {
         }
         supplierProperties.getContent().forEach(supplier ->{
             LGA lga = lgaRepository.getOne(supplier.getLgaId());
+            State state = stateRepository.getOne(supplier.getStateId());
             supplier.setLga(lga.getName());
+            supplier.setState(state.getName());
         });
         return supplierProperties;
 
@@ -319,7 +342,9 @@ public class SupplierService {
         for (Supplier sup : supplierProperties
                 ) {
             LGA lga = lgaRepository.getOne(sup.getLgaId());
+            State state = stateRepository.getOne(sup.getStateId());
             sup.setLga(lga.getName());
+            sup.setState(state.getName());
 
         }
         return supplierProperties;

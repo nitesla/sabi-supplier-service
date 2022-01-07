@@ -197,10 +197,10 @@ public class Validations {
         if (!Utility.validateName(request.getName().toString()))
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for Name ");
 
-        if (request.getStateID() == null )
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "StateID cannot be empty");
-        if (!Utility.isNumeric(request.getStateID().toString()))
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for StateID");
+//        if (request.getStateId() == null )
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "StateID cannot be empty");
+//        if (!Utility.isNumeric(request.getStateID().toString()))
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for StateID");
 
         if (request.getAddress() == null || request.getAddress().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Address cannot be empty");
@@ -245,11 +245,11 @@ public class Validations {
 
 
 
-
-        State state =  stateRepository.findById(request.getStateID())
-                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        " Enter a valid State!")
-                );
+//
+//        State state =  stateRepository.findById(request.getStateID())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid State!")
+//                );
 
         SupplierCategory supplierCategory = supplierCategoryRepository.findById(request.getSupplierCategoryID())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
@@ -414,6 +414,33 @@ public class Validations {
                     && !SupplierConstant.SABI.equals(request.getDeliveryType()) && !SupplierConstant.MY_PARTNER.equals(request.getDeliveryType()))
                 throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid User category type");
         }
+
+        if(request.getStateId() == null )
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "State cannot be empty");
+
+        State state =  stateRepository.findById(request.getStateId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid State!")
+                );
+
+        if(request.getLgaId() == null )
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "LGA cannot be empty");
+        LGA lga =  lgaRepository.findById(request.getLgaId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid Lga!")
+                );
+
+        if(request.getEmail() == null || request.getEmail().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Email cannot be empty");
+        if (!Utility.validEmail(request.getEmail().trim()))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid Email Address");
+        if (request.getPhone() == null || request.getPhone().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Phone number cannot be empty");
+        if (request.getPhone().length() < 8 || request.getPhone().length() > 14)// NAME LENGTH*********
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid phone number  length");
+        if (!Utility.isNumeric(request.getPhone()))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for phone number ");
+
     }
 
 
