@@ -209,6 +209,8 @@ public class SupplierService {
             request.setEmail(user.getEmail());
             request.setPhone(user.getPhone());
             request.setName(supplier.getName());
+            request.setSupplierId(supplier.getId());
+            request.setLgaId(supplier.getLgaId());
             String generatePassword= Utility.passwordGeneration();
             request.setPassword(generatePassword);
             request.getAssets().forEach(p -> {
