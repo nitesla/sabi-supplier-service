@@ -112,7 +112,7 @@ public class Validations {
 
         ProductCategory productCategory = productCategoryRepository.findById(productDto.getProductCategoryId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        " Enter a valid product id!"));
+                        " Enter a valid product category id!"));
         Manufacturer manufacturer = manufacturerRepository.findById(productDto.getManufacturerId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         " Enter a valid manufacturer id!"));
@@ -314,7 +314,7 @@ public class Validations {
         }
         if (request.getStatus() == null || request.getStatus().isEmpty() )
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Delivery Status cannot be empty");
-        if (!("Awaiting Shippment".equalsIgnoreCase(request.getStatus()) || "Shipped".equalsIgnoreCase(request.getStatus()) || "Cancelled".equalsIgnoreCase(request.getStatus()) ||"Opened".equalsIgnoreCase(request.getStatus())||"Accepted".equalsIgnoreCase(request.getStatus()) ||"Pending".equalsIgnoreCase(request.getStatus()) ||"Rejected".equalsIgnoreCase(request.getStatus())))
+        if (!("Awaiting_Shippment".equalsIgnoreCase(request.getStatus()) || "Shipped".equalsIgnoreCase(request.getStatus()) || "Cancelled".equalsIgnoreCase(request.getStatus()) ||"Opened".equalsIgnoreCase(request.getStatus())||"Accepted".equalsIgnoreCase(request.getStatus()) ||"Pending".equalsIgnoreCase(request.getStatus()) ||"Rejected".equalsIgnoreCase(request.getStatus())))
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Enter the correct Delivery Status");
 
     }
@@ -495,6 +495,8 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "vehicle can not be empty");
         if (shipmentDto.getStatus() == null || shipmentDto.getStatus().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+        if (!("Awaiting_Shipment".equalsIgnoreCase(shipmentDto.getStatus()) || "Shipped".equalsIgnoreCase(shipmentDto.getStatus()) ||"Delivered".equalsIgnoreCase(shipmentDto.getStatus())))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Enter the correct Shipment Status");
         if (shipmentDto.getTotalAmount() == null || shipmentDto.getStatus().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
     }

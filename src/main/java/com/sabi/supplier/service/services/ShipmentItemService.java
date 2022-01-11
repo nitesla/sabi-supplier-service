@@ -12,6 +12,7 @@ import com.sabi.supplier.service.repositories.ShipmentItemRepository;
 import com.sabi.supplier.service.repositories.ShipmentRepository;
 import com.sabi.supplier.service.repositories.SupplyRequestRepository;
 import com.sabi.suppliers.core.dto.request.ShipmentItemDto;
+import com.sabi.suppliers.core.dto.response.ShipmentItemInfoResponse;
 import com.sabi.suppliers.core.dto.response.ShipmentItemResponseDto;
 import com.sabi.suppliers.core.models.Shipment;
 import com.sabi.suppliers.core.models.ShipmentItem;
@@ -61,6 +62,7 @@ public class ShipmentItemService {
         }
         shipmentItem.setCreatedBy(userCurrent.getId());
         shipmentItem.setIsActive(true);
+//        shipmentItem.setStatus("Awaiting_shipment");
         shipmentItem = repository.save(shipmentItem);
         log.debug("Create new preference - {}"+ new Gson().toJson(shipmentItem));
         ShipmentItemResponseDto productResponseDto =  mapper.map(shipmentItem, ShipmentItemResponseDto.class);
@@ -119,13 +121,67 @@ public class ShipmentItemService {
     }
 
     public ShipmentItemResponseDto findShipmentItemById(Long id){
-        ShipmentItem preference  = repository.findShipmentItemById(id);
-        if (preference == null){
+        ShipmentItem shipmentItem  = repository.findShipmentItemById(id);
+        if (shipmentItem == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                     "Requested shipment item id does not exist!");
         }
-        ShipmentItemResponseDto productResponseDto =  mapper.map(preference, ShipmentItemResponseDto.class);
+        ShipmentItemResponseDto productResponseDto =  mapper.map(shipmentItem, ShipmentItemResponseDto.class);
         return productResponseDto;
+    }
+
+    public ShipmentItemInfoResponse findShipmentItemBySupplierRequestId(Long supplyRequestId){
+
+        ShipmentItem shipmentItem  = repository.findShipmentItemBySupplierRequestId(supplyRequestId);
+        if (shipmentItem == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    "Requested shipment item id does not exist!");
+        }
+        Shipment savedShipment= shipmentRepository.findShipmentById(shipmentItem.getShipmentId());
+        SupplyRequest savedSupplyRequest = supplyRequestRepository.findSupplyRequestById(shipmentItem.getSupplierRequestId());
+        ShipmentItemInfoResponse shipmentItemInfoResponse =  mapper.map(shipmentItem, ShipmentItemInfoResponse.class);
+        shipmentItemInfoResponse.setWarehouseId(savedShipment.getWarehouseId());
+        shipmentItemInfoResponse.setShipmentDeliveryDate(savedShipment.getDeliveryDate());
+        shipmentItemInfoResponse.setLogisticPartnerId(savedShipment.getLogisticPartnerId());
+        shipmentItemInfoResponse.setLogisticPartnerName(savedShipment.getLogisticPartnerName());
+        shipmentItemInfoResponse.setPhoneNumber(savedShipment.getPhoneNumber());
+        shipmentItemInfoResponse.setVehicle(savedShipment.getVehicle());
+        shipmentItemInfoResponse.setShipmentsStatus(savedShipment.getStatus());
+        shipmentItemInfoResponse.setShipmentQuantity(savedShipment.getQuantity());
+        shipmentItemInfoResponse.setTotalAmount(savedShipment.getTotalAmount());
+        shipmentItemInfoResponse.setExpectedDeliveryDate(savedShipment.getExpectedDeliveryDate());
+        shipmentItemInfoResponse.setStartTime(savedShipment.getStartTime());
+        shipmentItemInfoResponse.setEndTime(savedShipment.getEndTime());
+        shipmentItemInfoResponse.setShipment_createdDate(savedShipment.getCreatedDate());
+        shipmentItemInfoResponse.setShipment_updatedBy(savedShipment.getUpdatedBy());
+        shipmentItemInfoResponse.setShipment_createdBy(savedShipment.getCreatedBy());
+        shipmentItemInfoResponse.setIsActive(savedShipment.getIsActive());
+        shipmentItemInfoResponse.setDriverName(savedShipment.getDriverName());
+        shipmentItemInfoResponse.setPartnerName(savedShipment.getPartnerName());
+        shipmentItemInfoResponse.setPartnerId(savedShipment.getPartnerId());
+        shipmentItemInfoResponse.setAssestName(savedShipment.getAssestName());
+        shipmentItemInfoResponse.setAssestId(savedShipment.getAssestId());
+        shipmentItemInfoResponse.setProductId(savedSupplyRequest.getProductId());
+        shipmentItemInfoResponse.setProductName(savedSupplyRequest.getProductName());
+        shipmentItemInfoResponse.setAskedQuantity(savedSupplyRequest.getAskedQuantity());
+        shipmentItemInfoResponse.setAskingPrice(savedSupplyRequest.getAskingPrice());
+        shipmentItemInfoResponse.setSupplyRequest_startTime(savedSupplyRequest.getStartTime());
+        shipmentItemInfoResponse.setSupplyRequest_endTime(savedSupplyRequest.getEndTime());
+        shipmentItemInfoResponse.setReferenceNo(savedSupplyRequest.getReferenceNo());
+        shipmentItemInfoResponse.setSupplyRequest_status(savedSupplyRequest.getStatus());
+        shipmentItemInfoResponse.setSupplyRequest_quantity(savedSupplyRequest.getQuantity());
+        shipmentItemInfoResponse.setSupplyRequest_price(savedSupplyRequest.getPrice());
+        shipmentItemInfoResponse.setSupplyRequest_warehouseId(savedSupplyRequest.getWarehouseId());
+        shipmentItemInfoResponse.setDropOffAddress(savedSupplyRequest.getDropOffAddress());
+        shipmentItemInfoResponse.setDateAccepted(savedSupplyRequest.getDateAccepted());
+        shipmentItemInfoResponse.setAskedQuantity(savedSupplyRequest.getAskedQuantity());
+        shipmentItemInfoResponse.setAskedPrice(savedSupplyRequest.getAskedPrice());
+        shipmentItemInfoResponse.setSupplyRequest_deliveryDate(savedSupplyRequest.getDeliveryDate());
+        shipmentItemInfoResponse.setDeliveryAddress(savedSupplyRequest.getDeliveryAddress());
+        shipmentItemInfoResponse.setEmail(savedSupplyRequest.getEmail());
+        shipmentItemInfoResponse.setPhone(savedSupplyRequest.getPhone());
+        shipmentItemInfoResponse.setRejectReason(savedSupplyRequest.getRejectReason());
+        return shipmentItemInfoResponse;
     }
 
     public Page<ShipmentItem> findAll(Long supplierRequestedId, Long shipmentId, PageRequest pageRequest ){
