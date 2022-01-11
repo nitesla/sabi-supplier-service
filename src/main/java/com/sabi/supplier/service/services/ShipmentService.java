@@ -56,6 +56,9 @@ public class ShipmentService {
      */
 
     public ShipmentResponseDto createShipment(ShipmentDto request) {
+        if (request.getStatus() == null|| request.getStatus().isEmpty()){
+            request.setStatus("Awaiting_Shipment");
+        }
         validations.validateShipment(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Shipment shipment = mapper.map(request,Shipment.class);
@@ -65,6 +68,7 @@ public class ShipmentService {
         }
         shipment.setCreatedBy(userCurrent.getId());
         shipment.setIsActive(true);
+//        shipment.setStatus("Awaiting_Shipment");
         shipment = shipmentRepository.save(shipment);
         log.debug("Create new shipment - {}"+ new Gson().toJson(shipment));
         ShipmentResponseDto productResponseDto =  mapper.map(shipment, ShipmentResponseDto.class);
