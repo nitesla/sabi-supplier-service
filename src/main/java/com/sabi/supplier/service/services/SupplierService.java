@@ -292,9 +292,14 @@ public class SupplierService {
         Supplier supplier = supplierRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supplier Id does not exist!"));
-        State state = stateRepository.getOne(supplier.getStateId());
-
-        LGA lga = lgaRepository.getOne(supplier.getLgaId());
+        State state = null;
+        if (supplier.getStateId() != null) {
+             state = stateRepository.findStateById(supplier.getStateId());
+        }
+        LGA lga = null;
+        if (supplier.getLgaId() != null){
+            lga = lgaRepository.getOne(supplier.getLgaId());
+        }
 
         SupplierResponseDto supplierResponseDto = SupplierResponseDto.builder()
                 .address(supplier.getAddress())
@@ -310,12 +315,20 @@ public class SupplierService {
                 .email(supplier.getEmail())
                 .id(supplier.getId())
                 .isActive(supplier.getIsActive())
-                .lgaId(supplier.getLgaId())
-                .lga(lga.getName())
-                .stateId(supplier.getStateId())
-                .state(state.getName())
+//                .lgaId(supplier.getLgaId())
+//                .lga(lga.getName())
+//                .stateId(supplier.getStateId())
+//                .state(state.getName())
                 .supplierCategoryID(supplier.getSupplierCategoryId())
                 .build();
+        if (supplier.getStateId() != null){
+            supplierResponseDto.setState(state.getName());
+            supplierResponseDto.setStateId(supplier.getStateId());
+        }
+        if (supplier.getLgaId() != null){
+            supplierResponseDto.setLga(lga.getName());
+            supplierResponseDto.setLgaId(supplier.getLgaId());
+        }
         return supplierResponseDto;
 
     }
