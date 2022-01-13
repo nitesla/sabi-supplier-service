@@ -18,7 +18,7 @@ public interface SupplierCategoryRepository extends JpaRepository<SupplierCatego
 
     SupplierCategory findByName(String name);
 
-    List<SupplierCategory> findByIsActive(Boolean isActive);
+    List<SupplierCategory> findByIsActiveOrderByIdDesc(Boolean isActive);
 
 
 

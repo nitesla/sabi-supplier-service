@@ -93,7 +93,7 @@ public class SupplierProductService {
 
 
     public List<SupplierProduct> getAll(Boolean isActive){
-        List<SupplierProduct> states = supplierProductRepository.findByIsActive(isActive);
+        List<SupplierProduct> states = supplierProductRepository.findByIsActiveOrderByIdDesc(isActive);
         return states;
 
     }

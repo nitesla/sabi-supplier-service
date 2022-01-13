@@ -125,7 +125,7 @@ public class ManufacturerService {
 
 
     public List<Manufacturer> getAll(Boolean isActive){
-        List<Manufacturer> manufacturers = manufacturerRepository.findByIsActive(isActive);
+        List<Manufacturer> manufacturers = manufacturerRepository.findByIsActiveOrderByIdDesc(isActive);
         return manufacturers;
 
     }

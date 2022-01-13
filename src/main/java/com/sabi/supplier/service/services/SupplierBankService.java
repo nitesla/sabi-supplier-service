@@ -134,7 +134,7 @@ public class SupplierBankService {
 
 
     public List<SupplierBank> getAll(Boolean isActive){
-        List<SupplierBank> supplierBanks = supplierBankRepository.findByIsActive(isActive);
+        List<SupplierBank> supplierBanks = supplierBankRepository.findByIsActiveOrderByIdDesc(isActive);
         return supplierBanks;
 
     }

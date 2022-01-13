@@ -353,7 +353,7 @@ public class SupplierService {
 
 
     public List<Supplier> getAll(Boolean isActive){
-        List<Supplier> supplierProperties = supplierRepository.findByIsActive(isActive);
+        List<Supplier> supplierProperties = supplierRepository.findByIsActiveOrderByIdDesc(isActive);
         for (Supplier sup : supplierProperties
                 ) {
             LGA lga = lgaRepository.getOne(sup.getLgaId());

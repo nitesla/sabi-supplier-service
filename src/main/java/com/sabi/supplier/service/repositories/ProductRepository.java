@@ -14,9 +14,9 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Product findByName(String name);
-    List<Product> findByIsActive(Boolean isActive);
+    List<Product> findByIsActiveOrderByIdDesc(Boolean isActive);
 
-    @Query("SELECT c FROM Product c WHERE ((:name IS NULL) OR (:name IS NOT NULL AND c.name = :name))" )
+    @Query("SELECT c FROM Product c WHERE ((:name IS NULL) OR (:name IS NOT NULL AND c.name = :name)) order by c.id desc " )
 //            " AND ((:code IS NULL) OR (:code IS NOT NULL AND c.code = :code))")
     Page<Product> findProducts(@Param("name") String name,
                                Pageable pageable);

@@ -161,6 +161,6 @@ public class SupplyRequestService {
     }
 
     public List<SupplyRequest> getAll(Boolean isActive) {
-        return supplyRequestRepository.findByIsActive(isActive);
+        return supplyRequestRepository.findByIsActiveOrderByIdDesc(isActive);
     }
 }

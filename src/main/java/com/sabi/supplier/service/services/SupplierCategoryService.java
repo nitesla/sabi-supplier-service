@@ -158,7 +158,7 @@ public class SupplierCategoryService {
 
 
     public List<SupplierCategory> getAll(Boolean isActive){
-        List<SupplierCategory> supplierCategories = supplierCategoryRepository.findByIsActive(isActive);
+        List<SupplierCategory> supplierCategories = supplierCategoryRepository.findByIsActiveOrderByIdDesc(isActive);
         return supplierCategories;
 
     }

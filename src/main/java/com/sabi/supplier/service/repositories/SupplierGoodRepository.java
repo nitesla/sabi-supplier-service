@@ -15,7 +15,7 @@ public interface SupplierGoodRepository extends JpaRepository<SupplierGood, Long
 
     SupplierGood findSupplierGoodById(Long supplierGoodId);
 
-    SupplierGood findByVariantId(Long variantId);
+    SupplierGood findByVariantIdAndSupplierId(Long variantId,Long supplierId);
 
     @Query("SELECT s FROM SupplierGood s WHERE ((:isActive IS NULL) OR (:isActive IS NOT NULL AND s.isActive = :isActive))" +
             " AND ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND s.supplierId = :supplierId))")
@@ -23,7 +23,7 @@ public interface SupplierGoodRepository extends JpaRepository<SupplierGood, Long
                                       @Param("supplierId")Long supplierId);
 
     @Query("SELECT c FROM SupplierGood c WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND c.supplierId = :supplierId))" +
-            " AND ((:variantId IS NULL) OR (:variantId IS NOT NULL AND c.variantId = :variantId))")
+            " AND ((:variantId IS NULL) OR (:variantId IS NOT NULL AND c.variantId = :variantId)) order by c.id desc ")
     Page<SupplierGood> findSupplierGoods(@Param("supplierId") Long supplierId,
                                         @Param("variantId") Long variantId,Pageable pageable);
 }

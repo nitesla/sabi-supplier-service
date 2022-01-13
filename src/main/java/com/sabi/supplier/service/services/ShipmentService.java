@@ -169,7 +169,7 @@ public class ShipmentService {
 
 
     public List<Shipment> getAll(Boolean isActive){
-        List<Shipment> shipments = shipmentRepository.findByIsActive(isActive);
+        List<Shipment> shipments = shipmentRepository.findByIsActiveOrderByIdDesc(isActive);
         return shipments;
 
     }

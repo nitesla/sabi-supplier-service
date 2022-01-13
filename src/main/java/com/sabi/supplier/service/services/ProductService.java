@@ -129,7 +129,7 @@ public class ProductService {
 
 
     public List<Product> getAll(Boolean isActive){
-        List<Product> products = productRepository.findByIsActive(isActive);
+        List<Product> products = productRepository.findByIsActiveOrderByIdDesc(isActive);
         return products;
 
     }

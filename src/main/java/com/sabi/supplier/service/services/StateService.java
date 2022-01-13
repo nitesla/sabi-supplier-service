@@ -150,7 +150,7 @@ public class StateService {
     }
 
     public List<State> getAll(Boolean isActive){
-        List<State> states = stateRepository.findByIsActive(isActive);
+        List<State> states = stateRepository.findByIsActiveOrderByIdDesc(isActive);
         return states;
 
     }

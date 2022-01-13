@@ -11,5 +11,5 @@ import java.util.List;
 public interface SupplierBankRepository extends JpaRepository<SupplierBank, Long>, JpaSpecificationExecutor<SupplierBank> {
     SupplierBank findBySupplierId(Long supplierId);
 
-    List<SupplierBank> findByIsActive(Boolean isActive);
+    List<SupplierBank> findByIsActiveOrderByIdDesc(Boolean isActive);
 }

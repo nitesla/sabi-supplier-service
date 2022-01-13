@@ -212,7 +212,7 @@ public class ShipmentItemService {
 
 
     public List<ShipmentItem> getAll(Boolean isActive){
-        List<ShipmentItem> shipment = repository.findByIsActive(isActive);
+        List<ShipmentItem> shipment = repository.findByIsActiveOrderByIdDesc(isActive);
         return shipment;
 
     }
