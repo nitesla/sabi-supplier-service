@@ -85,7 +85,7 @@ public class SupplyRequestResponseService {
     }
 
     public List<SupplyRequestResponseEntity> getAll(Boolean isActive) {
-        return supplyRequestResponseRepository.findByIsActive(isActive);
+        return supplyRequestResponseRepository.findByIsActiveOrderByIdDesc(isActive);
     }
 
 

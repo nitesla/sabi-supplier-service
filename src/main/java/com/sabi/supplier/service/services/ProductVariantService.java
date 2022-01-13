@@ -95,7 +95,7 @@ public class ProductVariantService {
 
 
     public List<ProductVariant> getAll(Boolean isActive){
-        List<ProductVariant> productVariants = productVariantRepository.findByIsActive(isActive);
+        List<ProductVariant> productVariants = productVariantRepository.findByIsActiveOrderByIdDesc(isActive);
         return productVariants;
 
     }

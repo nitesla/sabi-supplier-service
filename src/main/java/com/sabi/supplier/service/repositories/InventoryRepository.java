@@ -15,10 +15,10 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
     Inventory findByName(String name);
 
-    List<Inventory> findByIsActive(Boolean isActive);
+    List<Inventory> findByIsActiveOrderByIdDesc(Boolean isActive);
 
     @Query("SELECT c FROM Inventory c WHERE ((:supplierGoodId IS NULL) OR (:supplierGoodId IS NOT NULL AND c.supplierGoodId = :supplierGoodId))" +
-            " AND ((:warehouseId IS NULL) OR (:warehouseId IS NOT NULL AND c.warehouseId = :warehouseId))" )
+            " AND ((:warehouseId IS NULL) OR (:warehouseId IS NOT NULL AND c.warehouseId = :warehouseId)) order by c.id desc " )
     Page<Inventory> findInventories(@Param("supplierGoodId") Long supplierRequestId,
                             @Param("warehouseId")Long shipmentId,
                             Pageable pageable);

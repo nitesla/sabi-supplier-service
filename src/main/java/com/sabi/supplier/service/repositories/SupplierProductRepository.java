@@ -15,10 +15,10 @@ public interface SupplierProductRepository extends JpaRepository<SupplierProduct
 
     SupplierProduct findSupplierProductById(Long supplierProductId);
 
-    List<SupplierProduct> findByIsActive(Boolean isActive);
+    List<SupplierProduct> findByIsActiveOrderByIdDesc(Boolean isActive);
 
     @Query("SELECT c FROM SupplierProduct c WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND c.supplierId = :supplierId))" +
-            " AND ((:productId IS NULL) OR (:productId IS NOT NULL AND c.productId = :productId))")
+            " AND ((:productId IS NULL) OR (:productId IS NOT NULL AND c.productId = :productId)) order by c.id desc ")
     Page<SupplierProduct> findSupplierProducts(@Param("supplierId") Long SupplierId,
                                             @Param("productId") Long variantId,
                                             Pageable pageable);

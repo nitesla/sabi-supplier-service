@@ -130,7 +130,7 @@ public class WareHouseGoodService {
 
 
     public List<WareHouseGood> getAll(boolean isActive){
-        List<WareHouseGood> countries = repository.findByIsActive(isActive);
+        List<WareHouseGood> countries = repository.findByIsActiveOrderByIdDesc(isActive);
         return countries;
 
     }

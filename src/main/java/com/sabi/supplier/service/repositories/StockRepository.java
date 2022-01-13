@@ -16,11 +16,11 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
     Stock findStockByAction(String action);
 
 
-    List<Stock> findByIsActive(Boolean isActive);
+    List<Stock> findByIsActiveOrderByIdDesc(Boolean isActive);
 
     @Query("SELECT c FROM Stock c WHERE ((:wareHouseGoodId IS NULL) OR (:wareHouseGoodId IS NOT NULL AND c.wareHouseGoodId = :wareHouseGoodId))" +
             " AND ((:action IS NULL) OR (:action IS NOT NULL AND c.action = :action))" +
-            " AND ((:userId IS NULL) OR (:userId IS NOT NULL AND c.userId = :userId))"
+            " AND ((:userId IS NULL) OR (:userId IS NOT NULL AND c.userId = :userId)) order by c.id desc "
     )
     Page<Stock> findStocks(@Param("wareHouseGoodId") Long wareHouseGoodId,
                                   @Param("action") String action,

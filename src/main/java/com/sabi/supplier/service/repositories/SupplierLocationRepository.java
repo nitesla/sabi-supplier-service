@@ -16,7 +16,7 @@ public interface SupplierLocationRepository extends JpaRepository<SupplierLocati
 
     SupplierLocation findBySupplierIdAndStateId(Long supplierId, Long stateId);
 
-    List<SupplierLocation> findByIsActive(Boolean isActive);
+    List<SupplierLocation> findByIsActiveOrderByIdDesc(Boolean isActive);
 
 
 

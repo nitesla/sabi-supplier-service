@@ -125,7 +125,7 @@ public class ProductCategoryService {
 
 
     public List<ProductCategory> getAll(Boolean isActive){
-        List<ProductCategory> productCategories = productCategoryRepository.findByIsActive(isActive);
+        List<ProductCategory> productCategories = productCategoryRepository.findByIsActiveOrderByIdDesc(isActive);
         return productCategories;
 
     }

@@ -120,7 +120,7 @@ public class SupplierLocationService {
 
 
     public List<SupplierLocation> getAll(Boolean isActive){
-        List<SupplierLocation> supplierLocations = supplierLocationRepository.findByIsActive(isActive);
+        List<SupplierLocation> supplierLocations = supplierLocationRepository.findByIsActiveOrderByIdDesc(isActive);
         return supplierLocations;
 
     }

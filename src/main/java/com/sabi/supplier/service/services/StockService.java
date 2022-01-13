@@ -145,7 +145,7 @@ public class StockService {
 
 
     public List<Stock> getAll(Boolean isActive){
-        List<Stock> stocks = stockRepository.findByIsActive(isActive);
+        List<Stock> stocks = stockRepository.findByIsActiveOrderByIdDesc(isActive);
         return stocks;
 
     }

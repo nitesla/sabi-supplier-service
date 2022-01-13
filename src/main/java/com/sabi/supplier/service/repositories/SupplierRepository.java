@@ -22,10 +22,10 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
 
     Supplier findByUserId(Long userId);
 
-    List<Supplier> findByIsActive(Boolean isActive);
+    List<Supplier> findByIsActiveOrderByIdDesc(Boolean isActive);
 
 
-    @Query("SELECT s FROM Supplier s WHERE ((:name IS NULL) OR (:name IS NOT NULL AND s.name = :name))")
+    @Query("SELECT s FROM Supplier s WHERE ((:name IS NULL) OR (:name IS NOT NULL AND s.name = :name)) order by s.id DESC ")
     Page<Supplier> findALLSupplier(@Param("name") String name, Pageable pageable);
 
 

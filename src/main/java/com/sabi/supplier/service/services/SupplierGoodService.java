@@ -46,7 +46,7 @@ public class SupplierGoodService {
         validations.validateSupplierGood(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplierGood supplierGood = mapper.map(request,SupplierGood.class);
-        SupplierGood supplierGoodExist = supplierGoodRepository.findByVariantId(request.getVariantId());
+        SupplierGood supplierGoodExist = supplierGoodRepository.findByVariantIdAndSupplierId(request.getVariantId(),request.getSupplierId());
         if(supplierGoodExist !=null){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " Supplier goods already exist");
         }

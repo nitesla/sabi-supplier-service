@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, Long>, JpaSpecificationExecutor<SupplyRequest> {
-    List<SupplyRequest> findByIsActive(Boolean isActive);
+    List<SupplyRequest> findByIsActiveOrderByIdDesc(Boolean isActive);
 
     Boolean existsByReferenceNo(String referenceNo);
 
@@ -32,7 +32,7 @@ public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, Lo
             "AND ((:warehouseId IS NULL and :unassigned is null )OR (s.warehouseId IS NULL and :unassigned = true ) OR (:warehouseId IS NOT NULL AND s.warehouseId = :warehouseId))" +
             "AND ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
             "AND ((:productId IS NULL) OR (:productId IS NOT NULL AND s.productId = :productId))" +
-            "AND ((:status IS NULL) OR (:status IS NOT NULL AND s.status = :status))"
+            "AND ((:status IS NULL) OR (:status IS NOT NULL AND s.status = :status)) order by s.id DESC "
     )
     Page<SupplyRequest> findSupplyRequests(@Param("productId") Long productId,
                                            @Param("productName") String productName,

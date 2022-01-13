@@ -15,13 +15,13 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
 
     ProductVariant findByName(String name);
 
-    List<ProductVariant> findByIsActive(Boolean isActive);
+    List<ProductVariant> findByIsActiveOrderByIdDesc(Boolean isActive);
 
     @Query("SELECT s FROM ProductVariant s WHERE ((:name IS NULL) OR (:name IS NOT NULL AND s.name = :name))" +
             " AND ((:productId IS NULL) OR (:productId IS NOT NULL AND s.productId = :productId))" +
             "AND ((:picture IS NULL) OR (:picture IS NOT NULL AND s.picture = :picture))" +
             "AND ((:rowPerPack IS NULL) OR (:rowPerPack IS NOT NULL AND s.rowPerPack = :rowPerPack))" +
-            "AND ((:pieceaPerRow IS NULL) OR (:pieceaPerRow IS NOT NULL AND s.pieceaPerRow = :pieceaPerRow))"
+            "AND ((:pieceaPerRow IS NULL) OR (:pieceaPerRow IS NOT NULL AND s.pieceaPerRow = :pieceaPerRow)) order by s.id desc "
     )
     Page<ProductVariant> findProductVariant(@Param("name") String name,
                                             @Param("productId") Long productId,
