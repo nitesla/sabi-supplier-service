@@ -10,10 +10,14 @@ import com.sabi.framework.models.PreviousPasswords;
 import com.sabi.framework.models.User;
 import com.sabi.framework.notification.requestDto.NotificationRequestDto;
 import com.sabi.framework.notification.requestDto.RecipientRequest;
+import com.sabi.framework.notification.requestDto.WhatsAppRequest;
 import com.sabi.framework.repositories.PreviousPasswordRepository;
 import com.sabi.framework.repositories.UserRepository;
+import com.sabi.framework.service.AuditTrailService;
 import com.sabi.framework.service.NotificationService;
 import com.sabi.framework.service.TokenService;
+import com.sabi.framework.service.WhatsAppService;
+import com.sabi.framework.utils.AuditTrailFlag;
 import com.sabi.framework.utils.Constants;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.framework.utils.Utility;
@@ -37,6 +41,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -69,11 +74,14 @@ public class SupplierService {
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
+    private final AuditTrailService auditTrailService;
+    private final WhatsAppService whatsAppService;
 
     public SupplierService(SupplierRepository supplierRepository,UserRepository userRepository,PreviousPasswordRepository previousPasswordRepository,
                            SupplierUserRepository supplierUserRepository,SupplierLocationRepository supplierLocationRepository,LGARepository lgaRepository,
                            StateRepository stateRepository,PartnerSignUpService partnerSignUpService,NotificationService notificationService,
-                           ModelMapper mapper, ObjectMapper objectMapper, Validations validations) {
+                           ModelMapper mapper, ObjectMapper objectMapper, Validations validations,AuditTrailService auditTrailService,
+                           WhatsAppService whatsAppService) {
         this.supplierRepository = supplierRepository;
         this.userRepository = userRepository;
         this.previousPasswordRepository = previousPasswordRepository;
@@ -86,6 +94,8 @@ public class SupplierService {
         this.mapper = mapper;
         this.objectMapper = objectMapper;
         this.validations = validations;
+        this.auditTrailService = auditTrailService;
+        this.whatsAppService = whatsAppService;
 
     }
 
@@ -93,7 +103,7 @@ public class SupplierService {
 
 
 
-    public SupplierSignUpResponse supplierSignUp(SupplierSignUpRequestDto request) {
+    public SupplierSignUpResponse supplierSignUp(SupplierSignUpRequestDto request,HttpServletRequest request1) {
         validations.validateSupplier(request);
         User user = mapper.map(request,User.class);
 
@@ -162,6 +172,14 @@ public class SupplierService {
                 .name(supplierResponse.getName())
                 .supplierId(supplierResponse.getId())
                 .build();
+
+
+        auditTrailService
+                .logEvent(response.getUsername(),
+                        "SignUp user :" + response.getUsername(),
+                        AuditTrailFlag.SIGNUP,
+                        " Sign up User Request for:" + user.getFirstName() + " " + user.getLastName() + " " + user.getEmail()
+                        , 1, Utility.getClientIp(request1));
 
         return response;
     }
@@ -243,6 +261,13 @@ public class SupplierService {
 //                    .phoneNumber(emailRecipient.getPhone())
 //                    .build();
 //            notificationService.smsNotificationRequest(smsRequest);
+
+
+            WhatsAppRequest whatsAppRequest = WhatsAppRequest.builder()
+                    .message(msg)
+                    .phoneNumber(emailRecipient.getPhone())
+                    .build();
+            whatsAppService.whatsAppNotification(whatsAppRequest);
         }
 
         CompleteSignUpResponse response = CompleteSignUpResponse.builder()
@@ -271,7 +296,7 @@ public class SupplierService {
      * </summary>
      * <remarks>this method is responsible for updating already existing Supplier</remarks>
      */
-    public SupplierResponseDto updateSupplier(SupplierRequestDto request) {
+    public SupplierResponseDto updateSupplier(SupplierRequestDto request,HttpServletRequest request1) {
         validations.validateSupplier(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Supplier supplier = supplierRepository.findById(request.getId())
@@ -281,6 +306,12 @@ public class SupplierService {
         supplier.setUpdatedBy(userCurrent.getId());
         supplierRepository.save(supplier);
         log.debug("Supplier record updated - {}"+ new Gson().toJson(supplier));
+
+        auditTrailService
+                .logEvent(userCurrent.getUsername(),
+                        "Update supplier by username:" + userCurrent.getUsername(),
+                        AuditTrailFlag.UPDATE,
+                        " Update supplier Request for:" + supplier.getId() + " "+ supplier.getName(),1, Utility.getClientIp(request1));
         return mapper.map(supplier, SupplierResponseDto.class);
     }
 
@@ -372,13 +403,20 @@ public class SupplierService {
      * </summary>
      * <remarks>this method is responsible for enabling and dis enabling a Supplier</remarks>
      */
-    public void enableDisable (EnableDisEnableDto request){
+    public void enableDisable (EnableDisEnableDto request,HttpServletRequest request1){
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Supplier supplier = supplierRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supplier Id does not exist!"));
         supplier.setIsActive(request.isActive());
         supplier.setUpdatedBy(userCurrent.getId());
+
+        auditTrailService
+                .logEvent(userCurrent.getUsername(),
+                        "Disable/Enable supplier by :" + userCurrent.getUsername() ,
+                        AuditTrailFlag.UPDATE,
+                        " Disable/Enable supplier Request for:" +  supplier.getId()
+                                + " " +  supplier.getName(),1, Utility.getClientIp(request1));
         supplierRepository.save(supplier);
 
     }

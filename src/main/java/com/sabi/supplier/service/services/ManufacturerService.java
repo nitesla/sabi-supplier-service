@@ -6,8 +6,11 @@ import com.sabi.framework.dto.requestDto.EnableDisEnableDto;
 import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.User;
+import com.sabi.framework.service.AuditTrailService;
 import com.sabi.framework.service.TokenService;
+import com.sabi.framework.utils.AuditTrailFlag;
 import com.sabi.framework.utils.CustomResponseCode;
+import com.sabi.framework.utils.Utility;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ManufacturerRepository;
 import com.sabi.suppliers.core.dto.request.ManufacturerDto;
@@ -19,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Slf4j
@@ -29,12 +33,15 @@ public class ManufacturerService {
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
+    private final AuditTrailService auditTrailService;
 
-    public ManufacturerService(ManufacturerRepository manufacturerRepository, ModelMapper mapper, ObjectMapper objectMapper, Validations validations) {
+    public ManufacturerService(ManufacturerRepository manufacturerRepository, ModelMapper mapper, ObjectMapper objectMapper, Validations validations,
+                               AuditTrailService auditTrailService) {
         this.manufacturerRepository = manufacturerRepository;
         this.mapper = mapper;
         this.objectMapper = objectMapper;
         this.validations = validations;
+        this.auditTrailService = auditTrailService;
     }
 
     /** <summary>
@@ -43,7 +50,7 @@ public class ManufacturerService {
      * <remarks>this method is responsible for creation of new product</remarks>
      */
 
-    public ManufacturerResponseDto createManufacturer(ManufacturerDto request) {
+    public ManufacturerResponseDto createManufacturer(ManufacturerDto request,HttpServletRequest request1) {
         validations.validateManufacturer(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Manufacturer manufacturer = mapper.map(request,Manufacturer.class);
@@ -55,6 +62,12 @@ public class ManufacturerService {
         manufacturer.setIsActive(true);
         manufacturer = manufacturerRepository.save(manufacturer);
         log.debug("Create new manufacturer - {}"+ new Gson().toJson(manufacturer));
+
+        auditTrailService
+                .logEvent(userCurrent.getUsername(),
+                        "Create new manufacturer by :" + userCurrent.getUsername(),
+                        AuditTrailFlag.CREATE,
+                        " Create new manufacturer for:" + manufacturer.getName() ,1, Utility.getClientIp(request1));
         return mapper.map(manufacturer, ManufacturerResponseDto.class);
     }
 
@@ -65,7 +78,7 @@ public class ManufacturerService {
      * <remarks>this method is responsible for updating already existing product</remarks>
      */
 
-    public ManufacturerResponseDto updateManufacturer(ManufacturerDto request) {
+    public ManufacturerResponseDto updateManufacturer(ManufacturerDto request,HttpServletRequest request1) {
         validations.validateManufacturer(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Manufacturer product = manufacturerRepository.findById(request.getId())
@@ -75,6 +88,12 @@ public class ManufacturerService {
         product.setUpdatedBy(userCurrent.getId());
         manufacturerRepository.save(product);
         log.debug("product record updated - {}"+ new Gson().toJson(product));
+
+        auditTrailService
+                .logEvent(userCurrent.getUsername(),
+                        "Update Manufacturer by username:" + userCurrent.getUsername(),
+                        AuditTrailFlag.UPDATE,
+                        " Update Manufacturer Request for:" + product.getId() + " "+ product.getName(),1, Utility.getClientIp(request1));
         return mapper.map(product, ManufacturerResponseDto.class);
     }
 

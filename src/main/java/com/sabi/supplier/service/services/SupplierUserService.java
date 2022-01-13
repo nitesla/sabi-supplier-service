@@ -10,11 +10,15 @@ import com.sabi.framework.models.Role;
 import com.sabi.framework.models.User;
 import com.sabi.framework.notification.requestDto.NotificationRequestDto;
 import com.sabi.framework.notification.requestDto.RecipientRequest;
+import com.sabi.framework.notification.requestDto.WhatsAppRequest;
 import com.sabi.framework.repositories.PreviousPasswordRepository;
 import com.sabi.framework.repositories.RoleRepository;
 import com.sabi.framework.repositories.UserRepository;
+import com.sabi.framework.service.AuditTrailService;
 import com.sabi.framework.service.NotificationService;
 import com.sabi.framework.service.TokenService;
+import com.sabi.framework.service.WhatsAppService;
+import com.sabi.framework.utils.AuditTrailFlag;
 import com.sabi.framework.utils.Constants;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.framework.utils.Utility;
@@ -33,6 +37,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,11 +56,13 @@ public class SupplierUserService {
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
+    private final AuditTrailService auditTrailService;
+    private final WhatsAppService whatsAppService;
 
     public SupplierUserService(SupplierUserRepository supplierUserRepository,UserRepository userRepository,
                                PreviousPasswordRepository previousPasswordRepository,RoleRepository roleRepository,
                                NotificationService notificationService,ModelMapper mapper, ObjectMapper objectMapper,
-                               Validations validations) {
+                               Validations validations,AuditTrailService auditTrailService,WhatsAppService whatsAppService) {
         this.supplierUserRepository = supplierUserRepository;
         this.userRepository = userRepository;
         this.previousPasswordRepository = previousPasswordRepository;
@@ -64,11 +71,13 @@ public class SupplierUserService {
         this.mapper = mapper;
         this.objectMapper = objectMapper;
         this.validations = validations;
+        this.auditTrailService = auditTrailService;
+        this.whatsAppService = whatsAppService;
     }
 
 
 
-    public SupplierUserResponseDto createSupplierUser(SupplierUserDto request) {
+    public SupplierUserResponseDto createSupplierUser(SupplierUserDto request,HttpServletRequest request1) {
         validations.validateSupplierUser(request);
         User user = mapper.map(request,User.class);
 
@@ -105,6 +114,12 @@ public class SupplierUserService {
         supplier.setIsActive(true);
         supplierUserRepository.save(supplier);
         log.debug("save to supplier user table - {}"+ new Gson().toJson(supplier));
+
+        auditTrailService
+                .logEvent(userCurrent.getUsername(),
+                        "Create new SupplierUser by :" + userCurrent.getUsername(),
+                        AuditTrailFlag.CREATE,
+                        " Create new SupplierUser for:" + user.getUsername() ,1, Utility.getClientIp(request1));
         return mapper.map(user, SupplierUserResponseDto.class);
     }
 
@@ -137,6 +152,12 @@ public class SupplierUserService {
                 .build());
         notificationRequestDto.setRecipient(recipient);
         notificationService.emailNotificationRequest(notificationRequestDto);
+
+        WhatsAppRequest whatsAppRequest = WhatsAppRequest.builder()
+                .message(msg)
+                .phoneNumber(emailRecipient.getPhone())
+                .build();
+        whatsAppService.whatsAppNotification(whatsAppRequest);
 
     }
 
