@@ -15,6 +15,7 @@ import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.SupplierBankRepository;
 import com.sabi.suppliers.core.dto.request.SupplierBankRequest;
 import com.sabi.suppliers.core.dto.response.SupplierBankResponse;
+import com.sabi.suppliers.core.models.Stock;
 import com.sabi.suppliers.core.models.SupplierBank;
 import com.sabi.suppliers.core.models.SupplyRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -101,18 +102,26 @@ public class SupplierBankService {
      * </summary>
      * <remarks>this method is responsible for getting all records in pagination</remarks>
      */
-    public Page<SupplierBank> findAll(String accountNumber, Long supplierId,PageRequest pageRequest ){
-        GenericSpecification<SupplierBank> genericSpecification = new GenericSpecification<>();
+//    public Page<SupplierBank> findAll(String accountNumber, Long supplierId,PageRequest pageRequest ){
+//        GenericSpecification<SupplierBank> genericSpecification = new GenericSpecification<>();
+//
+//        if (accountNumber != null && !accountNumber.isEmpty()) {
+//            genericSpecification.add(new SearchCriteria("accountNumber", accountNumber, SearchOperation.MATCH));
+//        }
+//
+//        if (supplierId != null ) {
+//            genericSpecification.add(new SearchCriteria("supplierId", supplierId, SearchOperation.MATCH));
+//        }
+//        Page<SupplierBank> supplyRequests = supplierBankRepository.findAll(genericSpecification, pageRequest);
+//    return supplyRequests;
+//    }
 
-        if (accountNumber != null && !accountNumber.isEmpty()) {
-            genericSpecification.add(new SearchCriteria("accountNumber", accountNumber, SearchOperation.MATCH));
+    public Page<SupplierBank> findAll(String accountNumber, Long supplierId,PageRequest pageRequest){
+        Page<SupplierBank> supplierBanks = supplierBankRepository.findSupplierBanks(accountNumber,supplierId,pageRequest);
+        if(supplierBanks == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
-
-        if (supplierId != null ) {
-            genericSpecification.add(new SearchCriteria("supplierId", supplierId, SearchOperation.MATCH));
-        }
-        Page<SupplierBank> supplyRequests = supplierBankRepository.findAll(genericSpecification, pageRequest);
-    return supplyRequests;
+        return supplierBanks;
     }
 
 

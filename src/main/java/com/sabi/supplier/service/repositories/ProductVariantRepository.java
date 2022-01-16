@@ -14,6 +14,7 @@ import java.util.List;
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
 
     ProductVariant findByName(String name);
+    ProductVariant findProductVariantById(Long id);
 
     List<ProductVariant> findByIsActiveOrderByIdDesc(Boolean isActive);
 

@@ -62,7 +62,7 @@ public class ShipmentItemService {
         }
         shipmentItem.setCreatedBy(userCurrent.getId());
         shipmentItem.setIsActive(true);
-//        shipmentItem.setStatus("Awaiting_shipment");
+        shipmentItem.setStatus("Awaiting_shipment");
         shipmentItem = repository.save(shipmentItem);
         log.debug("Create new preference - {}"+ new Gson().toJson(shipmentItem));
         ShipmentItemResponseDto productResponseDto =  mapper.map(shipmentItem, ShipmentItemResponseDto.class);
@@ -81,13 +81,13 @@ public class ShipmentItemService {
                 throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " shipment item already exist");
             }
             shipmentItem.setCreatedBy(userCurrent.getId());
-            shipmentItem.setStatus("Awaiting shipment");
+            shipmentItem.setStatus("Awaiting_shipment");
             SupplyRequest supplyRequest = supplyRequestRepository.findSupplyRequestById(request.getSupplierRequestId());
             if (supplyRequest == null) {
                 throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "supply request Id does not exist!");
             }
-            supplyRequest.setStatus("Awaiting shipment");
+            supplyRequest.setStatus("Awaiting_shipment");
             supplyRequestRepository.save(supplyRequest);
             shipmentItem.setIsActive(true);
             shipmentItem = repository.save(shipmentItem);

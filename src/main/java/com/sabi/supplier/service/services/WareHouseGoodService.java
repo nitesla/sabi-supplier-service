@@ -10,10 +10,12 @@ import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ProductVariantRepository;
+import com.sabi.supplier.service.repositories.SupplierGoodRepository;
 import com.sabi.supplier.service.repositories.WareHouseGoodRepository;
 import com.sabi.suppliers.core.dto.request.WareHouseGoodDto;
 import com.sabi.suppliers.core.dto.response.WareHouseGoodResponseDto;
 import com.sabi.suppliers.core.models.ProductVariant;
+import com.sabi.suppliers.core.models.SupplierGood;
 import com.sabi.suppliers.core.models.WareHouseGood;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -30,6 +32,10 @@ public class WareHouseGoodService {
 
     @Autowired
     private WareHouseGoodRepository repository;
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
+    @Autowired
+    private SupplierGoodRepository supplierGoodRepository;
     @Autowired
     private ModelMapper mapper;
     @Autowired
@@ -89,10 +95,14 @@ public class WareHouseGoodService {
      * <remarks>this method is responsible for getting a single record</remarks>
      */
     public WareHouseGoodResponseDto findWarehouseGood(Long id){
-        WareHouseGood country  = repository.findById(id)
+        WareHouseGood wareHouseGood  = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested warehouse goods Id does not exist!"));
-        return mapper.map(country,WareHouseGoodResponseDto.class);
+        SupplierGood supplierGood = supplierGoodRepository.findSupplierGoodById(wareHouseGood.getSupplierGoodId());
+        ProductVariant productVariant = productVariantRepository.findProductVariantById(supplierGood.getVariantId());
+        wareHouseGood.setVariantId(productVariant.getId());
+        wareHouseGood.setVariantName(productVariant.getName());
+        return mapper.map(wareHouseGood,WareHouseGoodResponseDto.class);
     }
 
 
@@ -103,11 +113,17 @@ public class WareHouseGoodService {
      * <remarks>this method is responsible for getting all records in pagination</remarks>
      */
     public Page<WareHouseGood> findAll(Long warehouseId, Long supplierGoodId,Long supplierId, PageRequest pageRequest ){
-        Page<WareHouseGood> country = repository.findWarehouseGood(warehouseId,supplierGoodId,supplierId,pageRequest);
-        if(country == null){
+        Page<WareHouseGood> warehouseGood = repository.findWarehouseGood(warehouseId,supplierGoodId,supplierId,pageRequest);
+        if(warehouseGood == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
-        return country;
+        warehouseGood.forEach(wareHouseGood -> {
+            SupplierGood supplierGood = supplierGoodRepository.findSupplierGoodById(wareHouseGood.getSupplierGoodId());
+            ProductVariant productVariant = productVariantRepository.findProductVariantById(supplierGood.getVariantId());
+            wareHouseGood.setVariantId(productVariant.getId());
+            wareHouseGood.setVariantName(productVariant.getName());
+        });
+        return warehouseGood;
 
     }
 
@@ -130,8 +146,14 @@ public class WareHouseGoodService {
 
 
     public List<WareHouseGood> getAll(boolean isActive){
-        List<WareHouseGood> countries = repository.findByIsActiveOrderByIdDesc(isActive);
-        return countries;
+        List<WareHouseGood> wareHouseGoods = repository.findByIsActiveOrderByIdDesc(isActive);
+        wareHouseGoods.forEach(wareHouseGood -> {
+            SupplierGood supplierGood = supplierGoodRepository.findSupplierGoodById(wareHouseGood.getSupplierGoodId());
+            ProductVariant productVariant = productVariantRepository.findProductVariantById(supplierGood.getVariantId());
+            wareHouseGood.setVariantId(productVariant.getId());
+            wareHouseGood.setVariantName(productVariant.getName());
+        });
+        return wareHouseGoods;
 
     }
 }

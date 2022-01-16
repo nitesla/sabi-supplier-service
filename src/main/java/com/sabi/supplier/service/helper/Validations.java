@@ -61,6 +61,8 @@ public class Validations {
 
 
 
+
+
     public Validations(StateRepository stateRepository, LGARepository lgaRepository, UserRepository userRepository, ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ManufacturerRepository manufacturerRepository, SupplyRequestRepository supplyRequestRepository, WareHouseRepository wareHouseRepository, WareHouseUserRepository wareHouseUserRepository) {
         this.stateRepository = stateRepository;
         this.lgaRepository = lgaRepository;
@@ -456,8 +458,8 @@ public class Validations {
     }
 
     public void validateShipmentItem(ShipmentItemDto request) {
-        supplierRepository.findById(request.getSupplierRequestId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                " Enter a valid supplier ID!"));
+        supplyRequestRepository.findById(request.getSupplierRequestId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                " Enter a valid supplier Request ID!"));
         shipmentRepository.findById(request.getShipmentId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid shipment ID!"));
         if (request.getAcceptedQuality() < 1)
@@ -468,8 +470,8 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "price can not be empty");
         if (request.getQuantity() < 1)
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity can not be empty");
-        if (request.getStatus() == null || request.getStatus().isEmpty())
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+//        if (request.getStatus() == null || request.getStatus().isEmpty())
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
     }
 
     public void validateShipment(ShipmentDto shipmentDto) {
@@ -580,10 +582,10 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "total amount not be empty");
         if (request.getVehicle() == null || request.getVehicle().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "vehicle can not be empty");
-        if (request.getStatus() == null || request.getStatus().isEmpty())
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
-        if (request.getTotalAmount() == null || request.getStatus().isEmpty())
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+//        if (request.getStatus() == null || request.getStatus().isEmpty())
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+//        if (request.getTotalAmount() == null || request.getStatus().isEmpty())
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
 //        request.getShipmentItemDtoList().forEach(shipmentItemDto -> {
 //            supplierRepository.findById(shipmentItemDto.getSupplierRequestId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
 //                    " Enter a valid supplier ID!"));

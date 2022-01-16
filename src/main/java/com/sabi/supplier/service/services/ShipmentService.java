@@ -80,18 +80,19 @@ public class ShipmentService {
         List<ShipmentItemResponseDto> responseDtos = new ArrayList<>();
         validations.validateShipmentAndShipmentItem(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
-        Shipment order = mapper.map(request,Shipment.class);
+        Shipment shipment = mapper.map(request,Shipment.class);
         ShipmentItem shipmentItem = mapper.map(request, ShipmentItem.class);
 
         Shipment shipmentExists = shipmentRepository.findShipmentById(request.getWarehouseId());
         if(shipmentExists != null){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "shipment already exist");
         }
-        order.setCreatedBy(userCurrent.getId());
-        order.setIsActive(true);
-        order = shipmentRepository.save(order);
-        log.debug("Create new shipment - {}"+ new Gson().toJson(order));
-        ShipmentShipmentResponseDto orderResponseDto = mapper.map(order, ShipmentShipmentResponseDto.class);
+        shipment.setCreatedBy(userCurrent.getId());
+        shipment.setIsActive(true);
+        shipment.setDeliveryStatus("Pending");
+        shipment = shipmentRepository.save(shipment);
+        log.debug("Create new shipment - {}"+ new Gson().toJson(shipment));
+        ShipmentShipmentResponseDto orderResponseDto = mapper.map(shipment, ShipmentShipmentResponseDto.class);
         log.info("request sent ::::::::::::::::::::::::::::::::: " + request.getShipmentItemDtoList());
         responseDtos = shipmentItemService.createShipmentItems(request.getShipmentItemDtoList());
         List<ShipmentItemResponseDto> finalResponseDtos = responseDtos;
