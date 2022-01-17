@@ -81,13 +81,13 @@ public class ShipmentItemService {
                 throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " shipment item already exist");
             }
             shipmentItem.setCreatedBy(userCurrent.getId());
-            shipmentItem.setStatus("Awaiting_shipment");
+            shipmentItem.setStatus("Awaiting_Shipment");
             SupplyRequest supplyRequest = supplyRequestRepository.findSupplyRequestById(request.getSupplierRequestId());
             if (supplyRequest == null) {
                 throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "supply request Id does not exist!");
             }
-            supplyRequest.setStatus("Awaiting_shipment");
+            supplyRequest.setStatus("Awaiting_Shipment");
             supplyRequestRepository.save(supplyRequest);
             shipmentItem.setIsActive(true);
             shipmentItem = repository.save(shipmentItem);

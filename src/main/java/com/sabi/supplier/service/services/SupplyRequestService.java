@@ -58,6 +58,7 @@ public class SupplyRequestService {
         }
         supplyRequest.setCreatedBy(userCurrent.getId());
         supplyRequest.setIsActive(false);
+        supplyRequest.setDeliveryStatus("Awaiting_Shipment");
         supplyRequest = supplyRequestRepository.save(supplyRequest);
         log.debug("Create new State - {}" + new Gson().toJson(supplyRequest));
         return mapper.map(supplyRequest, SupplyRequestResponse.class);

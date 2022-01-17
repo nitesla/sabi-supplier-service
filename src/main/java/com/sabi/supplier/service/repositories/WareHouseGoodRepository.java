@@ -15,6 +15,11 @@ public interface WareHouseGoodRepository extends JpaRepository<WareHouseGood, Lo
 
     List<WareHouseGood> findByIsActiveOrderByIdDesc(Boolean isActive);
 
+//    List<WareHouseGood> findByWarehouseIdOrderByIdDesc(Long warehouseId);
+
+    Integer countAllByWarehouseId(Long warehouseId);
+
+
     WareHouseGood findBySupplierGoodId(Long supplierGoodsId);
 
     @Query("SELECT c FROM WareHouseGood c inner join WareHouse pt on c.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +

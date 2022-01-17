@@ -156,4 +156,16 @@ public class WareHouseGoodService {
         return wareHouseGoods;
 
     }
+
+//    public List<WareHouseGood> getAllByWareHouseId(Long warehouseId){
+//        List<WareHouseGood> wareHouseGoods = repository.findByWarehouseIdOrderByIdDesc(warehouseId);
+//        wareHouseGoods.forEach(wareHouseGood -> {
+//            SupplierGood supplierGood = supplierGoodRepository.findSupplierGoodById(wareHouseGood.getSupplierGoodId());
+//            ProductVariant productVariant = productVariantRepository.findProductVariantById(supplierGood.getVariantId());
+//            wareHouseGood.setVariantId(productVariant.getId());
+//            wareHouseGood.setVariantName(productVariant.getName());
+//        });
+//        return wareHouseGoods;
+//
+//    }
 }

@@ -89,7 +89,8 @@ public class ShipmentService {
         }
         shipment.setCreatedBy(userCurrent.getId());
         shipment.setIsActive(true);
-        shipment.setDeliveryStatus("Pending");
+//        shipment.setDeliveryStatus("Pending");
+        shipment.setStatus("Awaiting_Shipment");
         shipment = shipmentRepository.save(shipment);
         log.debug("Create new shipment - {}"+ new Gson().toJson(shipment));
         ShipmentShipmentResponseDto orderResponseDto = mapper.map(shipment, ShipmentShipmentResponseDto.class);

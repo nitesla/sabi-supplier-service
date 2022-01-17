@@ -15,6 +15,6 @@ public interface WareHouseUserRepository extends JpaRepository<WareHouseUser, Lo
 
     List<WareHouseUser> findByIsActive(Boolean isActive);
 
-    Integer countByWareHouseId(Long wareHouseId);
+    Integer countAllByWareHouseId(Long wareHouseId);
 
 }
