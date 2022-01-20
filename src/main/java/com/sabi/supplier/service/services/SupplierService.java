@@ -373,10 +373,14 @@ public class SupplierService {
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
         supplierProperties.getContent().forEach(supplier ->{
-            LGA lga = lgaRepository.getOne(supplier.getLgaId());
-            State state = stateRepository.getOne(supplier.getStateId());
-            supplier.setLga(lga.getName());
-            supplier.setState(state.getName());
+            if (supplier.getLgaId() != null){
+                LGA lga = lgaRepository.getOne(supplier.getLgaId());
+                supplier.setLga(lga.getName());
+            }
+            if (supplier.getStateId() != null) {
+                State state = stateRepository.getOne(supplier.getStateId());
+                supplier.setState(state.getName());
+            }
         });
         return supplierProperties;
 
