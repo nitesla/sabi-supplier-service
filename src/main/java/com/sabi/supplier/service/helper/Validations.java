@@ -501,6 +501,9 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Enter the correct Shipment Status");
         if (shipmentDto.getTotalAmount() == null || shipmentDto.getStatus().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+        if (shipmentDto.getFeedStatus() == null || shipmentDto.getFeedStatus().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Feed status can not be empty");
+        if (!("Pending".equalsIgnoreCase(shipmentDto.getFeedStatus()) || "Sent".equalsIgnoreCase(shipmentDto.getFeedStatus()) ||"Failed".equalsIgnoreCase(shipmentDto.getFeedStatus())));
     }
 
     public void validateStock(StockDto request) {
@@ -582,6 +585,9 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "total amount not be empty");
         if (request.getVehicle() == null || request.getVehicle().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "vehicle can not be empty");
+        if (request.getFeedStatus() == null || request.getFeedStatus().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
+        if (!("Pending".equalsIgnoreCase(request.getFeedStatus()) || "Sent".equalsIgnoreCase(request.getFeedStatus()) ||"Failed".equalsIgnoreCase(request.getFeedStatus())));
 //        if (request.getStatus() == null || request.getStatus().isEmpty())
 //            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
 //        if (request.getTotalAmount() == null || request.getStatus().isEmpty())

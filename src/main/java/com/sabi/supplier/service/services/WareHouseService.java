@@ -152,6 +152,13 @@ public class WareHouseService {
         if(wareHouses == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
+        wareHouses.forEach(wareHouse ->{
+            State stateExist = stateRepository.getOne(wareHouse.getStateId());
+            wareHouse.setStateName(stateExist.getName());
+            LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
+            wareHouse.setLgaName(lga.getName());
+            wareHouse.setWareHouseUserCount(getWareHouseUsers(wareHouse.getId()));
+        });
         return wareHouses;
 
     }
