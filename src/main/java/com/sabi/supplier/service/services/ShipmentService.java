@@ -189,7 +189,7 @@ public class ShipmentService {
 
         shipments.forEach(pendingShipment->{
             ShipmentTripRequest shipmentTripRequest = ShipmentTripRequest.builder()
-                    .assestId(Long.valueOf(pendingShipment.getAssestId()))
+//                    .assestId(Long.valueOf(pendingShipment.getAssestId()))
                     .deliveryDate(pendingShipment.getDeliveryDate())
                     .endTime(pendingShipment.getEndTime())
                     .id(pendingShipment.getId())
