@@ -31,4 +31,8 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
                                       @Param("vehicle") String vehicle,
                                       @Param("status") String status,
                                       Pageable pageable);
+
+
+
+    List<Shipment> findByFeedStatus (String feedStatus);
 }

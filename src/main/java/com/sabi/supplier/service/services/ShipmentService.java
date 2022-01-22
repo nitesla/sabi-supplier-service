@@ -13,6 +13,7 @@ import com.sabi.supplier.service.repositories.ShipmentRepository;
 import com.sabi.supplier.service.repositories.WareHouseRepository;
 import com.sabi.suppliers.core.dto.request.ShipmentDto;
 import com.sabi.suppliers.core.dto.request.ShipmentShipmentItemDto;
+import com.sabi.suppliers.core.dto.request.ShipmentTripRequest;
 import com.sabi.suppliers.core.dto.response.ShipmentItemResponseDto;
 import com.sabi.suppliers.core.dto.response.ShipmentResponseDto;
 import com.sabi.suppliers.core.dto.response.ShipmentShipmentResponseDto;
@@ -36,6 +37,8 @@ public class ShipmentService {
     private ShipmentRepository shipmentRepository;
     @Autowired
     private ShipmentItemService shipmentItemService;
+    @Autowired
+    private PartnerSignUpService partnerSignUpService;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
@@ -174,6 +177,33 @@ public class ShipmentService {
         List<Shipment> shipments = shipmentRepository.findByIsActiveOrderByIdDesc(isActive);
         return shipments;
 
+    }
+
+
+    public void shipmentTripRequests(){
+        List<Shipment> shipments = shipmentRepository.findByFeedStatus("pending");
+
+        if(shipments ==null) {
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No pending shipment found!");
+        }
+
+        shipments.forEach(pendingShipment->{
+            ShipmentTripRequest shipmentTripRequest = ShipmentTripRequest.builder()
+                    .assestId(Long.valueOf(pendingShipment.getAssestId()))
+                    .deliveryDate(pendingShipment.getDeliveryDate())
+                    .endTime(pendingShipment.getEndTime())
+                    .id(pendingShipment.getId())
+                    .logisticPartnerId(Long.valueOf(pendingShipment.getLogisticPartnerId()))
+                    .phoneNumber(pendingShipment.getPhoneNumber())
+                    .startTime(pendingShipment.getStartTime())
+                    .status(pendingShipment.getStatus())
+                    .totalAmount(pendingShipment.getTotalAmount())
+                    .warehouseId(pendingShipment.getWarehouseId())
+                    .build();
+            log.info(":::::::  shipment request ::::::: " + shipmentTripRequest);
+            partnerSignUpService.shipmentTripRequest(shipmentTripRequest);
+
+        });
     }
 
 }
