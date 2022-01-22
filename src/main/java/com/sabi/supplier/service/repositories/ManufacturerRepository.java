@@ -16,7 +16,7 @@ public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long
     Manufacturer findByName(String name);
     List<Manufacturer> findByIsActiveOrderByIdDesc(Boolean isActive);
 
-    @Query("SELECT c FROM Manufacturer c WHERE ((:name IS NULL) OR (:name IS NOT NULL AND c.name = :name)) order by c.id desc ")
+    @Query("SELECT c FROM Manufacturer c WHERE ((:name IS NULL) OR (:name IS NOT NULL AND c.name like %:name%)) order by c.id desc ")
 //            " AND ((:code IS NULL) OR (:code IS NOT NULL AND c.code = :code))")
     Page<Manufacturer> findManufacturers(@Param("name") String name,
                                     Pageable pageable);
