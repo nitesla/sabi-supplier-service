@@ -25,6 +25,6 @@ public interface LGARepository extends JpaRepository<LGA, Long> {
 
        List<LGA> findByIsActiveOrderByIdDesc(Boolean isActive);
 
-       @Query("SELECT l FROM LGA l WHERE ((:name IS NULL) OR (:name IS NOT NULL AND l.name = :name)) order by l.id desc ")
+       @Query("SELECT l FROM LGA l WHERE ((:name IS NULL) OR (:name IS NOT NULL AND l.name like %:name%)) order by l.id desc ")
        Page<LGA> findLgas(@Param("name") String name, Pageable pageable);
 }

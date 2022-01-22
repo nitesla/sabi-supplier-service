@@ -373,10 +373,14 @@ public class SupplierService {
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
         supplierProperties.getContent().forEach(supplier ->{
-            LGA lga = lgaRepository.getOne(supplier.getLgaId());
-            State state = stateRepository.getOne(supplier.getStateId());
-            supplier.setLga(lga.getName());
-            supplier.setState(state.getName());
+            if (supplier.getLgaId() != null){
+                LGA lga = lgaRepository.getOne(supplier.getLgaId());
+                supplier.setLga(lga.getName());
+            }
+            if (supplier.getStateId() != null) {
+                State state = stateRepository.getOne(supplier.getStateId());
+                supplier.setState(state.getName());
+            }
         });
         return supplierProperties;
 
@@ -387,10 +391,14 @@ public class SupplierService {
         List<Supplier> supplierProperties = supplierRepository.findByIsActiveOrderByIdDesc(isActive);
         for (Supplier sup : supplierProperties
                 ) {
-            LGA lga = lgaRepository.getOne(sup.getLgaId());
-            State state = stateRepository.getOne(sup.getStateId());
-            sup.setLga(lga.getName());
-            sup.setState(state.getName());
+            if (sup.getLgaId() != null) {
+                LGA lga = lgaRepository.getOne(sup.getLgaId());
+                sup.setLga(lga.getName());
+            }
+            if (sup.getStateId() != null) {
+                State state = stateRepository.getOne(sup.getStateId());
+                sup.setState(state.getName());
+            }
 
         }
         return supplierProperties;
