@@ -15,6 +15,7 @@ import java.util.List;
  * This interface is responsible for Supplier crud operations
  */
 
+@SuppressWarnings("ALL")
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
 
@@ -25,7 +26,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     List<Supplier> findByIsActiveOrderByIdDesc(Boolean isActive);
 
 
-    @Query("SELECT s FROM Supplier s WHERE ((:name IS NULL) OR (:name IS NOT NULL AND s.name = :name)) order by s.id DESC ")
+    @Query("SELECT s FROM Supplier s WHERE ((:name IS NULL) OR (:name IS NOT NULL AND s.name like %:name%)) order by s.id DESC ")
     Page<Supplier> findALLSupplier(@Param("name") String name, Pageable pageable);
 
 

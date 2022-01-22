@@ -6,8 +6,10 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.supplier.service.repositories.SupplierUserRepository;
 import com.sabi.suppliers.core.dto.request.CompleteSignUpDto;
+import com.sabi.suppliers.core.dto.request.ShipmentTripRequest;
 import com.sabi.suppliers.core.dto.response.ExternalDetailsResponse;
 import com.sabi.suppliers.core.dto.response.PartnerSignUpResponse;
+import com.sabi.suppliers.core.dto.response.ShipmentTripresponse;
 import com.sabi.suppliers.core.models.SupplierUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class PartnerSignUpService {
     @Value("${partner.url}")
     private String partnerSignUp;
 
+    @Value("${shipment.trip.url}")
+    private String shipmentTrip;
+
     @Autowired
     private SupplierUserRepository supplierUserRepository;
 
@@ -44,4 +49,14 @@ public class PartnerSignUpService {
         ExternalDetailsResponse response = api.get(partnerSignUp+"details/"+ supplierUser.getSupplierId(), ExternalDetailsResponse.class,map);
         return response;
     }
+
+
+
+    public ShipmentTripresponse shipmentTripRequest (ShipmentTripRequest request)   {
+        Map map=new HashMap();
+        ShipmentTripresponse response = api.post(shipmentTrip ,request, ShipmentTripresponse.class,map);
+        return response;
+    }
+
+
 }

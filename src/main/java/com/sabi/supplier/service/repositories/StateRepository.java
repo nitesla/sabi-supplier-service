@@ -14,7 +14,7 @@ import java.util.List;
  *
  * This interface is responsible for State crud operations
  */
-
+@SuppressWarnings("ALL")
 @Repository
 public interface StateRepository extends JpaRepository<State, Long> {
 
@@ -27,7 +27,7 @@ public interface StateRepository extends JpaRepository<State, Long> {
 
     List<State> findByIsActiveOrderByIdDesc(Boolean isActive);
 
-    @Query("SELECT s FROM State s WHERE ((:name IS NULL) OR (:name IS NOT NULL AND s.name = :name)) order by s.id desc ")
+    @Query("SELECT s FROM State s WHERE ((:name IS NULL) OR (:name IS NOT NULL AND s.name like %:name%)) order by s.id desc ")
     Page<State> findStates(@Param("name") String name, Pageable pageable);
 
 }
