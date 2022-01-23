@@ -164,7 +164,7 @@ public class SupplierUserService {
 
 
     public SupplierActivationResponse supplierPasswordActivation(ChangePasswordDto request) {
-
+        validations.validateSupplierPasswordActivation(request);
         User user = userRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested user id does not exist!"));
