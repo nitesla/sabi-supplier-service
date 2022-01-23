@@ -25,7 +25,7 @@ public interface SupplierCategoryRepository extends JpaRepository<SupplierCatego
 
     List<SupplierCategory> findByIsActiveOrderByIdDesc(Boolean isActive);
 
-    @Query("SELECT c FROM SupplierCategory c WHERE ((:name IS NULL) OR (:name IS NOT NULL AND c.name = :name))" +
+    @Query("SELECT c FROM SupplierCategory c WHERE ((:name IS NULL) OR (:name IS NOT NULL AND c.name like %:name%))" +
             " AND ((:creditPeriod IS NULL) OR (:creditPeriod IS NOT NULL AND c.creditPeriod = :creditPeriod))" +
             " AND ((:isActive IS NULL) OR (:isActive IS NOT NULL AND c.isActive = :isActive)) order by c.id desc "
     )
