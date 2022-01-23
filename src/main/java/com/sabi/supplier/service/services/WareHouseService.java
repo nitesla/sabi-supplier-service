@@ -158,6 +158,7 @@ public class WareHouseService {
             LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
             wareHouse.setLgaName(lga.getName());
             wareHouse.setWareHouseUserCount(getWareHouseUsers(wareHouse.getId()));
+            wareHouse.setProductCount(getProductCount(wareHouse.getId()));
         });
         return wareHouses;
 
@@ -191,6 +192,10 @@ public class WareHouseService {
         List<WareHouse> wareHouses = wareHouseRepository.findByIsActive(isActive, supplierId);
 //        for (WareHouse request : wareHouses) {
             wareHouses.forEach(wareHouse -> {
+                State stateExist = stateRepository.getOne(wareHouse.getStateId());
+                wareHouse.setStateName(stateExist.getName());
+                LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
+                wareHouse.setLgaName(lga.getName());
                 wareHouse.setWareHouseUserCount(getWareHouseUsers(wareHouse.getId()));
                 wareHouse.setProductCount(getProductCount(wareHouse.getId()));
 
