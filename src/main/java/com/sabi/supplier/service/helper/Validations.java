@@ -1,6 +1,7 @@
 package com.sabi.supplier.service.helper;
 
 
+import com.sabi.framework.dto.requestDto.ChangePasswordDto;
 import com.sabi.framework.exceptions.BadRequestException;
 import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
@@ -402,6 +403,11 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for phone number ");
         if (request.getName() == null || request.getName().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+
+        if (request.getPassword() == null || request.getPassword().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "password cannot be empty");
+        if (request.getPassword().length() < 6 || request.getPassword().length() > 20)// NAME LENGTH*********
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid password length");
     }
 
 
@@ -454,6 +460,16 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid Email Address");
         if(request.getActivationUrl()== null || request.getActivationUrl().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Activation url cannot be empty");
+
+    }
+
+
+
+    public void validateSupplierPasswordActivation (ChangePasswordDto request){
+        if (request.getPassword() == null || request.getPassword().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Password cannot be empty");
+        if (request.getPassword().length() < 6 || request.getPassword().length() > 20)// NAME LENGTH*********
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid password length");
 
     }
 
