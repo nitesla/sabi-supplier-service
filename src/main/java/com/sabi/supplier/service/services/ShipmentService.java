@@ -98,6 +98,9 @@ public class ShipmentService {
         log.debug("Create new shipment - {}"+ new Gson().toJson(shipment));
         ShipmentShipmentResponseDto orderResponseDto = mapper.map(shipment, ShipmentShipmentResponseDto.class);
         log.info("request sent ::::::::::::::::::::::::::::::::: " + request.getShipmentItemDtoList());
+        request.getShipmentItemDtoList().forEach(orderItemRequest ->{
+            orderItemRequest.setId(orderResponseDto.getId());
+        });
         responseDtos = shipmentItemService.createShipmentItems(request.getShipmentItemDtoList());
         List<ShipmentItemResponseDto> finalResponseDtos = responseDtos;
         responseDtos.forEach(orderItemResponseDto -> {

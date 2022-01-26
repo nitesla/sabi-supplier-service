@@ -460,8 +460,10 @@ public class Validations {
     public void validateShipmentItem(ShipmentItemDto request) {
         supplyRequestRepository.findById(request.getSupplierRequestId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid supplier Request ID!"));
-        shipmentRepository.findById(request.getShipmentId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                " Enter a valid shipment ID!"));
+        if (request.getShipmentId() != null) {
+            shipmentRepository.findById(request.getShipmentId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    " Enter a valid shipment ID!"));
+        }
         if (request.getAcceptedQuality() < 1)
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, " accepted quantity can not be empty");
         if (request.getDeliveryDate() == null)
