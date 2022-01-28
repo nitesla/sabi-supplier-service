@@ -8,12 +8,14 @@ import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.PreviousPasswords;
 import com.sabi.framework.models.Role;
 import com.sabi.framework.models.User;
+import com.sabi.framework.models.UserRole;
 import com.sabi.framework.notification.requestDto.NotificationRequestDto;
 import com.sabi.framework.notification.requestDto.RecipientRequest;
 import com.sabi.framework.notification.requestDto.WhatsAppRequest;
 import com.sabi.framework.repositories.PreviousPasswordRepository;
 import com.sabi.framework.repositories.RoleRepository;
 import com.sabi.framework.repositories.UserRepository;
+import com.sabi.framework.repositories.UserRoleRepository;
 import com.sabi.framework.service.AuditTrailService;
 import com.sabi.framework.service.NotificationService;
 import com.sabi.framework.service.TokenService;
@@ -58,11 +60,13 @@ public class SupplierUserService {
     private final Validations validations;
     private final AuditTrailService auditTrailService;
     private final WhatsAppService whatsAppService;
+    private final UserRoleRepository userRoleRepository;
 
     public SupplierUserService(SupplierUserRepository supplierUserRepository,UserRepository userRepository,
                                PreviousPasswordRepository previousPasswordRepository,RoleRepository roleRepository,
                                NotificationService notificationService,ModelMapper mapper, ObjectMapper objectMapper,
-                               Validations validations,AuditTrailService auditTrailService,WhatsAppService whatsAppService) {
+                               Validations validations,AuditTrailService auditTrailService,WhatsAppService whatsAppService,
+                               UserRoleRepository userRoleRepository) {
         this.supplierUserRepository = supplierUserRepository;
         this.userRepository = userRepository;
         this.previousPasswordRepository = previousPasswordRepository;
@@ -73,6 +77,7 @@ public class SupplierUserService {
         this.validations = validations;
         this.auditTrailService = auditTrailService;
         this.whatsAppService = whatsAppService;
+        this.userRoleRepository = userRoleRepository;
     }
 
 
@@ -96,9 +101,16 @@ public class SupplierUserService {
         user.setUserCategory(Constants.OTHER_USER);
         user.setClientId(supplierUser.getSupplierId());
         user.setIsActive(false);
-        user.setLoginAttempts(0l);
+        user.setLoginAttempts(0);
         user = userRepository.save(user);
         log.debug("Create new supplier user - {}"+ new Gson().toJson(user));
+
+        UserRole userRole = UserRole.builder()
+                .userId(user.getId())
+                .roleId(user.getRoleId())
+                .createdDate(LocalDateTime.now())
+                .build();
+        userRoleRepository.save(userRole);
 
         PreviousPasswords previousPasswords = PreviousPasswords.builder()
                 .userId(user.getId())
