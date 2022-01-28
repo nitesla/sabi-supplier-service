@@ -17,6 +17,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
     List<Inventory> findByIsActiveOrderByIdDesc(Boolean isActive);
 
+    List<Inventory> findInventoriesByWarehouseId(Long warehouseId);
+
     @Query("SELECT c FROM Inventory c WHERE ((:supplierGoodId IS NULL) OR (:supplierGoodId IS NOT NULL AND c.supplierGoodId = :supplierGoodId))" +
             " AND ((:warehouseId IS NULL) OR (:warehouseId IS NOT NULL AND c.warehouseId = :warehouseId)) order by c.id desc " )
     Page<Inventory> findInventories(@Param("supplierGoodId") Long supplierRequestId,

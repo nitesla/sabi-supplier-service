@@ -146,6 +146,10 @@ public class InventoryService {
     public List<Inventory> getAll(boolean isActive){
         List<Inventory> countries = repository.findByIsActiveOrderByIdDesc(isActive);
         return countries;
+    }
 
+    public List<Inventory> getInventoryiesByWarehouseId(Long warehouseId){
+        List<Inventory> countries = repository.findInventoriesByWarehouseId(warehouseId);
+        return countries;
     }
 }
