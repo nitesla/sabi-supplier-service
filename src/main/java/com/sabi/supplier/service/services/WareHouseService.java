@@ -63,8 +63,10 @@ public class WareHouseService {
             int savedProduct = productRepository.countAllById(request.getProductId());
             wareHouse.setProductCount(savedProduct);
         }
+        Integer savedWarehouse = wareHouseRepository.countAllByUserId(request.getUserId());
         State savedState = stateRepository.findStateById(request.getStateId());
         LGA savedLga = lgaRepository.findLGAById(request.getLgaId());
+        wareHouse.setWareHouseUserCount(savedWarehouse);
         wareHouse.setStateName(savedState.getName());
         wareHouse.setLgaName(savedLga.getName());
         wareHouse.setCreatedBy(userCurrent.getId());
