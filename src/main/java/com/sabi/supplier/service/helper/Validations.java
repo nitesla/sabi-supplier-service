@@ -328,8 +328,10 @@ public class Validations {
     }
 
     public void validateWareHouse(WareHouseRequest request) {
-        productRepository.findById(request.getProductId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                " Enter a valid Product ID!"));
+        if (request.getProductId() != null) {
+            productRepository.findById(request.getProductId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    " Enter a valid Product ID!"));
+        }
         supplierRepository.findById(request.getSupplierId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid Supplier ID!"));
         //todo confirm warehouse userId validation

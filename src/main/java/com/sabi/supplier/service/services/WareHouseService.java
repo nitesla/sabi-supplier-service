@@ -14,10 +14,7 @@ import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.*;
 import com.sabi.suppliers.core.dto.request.WareHouseRequest;
 import com.sabi.suppliers.core.dto.response.WareHouseResponse;
-import com.sabi.suppliers.core.models.LGA;
-import com.sabi.suppliers.core.models.State;
-import com.sabi.suppliers.core.models.SupplyRequest;
-import com.sabi.suppliers.core.models.WareHouse;
+import com.sabi.suppliers.core.models.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +32,8 @@ public class WareHouseService {
 
     @Autowired
     WareHouseGoodRepository wareHouseGoodRepository;
+    @Autowired
+    ProductRepository productRepository;
     private final WareHouseRepository wareHouseRepository;
     private final Validations validations;
     private final ModelMapper mapper;
@@ -60,6 +59,14 @@ public class WareHouseService {
         if (wareHouseExists) {
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " wareHouse already exist");
         }
+        if (request.getProductId() != null) {
+            int savedProduct = productRepository.countAllById(request.getProductId());
+            wareHouse.setProductCount(savedProduct);
+        }
+        State savedState = stateRepository.findStateById(request.getStateId());
+        LGA savedLga = lgaRepository.findLGAById(request.getLgaId());
+        wareHouse.setStateName(savedState.getName());
+        wareHouse.setLgaName(savedLga.getName());
         wareHouse.setCreatedBy(userCurrent.getId());
         wareHouse.setIsActive(false);
         wareHouse = wareHouseRepository.save(wareHouse);
@@ -74,6 +81,14 @@ public class WareHouseService {
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested wareHouse Id does not exist!"));
         mapper.map(request, wareHouse);
+        if (request.getProductId() != null) {
+            int savedProduct = productRepository.countAllById(request.getProductId());
+            wareHouse.setProductCount(savedProduct);
+        }
+        State savedState = stateRepository.findStateById(request.getStateId());
+        LGA savedLga = lgaRepository.findLGAById(request.getLgaId());
+        wareHouse.setStateName(savedState.getName());
+        wareHouse.setLgaName(savedLga.getName());
         wareHouse.setUpdatedBy(userCurrent.getId());
         wareHouseRepository.save(wareHouse);
         log.debug("wareHouse record updated - {}" + new Gson().toJson(wareHouse));
