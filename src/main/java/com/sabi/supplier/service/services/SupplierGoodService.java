@@ -78,6 +78,7 @@ public class SupplierGoodService {
                         "Requested Supplier goods Id does not exist!"));
         ProductVariant productVariant = variantRepository.getOne(supplier.getVariantId());
         supplier.setVariantName(productVariant.getName());
+        supplier.setVariantPicture(productVariant.getPicture());
         return mapper.map(supplier,SupplierGoodResponseDto.class);
     }
 
@@ -89,6 +90,7 @@ public class SupplierGoodService {
         supplierGoods.forEach(supplierGood -> {
             ProductVariant productVariant = variantRepository.getOne(supplierGood.getVariantId());
             supplierGood.setVariantName(productVariant.getName());
+            supplierGood.setVariantPicture(productVariant.getPicture());
         });
         return supplierGoods;
     }
