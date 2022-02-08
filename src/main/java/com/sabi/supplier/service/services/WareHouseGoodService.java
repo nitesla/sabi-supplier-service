@@ -53,7 +53,7 @@ public class WareHouseGoodService {
         validations.validateWarehouseGood(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         WareHouseGood warehouseGood = mapper.map(request,WareHouseGood.class);
-        WareHouseGood wareHouseGoodsExist = repository.findBySupplierGoodId(request.getSupplierGoodId());
+        WareHouseGood wareHouseGoodsExist = repository.findBySupplierGoodIdAndWarehouseId(request.getSupplierGoodId(), request.getWarehouseId());
         if (wareHouseGoodsExist != null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                     " Warehouse goods already exist");

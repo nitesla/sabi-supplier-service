@@ -20,7 +20,7 @@ public interface WareHouseGoodRepository extends JpaRepository<WareHouseGood, Lo
     Integer countAllByWarehouseId(Long warehouseId);
 
 
-    WareHouseGood findBySupplierGoodId(Long supplierGoodsId);
+    WareHouseGood findBySupplierGoodIdAndWarehouseId(Long supplierGoodsId,Long warehouseId);
 
     @Query("SELECT c FROM WareHouseGood c inner join WareHouse pt on c.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
             "AND((:warehouseId IS NULL) OR (:warehouseId IS NOT NULL AND c.warehouseId = :warehouseId))" +
