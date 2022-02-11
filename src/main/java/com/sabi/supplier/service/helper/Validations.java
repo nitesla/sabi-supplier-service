@@ -554,9 +554,9 @@ public class Validations {
     if (request.getQtyAvaliable() < 1){
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity avaliable  can not be empty");
     }
-        if (request.getQtySold() < 1){
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity sold can not be empty");
-        }
+//        if (request.getQtySold() < 1){
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity sold can not be empty");
+//        }
         if (request.getPrice() < 1){
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "price can not be empty");
         }
