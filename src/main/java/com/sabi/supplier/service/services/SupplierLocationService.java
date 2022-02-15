@@ -9,13 +9,16 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.StateRepository;
 import com.sabi.supplier.service.repositories.SupplierLocationRepository;
 import com.sabi.suppliers.core.dto.request.SupplierLocationRequestDto;
 import com.sabi.suppliers.core.dto.response.SupplierLocationResponseDto;
+import com.sabi.suppliers.core.models.State;
 import com.sabi.suppliers.core.models.SupplierBank;
 import com.sabi.suppliers.core.models.SupplierLocation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,9 @@ import java.util.List;
 public class SupplierLocationService {
 
 
+
+    @Autowired
+    private StateRepository stateRepository;
 
     private SupplierLocationRepository supplierLocationRepository;
     private final ModelMapper mapper;
@@ -99,15 +105,22 @@ public class SupplierLocationService {
         SupplierLocation supplierLocation = supplierLocationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested supplier location Id does not exist!"));
+        State savedState = stateRepository.findStateById(supplierLocation.getStateId());
+        supplierLocation.setStateName(savedState.getName());
         return mapper.map(supplierLocation,SupplierLocationResponseDto.class);
     }
 
     public Page<SupplierLocation> findAll(Long supplierId, Long stateId,PageRequest pageRequest) {
-        Page<SupplierLocation> supplierLocation = supplierLocationRepository.findSupplierLocation(supplierId, stateId, pageRequest);
-        if (supplierLocation == null) {
+        Page<SupplierLocation> supplierLocations = supplierLocationRepository.findSupplierLocation(supplierId, stateId, pageRequest);
+        if (supplierLocations == null) {
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
-        return supplierLocation;
+        supplierLocations.forEach(supplierLocation->{
+            State savedState = stateRepository.findStateById(supplierLocation.getStateId());
+            supplierLocation.setStateName(savedState.getName());
+        });
+
+        return supplierLocations;
     }
 
 
