@@ -7,11 +7,9 @@ import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
-import com.sabi.supplier.service.helper.GenericSpecification;
-import com.sabi.supplier.service.helper.SearchCriteria;
-import com.sabi.supplier.service.helper.SearchOperation;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.*;
+import com.sabi.suppliers.core.dto.request.DefaultWarehouseRequest;
 import com.sabi.suppliers.core.dto.request.WareHouseRequest;
 import com.sabi.suppliers.core.dto.response.WareHouseResponse;
 import com.sabi.suppliers.core.models.*;
@@ -22,8 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -71,6 +67,7 @@ public class WareHouseService {
         wareHouse.setLgaName(savedLga.getName());
         wareHouse.setCreatedBy(userCurrent.getId());
         wareHouse.setIsActive(false);
+        wareHouse.setIsDefault(false);
         wareHouse = wareHouseRepository.save(wareHouse);
         log.debug("Create new WareHouse - {}" + new Gson().toJson(wareHouse));
         return mapper.map(wareHouse, WareHouseResponse.class);
@@ -95,6 +92,20 @@ public class WareHouseService {
         wareHouseRepository.save(wareHouse);
         log.debug("wareHouse record updated - {}" + new Gson().toJson(wareHouse));
         return mapper.map(wareHouse, WareHouseResponse.class);
+    }
+
+    public WareHouse setWareHouseAsDefault(DefaultWarehouseRequest request) {
+        User userCurrent = TokenService.getCurrentUserFromSecurityContext();
+        WareHouse wareHouses = wareHouseRepository.findAllBySupplierIdAndIsDefault(request.getSupplierId(),true);
+        wareHouses.setIsDefault(false);
+        WareHouse wareHouse = wareHouseRepository.findById(request.getId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested wareHouse Id does not exist!"));
+
+        wareHouse.setIsDefault(true);
+        wareHouseRepository.save(wareHouse);
+//        return mapper.map(wareHouse, WareHouseResponse.class);
+        return wareHouse;
     }
 
 //    public Page<WareHouse> findWareHouses(Long productId, Long supplierId, Long stateId, String address,

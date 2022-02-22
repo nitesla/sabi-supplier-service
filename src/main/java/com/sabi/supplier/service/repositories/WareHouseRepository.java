@@ -53,6 +53,8 @@ public interface WareHouseRepository extends JpaRepository<WareHouse, Long>, Jpa
 
     WareHouse findWareHouseById(Long id);
 
+    WareHouse findAllBySupplierIdAndIsDefault(Long SupplierId,Boolean isDefault);
+
     Integer countAllByUserId(Long userId);
 
     Boolean existsByAddress(String address);
