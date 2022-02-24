@@ -82,8 +82,8 @@ public class SupplierGoodService {
         return mapper.map(supplier,SupplierGoodResponseDto.class);
     }
 
-    public Page<SupplierGood> findAll(Long supplierId, Long variantId, PageRequest pageRequest ){
-        Page<SupplierGood> supplierGoods = supplierGoodRepository.findSupplierGoods(supplierId,variantId,pageRequest);
+    public Page<SupplierGood> findAll(Long supplierId, Long variantId,String variantName, PageRequest pageRequest ){
+        Page<SupplierGood> supplierGoods = supplierGoodRepository.findSupplierGoods(supplierId,variantId,variantName,pageRequest);
         if(supplierGoods == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }

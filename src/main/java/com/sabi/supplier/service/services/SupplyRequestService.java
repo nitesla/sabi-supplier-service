@@ -8,11 +8,13 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.ProductRepository;
 import com.sabi.supplier.service.repositories.SupplyRequestRepository;
 import com.sabi.supplier.service.repositories.SupplyRequestResponseRepository;
 import com.sabi.suppliers.core.dto.request.SupplyRequestRequest;
 import com.sabi.suppliers.core.dto.request.SupplyRequestResponseRequest;
 import com.sabi.suppliers.core.dto.response.SupplyRequestResponse;
+import com.sabi.suppliers.core.models.Product;
 import com.sabi.suppliers.core.models.SupplyRequest;
 import com.sabi.suppliers.core.models.SupplyRequestResponseEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,9 @@ public class SupplyRequestService {
 
     @Autowired
     private SupplyRequestResponseService supplyRequestResponseService;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     public SupplyRequestService(SupplyRequestRepository supplyRequestRepository, Validations validations, ModelMapper mapper) {
         this.supplyRequestRepository = supplyRequestRepository;
@@ -139,6 +144,8 @@ public class SupplyRequestService {
         SupplyRequest supplyRequest = supplyRequestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supply Request Id does not exist!"));
+        Product savedProduct = productRepository.findProductById(supplyRequest.getProductId());
+        supplyRequest.setProductWeight(savedProduct.get);
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 

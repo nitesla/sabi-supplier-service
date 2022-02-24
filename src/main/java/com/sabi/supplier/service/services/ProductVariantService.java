@@ -9,9 +9,11 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.ProductRepository;
 import com.sabi.supplier.service.repositories.ProductVariantRepository;
 import com.sabi.suppliers.core.dto.request.ProductVariantDto;
 import com.sabi.suppliers.core.dto.response.ProductVariantResponseDto;
+import com.sabi.suppliers.core.models.Product;
 import com.sabi.suppliers.core.models.ProductVariant;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -37,6 +39,9 @@ public class ProductVariantService {
         this.objectMapper = objectMapper;
         this.validations = validations;
     }
+
+    @Autowired
+   private ProductRepository productRepository;
 
     public ProductVariantResponseDto createProductVariant(ProductVariantDto request) {
         validations.validateProductVariant(request);
