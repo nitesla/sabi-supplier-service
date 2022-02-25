@@ -3,7 +3,7 @@ package com.sabi.supplier.service.services;
 
 import com.sabi.framework.helpers.API;
 import com.sabi.suppliers.core.dto.request.AssetTypeRequest;
-import com.sabi.suppliers.core.dto.response.AssetTypeResponse;
+import com.sabi.suppliers.core.models.response.AssetTypeResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

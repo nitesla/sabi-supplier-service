@@ -2,6 +2,7 @@ package com.sabi.supplier.service.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.sabi.agent.core.dto.responseDto.LGAResponseDto;
 import com.sabi.framework.dto.requestDto.EnableDisEnableDto;
 import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
@@ -12,7 +13,6 @@ import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.LGARepository;
 import com.sabi.supplier.service.repositories.StateRepository;
 import com.sabi.suppliers.core.dto.request.LGADto;
-import com.sabi.suppliers.core.dto.response.LGAResponseDto;
 import com.sabi.suppliers.core.models.LGA;
 import com.sabi.suppliers.core.models.State;
 import lombok.extern.slf4j.Slf4j;

@@ -13,10 +13,10 @@ import com.sabi.supplier.service.repositories.SupplyRequestRepository;
 import com.sabi.supplier.service.repositories.SupplyRequestResponseRepository;
 import com.sabi.suppliers.core.dto.request.SupplyRequestRequest;
 import com.sabi.suppliers.core.dto.request.SupplyRequestResponseRequest;
-import com.sabi.suppliers.core.dto.response.SupplyRequestResponse;
 import com.sabi.suppliers.core.models.Product;
 import com.sabi.suppliers.core.models.SupplyRequest;
 import com.sabi.suppliers.core.models.SupplyRequestResponseEntity;
+import com.sabi.suppliers.core.models.response.SupplyRequestResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +61,15 @@ public class SupplyRequestService {
         if (supplyRequestExists) {
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " SupplyRequest already exist");
         }
+        Product savedProduct = productRepository.findProductById(request.getProductId());
+        if (savedProduct == null){
+           throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    "Requested warehouse good Id does not exist!");
+        }
         supplyRequest.setCreatedBy(userCurrent.getId());
         supplyRequest.setIsActive(false);
         supplyRequest.setDeliveryStatus("Awaiting_Shipment");
+        supplyRequest.setProductWeight(savedProduct.getWeight());
         supplyRequest = supplyRequestRepository.save(supplyRequest);
         log.debug("Create new State - {}" + new Gson().toJson(supplyRequest));
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
@@ -145,7 +151,7 @@ public class SupplyRequestService {
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supply Request Id does not exist!"));
         Product savedProduct = productRepository.findProductById(supplyRequest.getProductId());
-        supplyRequest.setProductWeight(savedProduct.get);
+        supplyRequest.setProductWeight(savedProduct.getWeight());
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 

@@ -14,8 +14,8 @@ import com.sabi.framework.utils.Utility;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ManufacturerRepository;
 import com.sabi.suppliers.core.dto.request.ManufacturerDto;
-import com.sabi.suppliers.core.dto.response.ManufacturerResponseDto;
 import com.sabi.suppliers.core.models.Manufacturer;
+import com.sabi.suppliers.core.models.response.ManufacturerResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -50,7 +50,7 @@ public class ManufacturerService {
      * <remarks>this method is responsible for creation of new product</remarks>
      */
 
-    public ManufacturerResponseDto createManufacturer(ManufacturerDto request,HttpServletRequest request1) {
+    public ManufacturerResponseDto createManufacturer(ManufacturerDto request, HttpServletRequest request1) {
         validations.validateManufacturer(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Manufacturer manufacturer = mapper.map(request,Manufacturer.class);

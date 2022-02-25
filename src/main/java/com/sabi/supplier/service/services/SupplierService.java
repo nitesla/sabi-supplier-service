@@ -30,11 +30,11 @@ import com.sabi.suppliers.core.dto.request.CompleteSignUpDto;
 import com.sabi.suppliers.core.dto.request.PartnerAssetTypeRequest;
 import com.sabi.suppliers.core.dto.request.SupplierRequestDto;
 import com.sabi.suppliers.core.dto.request.SupplierSignUpRequestDto;
-import com.sabi.suppliers.core.dto.response.CompleteSignUpResponse;
-import com.sabi.suppliers.core.dto.response.PartnerSignUpResponse;
-import com.sabi.suppliers.core.dto.response.SupplierResponseDto;
-import com.sabi.suppliers.core.dto.response.SupplierSignUpResponse;
 import com.sabi.suppliers.core.models.*;
+import com.sabi.suppliers.core.models.response.CompleteSignUpResponse;
+import com.sabi.suppliers.core.models.response.PartnerSignUpResponse;
+import com.sabi.suppliers.core.models.response.SupplierResponseDto;
+import com.sabi.suppliers.core.models.response.SupplierSignUpResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +107,7 @@ public class SupplierService {
 
 
 
-    public SupplierSignUpResponse supplierSignUp(SupplierSignUpRequestDto request,HttpServletRequest request1) {
+    public SupplierSignUpResponse supplierSignUp(SupplierSignUpRequestDto request, HttpServletRequest request1) {
         validations.validateSupplier(request);
         User user = mapper.map(request,User.class);
 
@@ -308,7 +308,7 @@ public class SupplierService {
      * </summary>
      * <remarks>this method is responsible for updating already existing Supplier</remarks>
      */
-    public SupplierResponseDto updateSupplier(SupplierRequestDto request,HttpServletRequest request1) {
+    public SupplierResponseDto updateSupplier(SupplierRequestDto request, HttpServletRequest request1) {
         validations.validateSupplier(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Supplier supplier = supplierRepository.findById(request.getId())

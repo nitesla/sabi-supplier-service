@@ -12,11 +12,11 @@ import com.sabi.supplier.service.repositories.ShipmentItemRepository;
 import com.sabi.supplier.service.repositories.ShipmentRepository;
 import com.sabi.supplier.service.repositories.SupplyRequestRepository;
 import com.sabi.suppliers.core.dto.request.ShipmentItemDto;
-import com.sabi.suppliers.core.dto.response.ShipmentItemInfoResponse;
-import com.sabi.suppliers.core.dto.response.ShipmentItemResponseDto;
 import com.sabi.suppliers.core.models.Shipment;
 import com.sabi.suppliers.core.models.ShipmentItem;
 import com.sabi.suppliers.core.models.SupplyRequest;
+import com.sabi.suppliers.core.models.response.ShipmentItemInfoResponse;
+import com.sabi.suppliers.core.models.response.ShipmentItemResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@ public class ShipmentItemService {
 
     }
 
-    public  List<ShipmentItemResponseDto> createShipmentItems(List<ShipmentItemDto> requests) {
+    public List<ShipmentItemResponseDto> createShipmentItems(List<ShipmentItemDto> requests) {
         List<ShipmentItemResponseDto> responseDtos = new ArrayList<>();
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         requests.forEach(request->{
@@ -131,6 +131,7 @@ public class ShipmentItemService {
     }
 
     public ShipmentItemInfoResponse findShipmentItemBySupplierRequestId(Long supplyRequestId){
+
 
         ShipmentItem shipmentItem  = repository.findShipmentItemBySupplierRequestId(supplyRequestId);
         if (shipmentItem == null){
