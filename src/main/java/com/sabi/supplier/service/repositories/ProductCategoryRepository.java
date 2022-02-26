@@ -16,6 +16,8 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
     ProductCategory findByName(String name);
     List<ProductCategory> findByIsActiveOrderByIdDesc(Boolean isActive);
 
+    ProductCategory findProductCategoryById(Long porductCategory);
+
     @Query("SELECT c FROM ProductCategory c WHERE ((:name IS NULL) OR (:name IS NOT NULL AND c.name like %:name%)) order by c.id desc " )
 //            " AND ((:code IS NULL) OR (:code IS NOT NULL AND c.code = :code))")
     Page<ProductCategory> findProductCategories(@Param("name") String name,

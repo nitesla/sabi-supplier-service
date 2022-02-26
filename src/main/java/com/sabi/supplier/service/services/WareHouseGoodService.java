@@ -12,10 +12,9 @@ import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ProductVariantRepository;
 import com.sabi.supplier.service.repositories.SupplierGoodRepository;
 import com.sabi.supplier.service.repositories.WareHouseGoodRepository;
+import com.sabi.suppliers.core.dto.request.ShipmentItemDto;
 import com.sabi.suppliers.core.dto.request.WareHouseGoodDto;
-import com.sabi.suppliers.core.models.ProductVariant;
-import com.sabi.suppliers.core.models.SupplierGood;
-import com.sabi.suppliers.core.models.WareHouseGood;
+import com.sabi.suppliers.core.models.*;
 import com.sabi.suppliers.core.models.response.WareHouseGoodResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -24,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -63,6 +63,25 @@ public class WareHouseGoodService {
         warehouseGood = repository.save(warehouseGood);
         log.debug("Create new warehouse goods - {}"+ new Gson().toJson(warehouseGood));
         return mapper.map(warehouseGood, WareHouseGoodResponseDto.class);
+    }
+
+    public List<WareHouseGoodResponseDto> createWarehouses(List<WareHouseGoodDto> requests) {
+        List<WareHouseGoodResponseDto> responseDtos = new ArrayList<>();
+        User userCurrent = TokenService.getCurrentUserFromSecurityContext();
+        requests.forEach(request->{
+            validations.validateWarehouseGood(request);
+            WareHouseGood warehouseGood = mapper.map(request,WareHouseGood.class);
+            WareHouseGood wareHouseGoodsExist = repository.findBySupplierGoodIdAndWarehouseId(request.getSupplierGoodId(), request.getWarehouseId());
+            if(wareHouseGoodsExist !=null){
+                throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " warehouse item already exist");
+            }
+            warehouseGood.setCreatedBy(userCurrent.getId());
+            warehouseGood.setIsActive(true);
+            warehouseGood = repository.save(warehouseGood);
+            log.debug("Create new asset picture - {}"+ new Gson().toJson(warehouseGood));
+            responseDtos.add(mapper.map(warehouseGood, WareHouseGoodResponseDto.class));
+        });
+        return responseDtos;
     }
 
 
@@ -112,8 +131,8 @@ public class WareHouseGoodService {
      * </summary>
      * <remarks>this method is responsible for getting all records in pagination</remarks>
      */
-    public Page<WareHouseGood> findAll(Long warehouseId, Long supplierGoodId,Long supplierId, PageRequest pageRequest ){
-        Page<WareHouseGood> warehouseGood = repository.findWarehouseGood(warehouseId,supplierGoodId,supplierId,pageRequest);
+    public Page<WareHouseGood> findAll(Long warehouseId, Long supplierGoodId,Long supplierId, Long productId, PageRequest pageRequest ){
+        Page<WareHouseGood> warehouseGood = repository.findWarehouseGood(warehouseId,supplierGoodId,supplierId,productId,pageRequest);
         if(warehouseGood == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }

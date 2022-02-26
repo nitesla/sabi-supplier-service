@@ -9,10 +9,12 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.ProductCategoryRepository;
 import com.sabi.supplier.service.repositories.ProductRepository;
 import com.sabi.supplier.service.repositories.ProductVariantRepository;
 import com.sabi.suppliers.core.dto.request.ProductVariantDto;
 import com.sabi.suppliers.core.models.Product;
+import com.sabi.suppliers.core.models.ProductCategory;
 import com.sabi.suppliers.core.models.ProductVariant;
 import com.sabi.suppliers.core.models.response.ProductVariantResponseDto;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,9 @@ public class ProductVariantService {
     @Autowired
    private ProductRepository productRepository;
 
+    @Autowired
+    private ProductCategoryRepository productCategoryRepository;
+
     public ProductVariantResponseDto createProductVariant(ProductVariantDto request) {
         validations.validateProductVariant(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
@@ -51,8 +56,18 @@ public class ProductVariantService {
         if(productVariantExist !=null){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " Supplier Category already exist");
         }
+        Product savedProduct = productRepository.findProductById(request.getProductId());
+        if (savedProduct == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, "Product of this variant not found");
+        }
+        ProductCategory savedProductCategory = productCategoryRepository.findProductCategoryById(savedProduct.getProductCategoryId());
+        if (savedProductCategory == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, "Product Category associated with this variant not found");
+        }
         productVariant.setCreatedBy(userCurrent.getId());
         productVariant.setIsActive(true);
+        productVariant.setProductName(savedProduct.getName());
+        productVariant.setProductCategory(savedProductCategory.getName());
         productVariant = productVariantRepository.save(productVariant);
         log.debug("Create new product variant - {}"+ new Gson().toJson(productVariant));
         return mapper.map(productVariant, ProductVariantResponseDto.class);

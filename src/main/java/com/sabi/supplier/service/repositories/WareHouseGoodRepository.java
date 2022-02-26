@@ -25,10 +25,12 @@ public interface WareHouseGoodRepository extends JpaRepository<WareHouseGood, Lo
     @Query("SELECT c FROM WareHouseGood c inner join WareHouse pt on c.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
             "AND((:warehouseId IS NULL) OR (:warehouseId IS NOT NULL AND c.warehouseId = :warehouseId))" +
             "AND((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
+            "AND((:productId IS NULL) OR (:productId IS NOT NULL AND pt.productId = :productId))" +
             " AND ((:supplierGoodId IS NULL) OR (:supplierGoodId IS NOT NULL AND c.supplierGoodId = :supplierGoodId)) order by c.id desc "
     )
     Page<WareHouseGood> findWarehouseGood(@Param("warehouseId") Long warehouseId,
                                           @Param("supplierGoodId") Long supplierGoodId,
                                           @Param("supplierId") Long supplierId,
+                                          @Param("productId") Long productId,
                                           Pageable pageable);
 }

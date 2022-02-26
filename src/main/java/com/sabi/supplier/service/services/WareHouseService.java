@@ -96,8 +96,19 @@ public class WareHouseService {
 
     public WareHouse setWareHouseAsDefault(DefaultWarehouseRequest request) {
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
-        WareHouse wareHouses = wareHouseRepository.findAllBySupplierIdAndIsDefault(request.getSupplierId(),true);
-        wareHouses.setIsDefault(false);
+        List<WareHouse> wareHouseList = wareHouseRepository.findAll();
+        wareHouseList.forEach(wareHouse -> {
+            wareHouse.setIsDefault(false);
+            wareHouseRepository.save(wareHouse);
+        });
+//        WareHouse wareHouses = wareHouseRepository.findAllBySupplierIdAndIsDefault(request.getSupplierId(),true);
+//        if (wareHouses.equals("null") || wareHouses.equals("")){
+//            List<WareHouse> wareHouse = wareHouseRepository.findAll();
+//            wareHouse.forEach(warehouseList -> {
+//                warehouseList.setIsDefault(false);
+//            });
+//        }
+//        wareHouses.setIsDefault(false);
         WareHouse wareHouse = wareHouseRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested wareHouse Id does not exist!"));
