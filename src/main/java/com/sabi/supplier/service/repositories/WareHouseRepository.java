@@ -60,4 +60,6 @@ public interface WareHouseRepository extends JpaRepository<WareHouse, Long>, Jpa
     Integer countAllByUserId(Long userId);
 
     Boolean existsByAddress(String address);
+
+    int countAllById(Long id);
 }

@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.sabi.framework.dto.requestDto.EnableDisEnableDto;
 import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
+import com.sabi.framework.exceptions.ProcessingException;
 import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
@@ -20,13 +21,17 @@ import com.sabi.suppliers.core.models.response.ShipmentItemResponseDto;
 import com.sabi.suppliers.core.models.response.ShipmentResponseDto;
 import com.sabi.suppliers.core.models.response.ShipmentShipmentResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -64,11 +69,12 @@ public class ShipmentService {
         }
         validations.validateShipment(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
+        generateShipmentReferenceNumber(request);
         Shipment shipment = mapper.map(request,Shipment.class);
-        Shipment shipmentExists = shipmentRepository.findShipmentById(request.getWarehouseId());
-        if(shipmentExists != null){
-            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "shipment already exist");
-        }
+//        Shipment shipmentExists = shipmentRepository.findShipmentById(request.getWarehouseId());
+//        if(shipmentExists != null){
+//            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "shipment already exist");
+//        }
         shipment.setCreatedBy(userCurrent.getId());
         shipment.setIsActive(true);
 //        shipment.setStatus("Awaiting_Shipment");
@@ -85,11 +91,11 @@ public class ShipmentService {
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         Shipment shipment = mapper.map(request,Shipment.class);
         ShipmentItem shipmentItem = mapper.map(request, ShipmentItem.class);
-
-        Shipment shipmentExists = shipmentRepository.findShipmentById(request.getWarehouseId());
-        if(shipmentExists != null){
-            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "shipment already exist");
-        }
+//        Shipment shipmentExists = shipmentRepository.findShipmentById(request.getWarehouseId());
+//        if(shipmentExists != null){
+//            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "shipment already exist");
+//        }
+        generateShipmentReferenceNumbers(request);
         shipment.setCreatedBy(userCurrent.getId());
         shipment.setIsActive(true);
 //        shipment.setDeliveryStatus("Pending");
@@ -209,4 +215,26 @@ public class ShipmentService {
         });
     }
 
+    public void generateShipmentReferenceNumber(ShipmentDto shipmentDto) {
+        String rawKey = shipmentDto.getPhoneNumber()+ shipmentDto.getLogisticPartnerName() + shipmentDto.getExpectedDeliveryDate() + new Date() + Math.random();
+        String encodedKey = hashWithSha256(rawKey);
+        shipmentDto.setShipmentReferenceNumber("SPM-" + encodedKey.substring(0, 20));
+    }
+
+    public void generateShipmentReferenceNumbers(ShipmentShipmentItemDto shipmentDto) {
+        String rawKey = shipmentDto.getPhoneNumber()+ shipmentDto.getLogisticPartnerName() + shipmentDto.getExpectedDeliveryDate() + new Date() + Math.random();
+        String encodedKey = hashWithSha256(rawKey);
+        shipmentDto.setShipmentReferenceNumber("SPM-" + encodedKey.substring(0, 20));
+    }
+
+    public static String hashWithSha256(String rawKey) throws ProcessingException {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] encrypted = md.digest(rawKey.getBytes());
+            return new String(Hex.encodeHex(encrypted));
+        } catch (NoSuchAlgorithmException ex) {
+            String errorMessage = "Unable to hash this string";
+            throw new ProcessingException(errorMessage);
+        }
+    }
 }

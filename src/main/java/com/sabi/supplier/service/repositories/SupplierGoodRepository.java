@@ -17,6 +17,8 @@ public interface SupplierGoodRepository extends JpaRepository<SupplierGood, Long
 
     SupplierGood findByVariantIdAndSupplierId(Long variantId,Long supplierId);
 
+    int countAllBySupplierId(Long supplierId);
+
     @Query("SELECT s FROM SupplierGood s WHERE ((:isActive IS NULL) OR (:isActive IS NOT NULL AND s.isActive = :isActive))" +
             " AND ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND s.supplierId = :supplierId)) order by s.id desc ")
     List<SupplierGood> findByIsActive(@Param("isActive")Boolean isActive,
