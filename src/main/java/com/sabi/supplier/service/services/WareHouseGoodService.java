@@ -78,7 +78,7 @@ public class WareHouseGoodService {
             warehouseGood.setCreatedBy(userCurrent.getId());
             warehouseGood.setIsActive(true);
             warehouseGood = repository.save(warehouseGood);
-            log.debug("Create new asset picture - {}"+ new Gson().toJson(warehouseGood));
+            log.debug("Create new warehouse goods - {}"+ new Gson().toJson(warehouseGood));
             responseDtos.add(mapper.map(warehouseGood, WareHouseGoodResponseDto.class));
         });
         return responseDtos;
@@ -103,6 +103,23 @@ public class WareHouseGoodService {
         repository.save(wareHouseGood);
         log.debug("warehouse goods record updated - {}"+ new Gson().toJson(wareHouseGood));
         return mapper.map(wareHouseGood, WareHouseGoodResponseDto.class);
+    }
+
+    public List<WareHouseGoodResponseDto> updateWarehouseGoods(List<WareHouseGoodDto> requests) {
+        List<WareHouseGoodResponseDto> responseDtos = new ArrayList<>();
+        User userCurrent = TokenService.getCurrentUserFromSecurityContext();
+        requests.forEach(request->{
+            validations.validateWarehouseGood(request);
+            WareHouseGood warehouseGood = mapper.map(request,WareHouseGood.class);
+            WareHouseGood wareHouseGood = repository.findById(request.getId())
+                    .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                            "Requested warehouse good Id does not exist!"));
+            wareHouseGood.setUpdatedBy(userCurrent.getId());
+            warehouseGood = repository.save(warehouseGood);
+            log.debug("warehouse goods record updated - {}"+ new Gson().toJson(warehouseGood));
+            responseDtos.add(mapper.map(warehouseGood, WareHouseGoodResponseDto.class));
+        });
+        return responseDtos;
     }
 
 
