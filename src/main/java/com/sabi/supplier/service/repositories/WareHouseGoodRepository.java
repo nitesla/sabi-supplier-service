@@ -19,6 +19,8 @@ public interface WareHouseGoodRepository extends JpaRepository<WareHouseGood, Lo
 
     Integer countAllByWarehouseId(Long warehouseId);
 
+    Integer countAllBySupplierGoodId(Long supplierGood);
+
 
     WareHouseGood findBySupplierGoodIdAndWarehouseId(Long supplierGoodsId,Long warehouseId);
 

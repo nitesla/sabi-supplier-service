@@ -21,6 +21,8 @@ public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, Lo
 
     SupplyRequest findSupplyRequestById(Long id);
 
+    int countAllByStatus(String status);
+
     @Query("SELECT s FROM SupplyRequest s left join WareHouse pt on s.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
             " AND ((:productName IS NULL) OR (:productName IS NOT NULL AND s.productName like %:productName%))" +
             "AND ((:askingQuantity IS NULL) OR (:askingQuantity IS NOT NULL AND s.askingQuantity = :askingQuantity))" +
