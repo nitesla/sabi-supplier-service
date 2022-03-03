@@ -110,8 +110,8 @@ public class SupplierLocationService {
         return mapper.map(supplierLocation,SupplierLocationResponseDto.class);
     }
 
-    public Page<SupplierLocation> findAll(Long supplierId, Long stateId,PageRequest pageRequest) {
-        Page<SupplierLocation> supplierLocations = supplierLocationRepository.findSupplierLocation(supplierId, stateId, pageRequest);
+    public Page<SupplierLocation> findAll(Long supplierId, Long stateId, String stateName,PageRequest pageRequest) {
+        Page<SupplierLocation> supplierLocations = supplierLocationRepository.findSupplierLocation(supplierId, stateId,stateName, pageRequest);
         if (supplierLocations == null) {
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }

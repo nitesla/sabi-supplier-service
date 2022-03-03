@@ -23,14 +23,15 @@ public interface SupplierLocationRepository extends JpaRepository<SupplierLocati
 
     List<SupplierLocation> findByIsActiveOrderByIdDesc(Boolean isActive);
 
-    @Query("SELECT l FROM SupplierLocation l WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND l.supplierId = :supplierId))" +
+    @Query("SELECT l FROM SupplierLocation l inner join State  s on l.stateId = s.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND l.supplierId = :supplierId))" +
 //            " AND ((:stateId IS NULL) OR (:stateId IS NOT NULL AND l.stateId = :stateId))" +
-            " AND ((:stateId IS NULL) OR (:stateId IS NOT NULL AND l.stateId = :stateId)) order by l.id desc "
+            " AND ((:stateId IS NULL) OR (:stateId IS NOT NULL AND l.stateId = :stateId))" +
+            " AND ((:stateName IS NULL) OR (:stateName IS NOT NULL AND s.name like %:stateName%)) order by l.id desc "
     )
     Page<SupplierLocation> findSupplierLocation(@Param("supplierId") Long supplierId,
                                             @Param("stateId") Long stateId,
+                                                @Param("stateName") String stateName,
                                             Pageable pageable);
-
 
 
 }
