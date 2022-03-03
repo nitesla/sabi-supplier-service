@@ -58,6 +58,9 @@ public class WareHouseGoodService {
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                     " Warehouse goods already exist");
         }
+        SupplierGood supplierGood = supplierGoodRepository.findSupplierGoodById(request.getSupplierGoodId());
+        ProductVariant productVariant = productVariantRepository.findProductVariantById(supplierGood.getVariantId());
+        warehouseGood.setVariantName(productVariant.getName());
         warehouseGood.setCreatedBy(userCurrent.getId());
         warehouseGood.setIsActive(true);
         warehouseGood = repository.save(warehouseGood);
@@ -75,6 +78,9 @@ public class WareHouseGoodService {
             if(wareHouseGoodsExist !=null){
                 throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " warehouse item already exist");
             }
+            SupplierGood supplierGood = supplierGoodRepository.findSupplierGoodById(request.getSupplierGoodId());
+            ProductVariant productVariant = productVariantRepository.findProductVariantById(supplierGood.getVariantId());
+            warehouseGood.setVariantName(productVariant.getName());
             warehouseGood.setCreatedBy(userCurrent.getId());
             warehouseGood.setIsActive(true);
             warehouseGood = repository.save(warehouseGood);
@@ -148,8 +154,8 @@ public class WareHouseGoodService {
      * </summary>
      * <remarks>this method is responsible for getting all records in pagination</remarks>
      */
-    public Page<WareHouseGood> findAll(Long warehouseId, Long supplierGoodId,Long supplierId, Long productId, PageRequest pageRequest ){
-        Page<WareHouseGood> warehouseGood = repository.findWarehouseGood(warehouseId,supplierGoodId,supplierId,productId,pageRequest);
+    public Page<WareHouseGood> findAll(Long warehouseId, Long supplierGoodId,Long supplierId, Long productId, String variantName, PageRequest pageRequest ){
+        Page<WareHouseGood> warehouseGood = repository.findWarehouseGood(warehouseId,supplierGoodId,supplierId,productId,variantName,pageRequest);
         if(warehouseGood == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }

@@ -28,11 +28,13 @@ public interface WareHouseGoodRepository extends JpaRepository<WareHouseGood, Lo
             "AND((:warehouseId IS NULL) OR (:warehouseId IS NOT NULL AND c.warehouseId = :warehouseId))" +
             "AND((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
             "AND((:productId IS NULL) OR (:productId IS NOT NULL AND pt.productId = :productId))" +
+            "AND((:variantName IS NULL) OR (:variantName IS NOT NULL AND c.variantName like %:variantName%))" +
             " AND ((:supplierGoodId IS NULL) OR (:supplierGoodId IS NOT NULL AND c.supplierGoodId = :supplierGoodId)) order by c.id desc "
     )
     Page<WareHouseGood> findWarehouseGood(@Param("warehouseId") Long warehouseId,
                                           @Param("supplierGoodId") Long supplierGoodId,
                                           @Param("supplierId") Long supplierId,
                                           @Param("productId") Long productId,
+                                          @Param("variantName") String variantName,
                                           Pageable pageable);
 }
