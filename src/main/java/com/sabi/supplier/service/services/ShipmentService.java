@@ -188,6 +188,11 @@ public class ShipmentService {
 
     }
 
+    public List<Shipment> getAllShipment(Long supplierId){
+        List<Shipment> shipments = shipmentRepository.findShipmentBySupplierId(supplierId);
+        return shipments;
+    }
+
 
     public void shipmentTripRequests(){
         List<Shipment> shipments = shipmentRepository.findByFeedStatus("pending");
