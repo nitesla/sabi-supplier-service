@@ -16,6 +16,12 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
     Shipment findShipmentByWarehouseId (Long warehouseId);
     Shipment findShipmentById(Long id);
 
+
+    @Query("SELECT s FROM Shipment s inner join WareHouse pt on s.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))")
+    List<Shipment>findShipmentBySupplierId(@Param("supplierId")Long supplierId);
+
+    List<Shipment>findShipmentByPaymentStatus(String status);
+
     List<Shipment> findByIsActiveOrderByIdDesc(Boolean isActive);
 
     @Query("SELECT s FROM Shipment s WHERE ((:warehouseId IS NULL) OR (:warehouseId IS NOT NULL AND s.warehouseId = :warehouseId))" +

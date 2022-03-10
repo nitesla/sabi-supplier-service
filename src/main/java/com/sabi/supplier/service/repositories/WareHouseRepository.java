@@ -61,5 +61,5 @@ public interface WareHouseRepository extends JpaRepository<WareHouse, Long>, Jpa
 
     Boolean existsByAddress(String address);
 
-    int countAllById(Long id);
+    int countAllBySupplierId(Long id);
 }

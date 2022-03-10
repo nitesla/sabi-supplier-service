@@ -523,7 +523,10 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "status can not be empty");
         if (shipmentDto.getFeedStatus() == null || shipmentDto.getFeedStatus().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Feed status can not be empty");
-        if (!("Pending".equalsIgnoreCase(shipmentDto.getFeedStatus()) || "Sent".equalsIgnoreCase(shipmentDto.getFeedStatus()) ||"Failed".equalsIgnoreCase(shipmentDto.getFeedStatus())));
+        if (!("Pending".equalsIgnoreCase(shipmentDto.getFeedStatus()) || "Sent".equalsIgnoreCase(shipmentDto.getFeedStatus()) ||"Failed".equalsIgnoreCase(shipmentDto.getFeedStatus())))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Enter the correct Feed Status");
+        if (!("Paid".equalsIgnoreCase(shipmentDto.getPaymentStatus()) || "Unpaid".equalsIgnoreCase(shipmentDto.getPaymentStatus())))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Enter the correct Payment Status");
     }
 
     public void validateStock(StockDto request) {
