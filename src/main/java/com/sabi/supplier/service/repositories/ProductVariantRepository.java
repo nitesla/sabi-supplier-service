@@ -15,6 +15,7 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
 
     ProductVariant findByName(String name);
     ProductVariant findProductVariantById(Long id);
+    List<ProductVariant> findProductVariantByProductId(Long productId);
 
     List<ProductVariant> findByIsActiveOrderByIdDesc(Boolean isActive);
 

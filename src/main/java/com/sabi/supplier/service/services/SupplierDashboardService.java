@@ -44,7 +44,7 @@ public class SupplierDashboardService {
     private ShipmentRepository shipmentRepository;
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductVariantRepository productVariantRepository;
 
     public SupplierDashboardService(ModelMapper mapper, Validations validations) {
         this.mapper = mapper;
@@ -111,10 +111,15 @@ public class SupplierDashboardService {
         List<SupplyRequest> savedSupplyRequest = supplyRequestRepository.findSupplyRequestBySupplierId(supplierId,startDate,endDate);
         log.info("info fetched from supplier request {} ::::::::::::::: " + savedSupplyRequest);
         savedSupplyRequest.forEach(supplyRequest -> {
+            List<ProductVariant> savedProductVariant = productVariantRepository.findProductVariantByProductId(supplyRequest.getProductId());
             DashboardProductResponse response = new DashboardProductResponse();
             response.setName(supplyRequest.getProductName());
             response.setPrice(supplyRequest.getPrice());
             response.setProductId(supplyRequest.getProductId());
+            savedProductVariant.forEach(productVariant -> {
+                response.setProductImage(productVariant.getPicture());
+            });
+
             responseDtos.add(response);
         });
         return responseDtos;
