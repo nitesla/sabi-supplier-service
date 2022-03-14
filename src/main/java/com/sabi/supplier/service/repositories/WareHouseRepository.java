@@ -1,5 +1,6 @@
 package com.sabi.supplier.service.repositories;
 
+import com.sabi.suppliers.core.models.SupplyRequest;
 import com.sabi.suppliers.core.models.WareHouse;
 import com.sabi.suppliers.core.models.WareHouseGood;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -61,5 +63,11 @@ public interface WareHouseRepository extends JpaRepository<WareHouse, Long>, Jpa
 
     Boolean existsByAddress(String address);
 
+//        @Query("select sum(t.supplierId) from WareHouse t where ( t.supplierId = ?1) AND (  t.createdDate BETWEEN  ?2 and ?3)")
+//    int countAllBySupplierId(Long id, LocalDateTime startDate, LocalDateTime endDate);
+
     int countAllBySupplierId(Long id);
+
+
+
 }

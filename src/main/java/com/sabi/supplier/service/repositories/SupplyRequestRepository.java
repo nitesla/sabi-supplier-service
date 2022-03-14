@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -21,13 +22,22 @@ public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, Lo
 
     SupplyRequest findSupplyRequestById(Long id);
 
-    List<SupplyRequest> findSupplyRequestBySupplierId(Long supplierId);
+    @Query("SELECT d FROM SupplyRequest d WHERE ( d.supplierId = ?1) AND (  d.createdDate BETWEEN  ?2 and ?3)")
+    List<SupplyRequest> findSupplyRequestBySupplierId(@Param("supplierId") Long supplierId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+
+@Query("SELECT d FROM SupplyRequest d WHERE ( d.productId = ?1) AND (  d.createdDate BETWEEN  ?2 and ?3)")
+    List<SupplyRequest> findSupplyRequestByProductId(@Param("productId") Long productId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     List<SupplyRequest> findSupplyRequestByProductId(Long productId);
 
     List<SupplyRequest>findByProductIdOrderByPriceDesc(Long productId);
 
+//        @Query("select sum(t.id) from SupplyRequest t where ( t.status = ?1) AND (  t.createdDate BETWEEN  ?2 and ?3)")
     int countAllByStatus(String status);
+
+//    @Query("select sum(t.supplierId) from WareHouse t where ( t.supplierId = ?1) AND (  t.createdDate BETWEEN  ?2 and ?3)")
+//    int countAllBySupplierId(Long id, LocalDateTime startDate, LocalDateTime endDate);
 
     @Query("SELECT s FROM SupplyRequest s left join WareHouse pt on s.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
             " AND ((:productName IS NULL) OR (:productName IS NOT NULL AND s.productName like %:productName%))" +

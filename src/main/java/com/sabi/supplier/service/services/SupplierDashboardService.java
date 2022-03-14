@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +42,9 @@ public class SupplierDashboardService {
 
     @Autowired
     private ShipmentRepository shipmentRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     public SupplierDashboardService(ModelMapper mapper, Validations validations) {
         this.mapper = mapper;
@@ -101,9 +106,9 @@ public class SupplierDashboardService {
         return dashbaord;
     }
 
-    public List<DashboardProductResponse> fetchTopProduct(Long supplierId) {
+    public List<DashboardProductResponse> fetchTopProduct(Long supplierId,LocalDateTime startDate, LocalDateTime endDate) {
         List<DashboardProductResponse> responseDtos = new ArrayList<>();
-        List<SupplyRequest> savedSupplyRequest = supplyRequestRepository.findSupplyRequestBySupplierId(supplierId);
+        List<SupplyRequest> savedSupplyRequest = supplyRequestRepository.findSupplyRequestBySupplierId(supplierId,startDate,endDate);
         log.info("info fetched from supplier request {} ::::::::::::::: " + savedSupplyRequest);
         savedSupplyRequest.forEach(supplyRequest -> {
             DashboardProductResponse response = new DashboardProductResponse();
@@ -115,9 +120,25 @@ public class SupplierDashboardService {
         return responseDtos;
     }
 
-    public List<DashboardWarehouseResponse> fetchWarehouseProduct(Long productId) {
+//    public List<DashboardWarehouseResponse> fetchWarehouseProduct(Long productId) {
+//        List<DashboardWarehouseResponse> responseDtos = new ArrayList<>();
+//        List<SupplyRequest> savedSupplyRequest = supplyRequestRepository.findSupplyRequestByProductId(productId);
+//        log.info("info fetched from supplier request {} ::::::::::::::: " + savedSupplyRequest);
+//        savedSupplyRequest.forEach(supplyRequest -> {
+//            DashboardWarehouseResponse response = new DashboardWarehouseResponse();
+//            response.setProductName(supplyRequest.getProductName());
+//            response.setPrice(supplyRequest.getPrice());
+//            WareHouse savedWarehouse = wareHouseRepository.findWareHouseById(supplyRequest.getWarehouseId());
+//            response.setWarehouseName(savedWarehouse.getName());
+//            responseDtos.add(response);
+//        });
+//        return responseDtos;
+//    }
+
+    public List<DashboardWarehouseResponse> fetchWarehouseProductDate(Long productId,LocalDateTime startDate, LocalDateTime endDate) {
         List<DashboardWarehouseResponse> responseDtos = new ArrayList<>();
-        List<SupplyRequest> savedSupplyRequest = supplyRequestRepository.findSupplyRequestByProductId(productId);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        List<SupplyRequest> savedSupplyRequest = supplyRequestRepository.findSupplyRequestByProductId(productId,startDate,endDate);
         log.info("info fetched from supplier request {} ::::::::::::::: " + savedSupplyRequest);
         savedSupplyRequest.forEach(supplyRequest -> {
             DashboardWarehouseResponse response = new DashboardWarehouseResponse();
