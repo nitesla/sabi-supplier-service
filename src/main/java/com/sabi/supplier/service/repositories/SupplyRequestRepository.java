@@ -33,8 +33,8 @@ public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, Lo
 
     List<SupplyRequest>findByProductIdOrderByPriceDesc(Long productId);
 
-//        @Query("select sum(t.id) from SupplyRequest t where ( t.status = ?1) AND (  t.createdDate BETWEEN  ?2 and ?3)")
-    int countAllByStatus(String status);
+        @Query("select sum(t.id) from SupplyRequest t where ( t.status = ?1) AND (  t.createdDate BETWEEN  ?2 and ?3)")
+    Integer countAllByStatus(String status,LocalDateTime startDate,LocalDateTime endDate);
 
 //    @Query("select sum(t.supplierId) from WareHouse t where ( t.supplierId = ?1) AND (  t.createdDate BETWEEN  ?2 and ?3)")
 //    int countAllBySupplierId(Long id, LocalDateTime startDate, LocalDateTime endDate);

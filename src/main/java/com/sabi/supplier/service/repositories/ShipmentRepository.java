@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,8 +18,21 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
     Shipment findShipmentById(Long id);
 
 
-    @Query("SELECT s FROM Shipment s inner join WareHouse pt on s.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))")
+    @Query("SELECT s FROM Shipment s inner join WareHouse pt on s.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
+            "AND ((:startDate IS NULL) OR (:startDate IS NOT NULL AND  pt.createdDate <= :startDate)) " +
+            "AND ((:endDate IS NULL) OR (:endDate IS NOT NULL AND  pt.createdDate <= :endDate)) " )
+    List<Shipment>findShipmentBySupplierId(@Param("supplierId")Long supplierId,
+                                           @Param("startDate") LocalDateTime startDate,
+                                           @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT s FROM Shipment s inner join WareHouse pt on s.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" )
     List<Shipment>findShipmentBySupplierId(@Param("supplierId")Long supplierId);
+
+//    @Query(value = "SELECT d FROM FulfilmentDashboard d WHERE ((:startDate IS NULL) OR (:startDate IS NOT NULL AND d.date >= :startDate)) " +
+//            "AND ((:endDate IS NULL) OR (:endDate IS NOT NULL AND  d.date <= :endDate)) " +
+//            "AND ((:wareHouseId IS NULL) OR (:wareHouseId IS NOT NULL AND  d.wareHouseId = :wareHouseId)) " +
+//            "AND ((:partnerId IS NULL) OR (:partnerId IS NOT NULL AND  d.partnerId = :partnerId))"
+//    )
 
     List<Shipment>findShipmentByPaymentStatus(String status);
 

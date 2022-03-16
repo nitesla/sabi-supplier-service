@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -190,6 +191,11 @@ public class ShipmentService {
 
     public List<Shipment> getAllShipment(Long supplierId){
         List<Shipment> shipments = shipmentRepository.findShipmentBySupplierId(supplierId);
+        return shipments;
+    }
+
+    public List<Shipment> getAllShipmentData(Long supplierId, LocalDateTime startDate, LocalDateTime endDate){
+        List<Shipment> shipments = shipmentRepository.findShipmentBySupplierId(supplierId, startDate,endDate);
         return shipments;
     }
 

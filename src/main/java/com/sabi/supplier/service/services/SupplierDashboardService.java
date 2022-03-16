@@ -51,18 +51,21 @@ public class SupplierDashboardService {
         this.validations = validations;
     }
 
-    public SupplierDashbaordResponseDto createDashboardInfo(Long supplierId) {
+    public SupplierDashbaordResponseDto createDashboardInfo(Long supplierId,LocalDateTime startDate, LocalDateTime endDate) {
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplierDashbaordResponseDto dashbaord = new SupplierDashbaordResponseDto();
-       int warehouseCount = wareHouseRepository.countAllBySupplierId(supplierId);
-       int supplierProductsCount = supplierGoodRepository.countAllBySupplierId(supplierId);
-       int awaitingShippmentCount = supplyRequestRepository.countAllByStatus("Awaiting_Shippment");
-       int acceptedCount = supplyRequestRepository.countAllByStatus("Accepted");
-       int totalPendingCount = awaitingShippmentCount+acceptedCount;
-       int shippedCount = supplyRequestRepository.countAllByStatus("Shipped");
-       int cancelledOrder = supplyRequestRepository.countAllByStatus("Cancelled");
-       int rejectedOrder = supplyRequestRepository.countAllByStatus("Rejected");
-       int totalCancelledOrder = cancelledOrder + rejectedOrder;
+//        Integer warehouseCountS = wareHouseRepository.countAllBySupplierId(supplierId);
+        Integer warehouseCount = wareHouseRepository.countAllBySupplierId(supplierId,startDate,endDate);
+//        Integer supplierProductsCounts = supplierGoodRepository.countAllBySupplierId(supplierId);
+        Integer supplierProductsCount = supplierGoodRepository.countAllBySupplierId(supplierId,startDate,endDate);
+//        Integer awaitingShippmentCount = supplyRequestRepository.countAllByStatus("Awaiting_Shippment");
+        Integer awaitingShippmentCount = supplyRequestRepository.countAllByStatus("Awaiting_Shipment",startDate,endDate);
+        Integer acceptedCount = supplyRequestRepository.countAllByStatus("Accepted",startDate,endDate);
+        Integer totalPendingCount = awaitingShippmentCount+acceptedCount;
+        Integer shippedCount = supplyRequestRepository.countAllByStatus("Shipped",startDate,endDate);
+        Integer cancelledOrder = supplyRequestRepository.countAllByStatus("Cancelled",startDate,endDate);
+        Integer rejectedOrder = supplyRequestRepository.countAllByStatus("Rejected",startDate,endDate);
+        Integer totalCancelledOrder = cancelledOrder + rejectedOrder;
 //       List<SupplyRequest> savedSupplyRequest = supplyRequestRepository.findBySupplierId(supplierId);
        List<Shipment> savedSupplyRequest = shipmentRepository.findShipmentBySupplierId(supplierId);
         List<Shipment> savedSupplyRequestForOutstandingPayment = shipmentRepository.findShipmentByPaymentStatus("Unpaid");
@@ -99,7 +102,7 @@ public class SupplierDashboardService {
        dashbaord.setPendingOrder(totalPendingCount);
        dashbaord.setCompletedOrder(shippedCount);
        dashbaord.setCancelledOrder(totalCancelledOrder);
-//       dashbaord.setOngoingDelivery();
+       dashbaord.setOngoingDelivery(acceptedCount);
         dashbaord.setCreatedBy(userCurrent.getId());
 //        dashbaord = supplierDashboardRepository.save(dashbaord);
         log.debug("Supplier dashboard summary info - {}"+ new Gson().toJson(dashbaord));
