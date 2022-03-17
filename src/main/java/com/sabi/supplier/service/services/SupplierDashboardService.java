@@ -67,8 +67,8 @@ public class SupplierDashboardService {
         Integer rejectedOrder = supplyRequestRepository.countAllByStatus("Rejected",startDate,endDate);
         Integer totalCancelledOrder = cancelledOrder + rejectedOrder;
 //       List<SupplyRequest> savedSupplyRequest = supplyRequestRepository.findBySupplierId(supplierId);
-       List<Shipment> savedSupplyRequest = shipmentRepository.findShipmentBySupplierId(supplierId);
-        List<Shipment> savedSupplyRequestForOutstandingPayment = shipmentRepository.findShipmentByPaymentStatus("Unpaid");
+       List<Shipment> savedSupplyRequest = shipmentRepository.findShipmentBySupplierId(supplierId,startDate,endDate);
+        List<Shipment> savedSupplyRequestForOutstandingPayment = shipmentRepository.findShipmentByPaymentStatus("Unpaid",startDate,endDate);
        log.info("Saved supply request {} ::::::::::::::: " +savedSupplyRequest);
        List<BigDecimal> prices = savedSupplyRequest
                .stream()

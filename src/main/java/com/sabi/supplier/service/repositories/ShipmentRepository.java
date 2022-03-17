@@ -18,9 +18,18 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
     Shipment findShipmentById(Long id);
 
 
-    @Query("SELECT s FROM Shipment s inner join WareHouse pt on s.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
-            "AND ((:startDate IS NULL) OR (:startDate IS NOT NULL AND  pt.createdDate <= :startDate)) " +
-            "AND ((:endDate IS NULL) OR (:endDate IS NOT NULL AND  pt.createdDate <= :endDate)) " )
+//    @Query("SELECT s FROM Shipment s inner join WareHouse pt on s.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
+//            "AND ((:startDate IS NULL) OR (:startDate IS NOT NULL AND  pt.createdDate <= :startDate)) " +
+//            "AND ((:endDate IS NULL) OR (:endDate IS NOT NULL AND  pt.createdDate <= :endDate)) " )
+//    List<Shipment>findShipmentBySupplierIds(@Param("supplierId")Long supplierId,
+//                                           @Param("startDate") LocalDateTime startDate,
+//                                           @Param("endDate") LocalDateTime endDate);
+
+
+
+//        @Query("SELECT s FROM Shipment s inner join WareHouse pt on s.warehouseId = pt.id WHERE (pt.supplierId = :supplierId) AND (  pt.createdDate BETWEEN  ?2 and ?3)" )
+//@Query("select sum(t.id) from SupplyRequest t where ( t.status = ?1) AND (  t.createdDate BETWEEN  ?2 and ?3)")
+@Query("select s from Shipment s inner join WareHouse pt on s.warehouseId = pt.id where ( pt.supplierId = ?1) AND (  pt.createdDate BETWEEN  ?2 and ?3)")
     List<Shipment>findShipmentBySupplierId(@Param("supplierId")Long supplierId,
                                            @Param("startDate") LocalDateTime startDate,
                                            @Param("endDate") LocalDateTime endDate);
@@ -28,13 +37,10 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
     @Query("SELECT s FROM Shipment s inner join WareHouse pt on s.warehouseId = pt.id WHERE ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" )
     List<Shipment>findShipmentBySupplierId(@Param("supplierId")Long supplierId);
 
-//    @Query(value = "SELECT d FROM FulfilmentDashboard d WHERE ((:startDate IS NULL) OR (:startDate IS NOT NULL AND d.date >= :startDate)) " +
-//            "AND ((:endDate IS NULL) OR (:endDate IS NOT NULL AND  d.date <= :endDate)) " +
-//            "AND ((:wareHouseId IS NULL) OR (:wareHouseId IS NOT NULL AND  d.wareHouseId = :wareHouseId)) " +
-//            "AND ((:partnerId IS NULL) OR (:partnerId IS NOT NULL AND  d.partnerId = :partnerId))"
-//    )
-
-    List<Shipment>findShipmentByPaymentStatus(String status);
+    @Query("select t from Shipment t where ( t.paymentStatus = ?1) AND (  t.createdDate BETWEEN  ?2 and ?3)")
+    List<Shipment>findShipmentByPaymentStatus(@Param("paymentStatus")String paymentStatus,
+                                              @Param("startDate") LocalDateTime startDate,
+                                              @Param("endDate") LocalDateTime endDate);
 
     List<Shipment> findByIsActiveOrderByIdDesc(Boolean isActive);
 

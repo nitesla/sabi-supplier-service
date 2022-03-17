@@ -194,10 +194,10 @@ public class ShipmentService {
         return shipments;
     }
 
-    public List<Shipment> getAllShipmentData(Long supplierId, LocalDateTime startDate, LocalDateTime endDate){
-        List<Shipment> shipments = shipmentRepository.findShipmentBySupplierId(supplierId, startDate,endDate);
-        return shipments;
-    }
+//    public List<Shipment> getAllShipmentData(Long supplierId, LocalDateTime startDate, LocalDateTime endDate){
+//        List<Shipment> shipments = shipmentRepository.findShipmentBySupplierId(supplierId, startDate,endDate);
+//        return shipments;
+//    }
 
 
     public void shipmentTripRequests(){
