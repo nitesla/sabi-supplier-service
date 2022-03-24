@@ -113,7 +113,9 @@ public class WareHouseService {
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested wareHouse Id does not exist!"));
 
-        wareHouse.setIsDefault(true);
+        if (wareHouse.getIsActive().equals(true)) {
+            wareHouse.setIsDefault(true);
+        } else throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION,"Warehouse is inactive");
         wareHouseRepository.save(wareHouse);
 //        return mapper.map(wareHouse, WareHouseResponse.class);
         return wareHouse;
