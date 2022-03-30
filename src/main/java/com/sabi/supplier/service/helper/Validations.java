@@ -86,23 +86,23 @@ public class Validations {
 
 //
 
-    public void validateLGA (LGADto lgaDto){
-        if (lgaDto.getName() == null || lgaDto.getName().isEmpty())
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+//    public void validateLGA (LGADto lgaDto){
+//        if (lgaDto.getName() == null || lgaDto.getName().isEmpty())
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+//
+//        State state = stateRepository.findById(lgaDto.getId())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid State id!"));
+//
+//    }
 
-        State state = stateRepository.findById(lgaDto.getId())
-                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        " Enter a valid State id!"));
 
-    }
-
-
-    public void validateCountry(CountryDto countryDto) {
-        if (countryDto.getName() == null || countryDto.getName().isEmpty())
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
-        if(countryDto.getCode() == null || countryDto.getCode().isEmpty())
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Code cannot be empty");
-    }
+//    public void validateCountry(CountryDto countryDto) {
+//        if (countryDto.getName() == null || countryDto.getName().isEmpty())
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+//        if(countryDto.getCode() == null || countryDto.getCode().isEmpty())
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Code cannot be empty");
+//    }
 
     public void validateProduct (ProductDto productDto){
         String valName = productDto.getName();
@@ -182,10 +182,10 @@ public class Validations {
         if (!Utility.isNumeric(request.getStateID().toString()))
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for StateID");
 
-        State state =  stateRepository.findById(request.getStateID())
-                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        " Enter a valid State!")
-                );
+//        State state =  stateRepository.findById(request.getStateID())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid State!")
+//                );
 
         Supplier supplier = supplierRepository.findById(request.getSupplierID())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
@@ -335,8 +335,8 @@ public class Validations {
         supplierRepository.findById(request.getSupplierId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid Supplier ID!"));
         //todo confirm warehouse userId validation
-        stateRepository.findById(request.getStateId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                " Enter a valid State ID!"));
+//        stateRepository.findById(request.getStateId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                " Enter a valid State ID!"));
         userRepository.findById(request.getUserId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid USER ID!"));
         lgaRepository.findById(request.getLgaId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
@@ -428,17 +428,17 @@ public class Validations {
         if(request.getStateId() == null )
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "State cannot be empty");
 
-        State state =  stateRepository.findById(request.getStateId())
-                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        " Enter a valid State!")
-                );
+//        State state =  stateRepository.findById(request.getStateId())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid State!")
+//                );
 
         if(request.getLgaId() == null )
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "LGA cannot be empty");
-        LGA lga =  lgaRepository.findById(request.getLgaId())
-                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        " Enter a valid Lga!")
-                );
+//        LGA lga =  lgaRepository.findById(request.getLgaId())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid Lga!")
+//                );
 
         if(request.getEmail() == null || request.getEmail().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Email cannot be empty");
