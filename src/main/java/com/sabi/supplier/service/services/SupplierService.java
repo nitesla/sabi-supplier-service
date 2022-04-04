@@ -70,7 +70,7 @@ public class SupplierService {
     private SupplierUserRepository supplierUserRepository;
     private SupplierLocationRepository supplierLocationRepository;
     private LGARepository lgaRepository;
-    private StateRepository stateRepository;
+//    private StateRepository stateRepository;
     private PartnerSignUpService partnerSignUpService;
     private NotificationService notificationService;
     private final ModelMapper mapper;
@@ -91,7 +91,7 @@ public class SupplierService {
         this.supplierUserRepository = supplierUserRepository;
         this.supplierLocationRepository = supplierLocationRepository;
         this.lgaRepository = lgaRepository;
-        this.stateRepository = stateRepository;
+//        this.stateRepository = stateRepository;
         this.partnerSignUpService = partnerSignUpService;
         this.notificationService = notificationService;
         this.mapper = mapper;
@@ -315,6 +315,8 @@ public class SupplierService {
                         "Requested Supplier Id does not exist!"));
         mapper.map(request, supplier);
         supplier.setUpdatedBy(userCurrent.getId());
+//        supplier.setState();
+//        supplier.setLga();
         supplierRepository.save(supplier);
         log.debug("Supplier record updated - {}"+ new Gson().toJson(supplier));
 
@@ -336,14 +338,14 @@ public class SupplierService {
         Supplier supplier = supplierRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supplier Id does not exist!"));
-        State state = null;
-        if (supplier.getStateId() != null) {
-             state = stateRepository.findStateById(supplier.getStateId());
-        }
-        LGA lga = null;
-        if (supplier.getLgaId() != null){
-            lga = lgaRepository.getOne(supplier.getLgaId());
-        }
+//        State state = null;
+//        if (supplier.getStateId() != null) {
+//             state = stateRepository.findStateById(supplier.getStateId());
+//        }
+//        LGA lga = null;
+//        if (supplier.getLgaId() != null){
+//            lga = lgaRepository.getOne(supplier.getLgaId());
+//        }
 
         SupplierResponseDto supplierResponseDto = SupplierResponseDto.builder()
                 .address(supplier.getAddress())
@@ -359,20 +361,21 @@ public class SupplierService {
                 .email(supplier.getEmail())
                 .id(supplier.getId())
                 .isActive(supplier.getIsActive())
-//                .lgaId(supplier.getLgaId())
-//                .lga(lga.getName())
-//                .stateId(supplier.getStateId())
-//                .state(state.getName())
+                .lgaId(supplier.getLgaId())
+                .lga(supplier.getLga())
+                .stateId(supplier.getStateId())
+                .state(supplier.getState())
+                .state(supplier.getName())
                 .supplierCategoryID(supplier.getSupplierCategoryId())
                 .build();
-        if (supplier.getStateId() != null){
-            supplierResponseDto.setState(state.getName());
-            supplierResponseDto.setStateId(supplier.getStateId());
-        }
-        if (supplier.getLgaId() != null){
-            supplierResponseDto.setLga(lga.getName());
-            supplierResponseDto.setLgaId(supplier.getLgaId());
-        }
+//        if (supplier.getStateId() != null){
+//            supplierResponseDto.setState(state.getName());
+//            supplierResponseDto.setStateId(supplier.getStateId());
+//        }
+//        if (supplier.getLgaId() != null){
+//            supplierResponseDto.setLga(lga.getName());
+//            supplierResponseDto.setLgaId(supplier.getLgaId());
+//        }
         return supplierResponseDto;
 
     }
@@ -384,14 +387,14 @@ public class SupplierService {
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
         supplierProperties.getContent().forEach(supplier ->{
-            if (supplier.getLgaId() != null){
-                LGA lga = lgaRepository.getOne(supplier.getLgaId());
-                supplier.setLga(lga.getName());
-            }
-            if (supplier.getStateId() != null) {
-                State state = stateRepository.getOne(supplier.getStateId());
-                supplier.setState(state.getName());
-            }
+//            if (supplier.getLgaId() != null){
+//                LGA lga = lgaRepository.getOne(supplier.getLgaId());
+//                supplier.setLga(lga.getName());
+//            }
+//            if (supplier.getStateId() != null) {
+//                State state = stateRepository.getOne(supplier.getStateId());
+//                supplier.setState(state.getName());
+//            }
         });
         return supplierProperties;
 
@@ -402,14 +405,14 @@ public class SupplierService {
         List<Supplier> supplierProperties = supplierRepository.findByIsActiveOrderByIdDesc(isActive);
         for (Supplier sup : supplierProperties
                 ) {
-            if (sup.getLgaId() != null) {
-                LGA lga = lgaRepository.getOne(sup.getLgaId());
-                sup.setLga(lga.getName());
-            }
-            if (sup.getStateId() != null) {
-                State state = stateRepository.getOne(sup.getStateId());
-                sup.setState(state.getName());
-            }
+//            if (sup.getLgaId() != null) {
+//                LGA lga = lgaRepository.getOne(sup.getLgaId());
+//                sup.setLga(lga.getName());
+//            }
+//            if (sup.getStateId() != null) {
+//                State state = stateRepository.getOne(sup.getStateId());
+//                sup.setState(state.getName());
+//            }
 
         }
         return supplierProperties;
@@ -439,9 +442,4 @@ public class SupplierService {
         supplierRepository.save(supplier);
 
     }
-
-
-
-
-
 }

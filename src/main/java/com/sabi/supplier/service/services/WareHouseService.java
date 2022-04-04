@@ -60,11 +60,11 @@ public class WareHouseService {
             wareHouse.setProductCount(savedProduct);
         }
         Integer savedWarehouse = wareHouseRepository.countAllByUserId(request.getUserId());
-        State savedState = stateRepository.findStateById(request.getStateId());
-        LGA savedLga = lgaRepository.findLGAById(request.getLgaId());
+//        State savedState = stateRepository.findStateById(request.getStateId());
+//        LGA savedLga = lgaRepository.findLGAById(request.getLgaId());
         wareHouse.setWareHouseUserCount(savedWarehouse);
-        wareHouse.setStateName(savedState.getName());
-        wareHouse.setLgaName(savedLga.getName());
+//        wareHouse.setStateName(savedState.getName());
+//        wareHouse.setLgaName(savedLga.getName());
         wareHouse.setCreatedBy(userCurrent.getId());
         wareHouse.setIsActive(false);
         wareHouse.setIsDefault(false);
@@ -84,10 +84,10 @@ public class WareHouseService {
             int savedProduct = productRepository.countAllById(request.getProductId());
             wareHouse.setProductCount(savedProduct);
         }
-        State savedState = stateRepository.findStateById(request.getStateId());
-        LGA savedLga = lgaRepository.findLGAById(request.getLgaId());
-        wareHouse.setStateName(savedState.getName());
-        wareHouse.setLgaName(savedLga.getName());
+//        State savedState = stateRepository.findStateById(request.getStateId());
+//        LGA savedLga = lgaRepository.findLGAById(request.getLgaId());
+//        wareHouse.setStateName(savedState.getName());
+//        wareHouse.setLgaName(savedLga.getName());
         wareHouse.setUpdatedBy(userCurrent.getId());
         wareHouseRepository.save(wareHouse);
         log.debug("wareHouse record updated - {}" + new Gson().toJson(wareHouse));
@@ -130,10 +130,10 @@ public class WareHouseService {
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
         wareHouses.forEach(wareHouse ->{
-            State stateExist = stateRepository.getOne(wareHouse.getStateId());
-            wareHouse.setStateName(stateExist.getName());
-            LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
-            wareHouse.setLgaName(lga.getName());
+//            State stateExist = stateRepository.getOne(wareHouse.getStateId());
+//            wareHouse.setStateName(stateExist.getName());
+//            LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
+//            wareHouse.setLgaName(lga.getName());
             wareHouse.setWareHouseUserCount(getWareHouseUsers(wareHouse.getId()));
             wareHouse.setProductCount(getProductCount(wareHouse.getId()));
         });
@@ -147,10 +147,10 @@ public class WareHouseService {
                         "Requested WareHouse Id does not exist!"));
         WareHouseResponse wareHouseResponse = mapper.map(wareHouse, WareHouseResponse.class);
         wareHouseResponse.setWareHouseUserCount(getWareHouseUsers(id));
-        State state = stateRepository.getOne(wareHouse.getStateId());
-        wareHouseResponse.setStateName(state.getName());
-        LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
-        wareHouseResponse.setLgaName(lga.getName());
+//        State state = stateRepository.getOne(wareHouse.getStateId());
+//        wareHouseResponse.setStateName(state.getName());
+//        LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
+//        wareHouseResponse.setLgaName(lga.getName());
         wareHouseResponse.setProductCount(getProductCount(wareHouseResponse.getId()));
         return wareHouseResponse;
     }
@@ -169,10 +169,10 @@ public class WareHouseService {
         List<WareHouse> wareHouses = wareHouseRepository.findByIsActive(isActive, supplierId);
 //        for (WareHouse request : wareHouses) {
             wareHouses.forEach(wareHouse -> {
-                State stateExist = stateRepository.getOne(wareHouse.getStateId());
-                wareHouse.setStateName(stateExist.getName());
-                LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
-                wareHouse.setLgaName(lga.getName());
+//                State stateExist = stateRepository.getOne(wareHouse.getStateId());
+//                wareHouse.setStateName(stateExist.getName());
+//                LGA lga = lgaRepository.getOne(wareHouse.getLgaId());
+//                wareHouse.setLgaName(lga.getName());
                 wareHouse.setWareHouseUserCount(getWareHouseUsers(wareHouse.getId()));
                 wareHouse.setProductCount(getProductCount(wareHouse.getId()));
 
