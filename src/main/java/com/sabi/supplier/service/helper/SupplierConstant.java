@@ -5,4 +5,5 @@ public class SupplierConstant {
     public static final String ME = "me";
     public static final String SABI = "sabi";
     public static final String MY_PARTNER = "my_partner";
+    public static final Long DEFAULT_ROLE = 1l;
 }
