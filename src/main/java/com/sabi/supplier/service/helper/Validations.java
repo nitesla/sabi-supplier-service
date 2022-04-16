@@ -121,6 +121,47 @@ public class Validations {
                         " Enter a valid manufacturer id!"));
     }
 
+    public void validateProductSuggestion (ProductSuggestionRequestDto productSuggestionRequestDto){
+        String valName = productSuggestionRequestDto.getName();
+        char valCharName = valName.charAt(0);
+        if (Character.isDigit(valCharName)){
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name can not start with a number");
+        }
+        if (productSuggestionRequestDto.getName() == null || productSuggestionRequestDto.getName().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
+        if (productSuggestionRequestDto.getDescription() == null || productSuggestionRequestDto.getDescription().isEmpty())
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Description cannot be empty");
+        if (!("Approved".equalsIgnoreCase(productSuggestionRequestDto.getStatus()) || "Declined".equalsIgnoreCase(productSuggestionRequestDto.getStatus())))
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Enter the correct product suggestion Status");
+    }
+
+    public void validateSupplyRequestCounterOffer (SupplyRequestCounterOfferRequestDto counterOfferRequestDto){
+        if (counterOfferRequestDto.getSupplyRequestId() == null || counterOfferRequestDto.getSupplyRequestId() <= 0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Supply request Id can not be less than 1");
+        SupplyRequest supplyRequest = supplyRequestRepository.findById(counterOfferRequestDto.getSupplyRequestId())
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        " Enter a valid supply Request id!"));
+        if (counterOfferRequestDto.getPrice() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Price cannot be empty");
+        if (counterOfferRequestDto.getQuantity() == null || counterOfferRequestDto.getQuantity() <= 0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity cannot be empty");
+
+    }
+
+    public void validateSupplyRequestCounterOfferUpdate (SupplyRequestCounterOfferRequestDto counterOfferRequestDto){
+        if (counterOfferRequestDto.getSupplyRequestId() != null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Supply request Id can not be updated");
+        if (counterOfferRequestDto.getPrice() == null)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Price cannot be empty");
+        if (counterOfferRequestDto.getQuantity() == null || counterOfferRequestDto.getQuantity() <= 0)
+            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "quantity cannot be empty");
+        if (counterOfferRequestDto.getUserId() != null){
+            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION,"User Id can not be updated");
+
+        }
+
+    }
+
     public void validateProductCategory(ProductCategoryDto productCategoryDto){
         String valName = productCategoryDto.getName();
         char valCharName = valName.charAt(0);

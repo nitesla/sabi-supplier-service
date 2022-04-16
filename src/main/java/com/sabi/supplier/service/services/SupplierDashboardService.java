@@ -54,14 +54,22 @@ public class SupplierDashboardService {
     public SupplierDashbaordResponseDto createDashboardInfo(Long supplierId,LocalDateTime startDate, LocalDateTime endDate) {
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplierDashbaordResponseDto dashbaord = new SupplierDashbaordResponseDto();
-//        Integer warehouseCountS = wareHouseRepository.countAllBySupplierId(supplierId);
         Integer warehouseCount = wareHouseRepository.countAllBySupplierId(supplierId,startDate,endDate);
-//        Integer supplierProductsCounts = supplierGoodRepository.countAllBySupplierId(supplierId);
+        log.info("warehouse count ::::::::::::::::::::::::::::" + warehouseCount);
         Integer supplierProductsCount = supplierGoodRepository.countAllBySupplierId(supplierId,startDate,endDate);
-//        Integer awaitingShippmentCount = supplyRequestRepository.countAllByStatus("Awaiting_Shippment");
+        log.info("supplier product count ::::::::::::::::::::::::::::" + supplierProductsCount);
         Integer awaitingShippmentCount = supplyRequestRepository.countAllByStatus("Awaiting_Shipment",startDate,endDate);
+        log.info("awiting shipment count ::::::::::::::::::::::::::::" + awaitingShippmentCount);
+//        if (awaitingShippmentCount.equals("") || awaitingShippmentCount == null){
+//            awaitingShippmentCount = 0;
+//        }
         Integer acceptedCount = supplyRequestRepository.countAllByStatus("Accepted",startDate,endDate);
+        log.info("accepted count ::::::::::::::::::::::::::::" + acceptedCount);
+//        if (acceptedCount.equals("") || acceptedCount == null){
+//            acceptedCount = 0;
+//        }
         Integer totalPendingCount = awaitingShippmentCount+acceptedCount;
+        log.info("total pending count ::::::::::::::::::::::::::::" + totalPendingCount);
         Integer shippedCount = supplyRequestRepository.countAllByStatus("Shipped",startDate,endDate);
         Integer cancelledOrder = supplyRequestRepository.countAllByStatus("Cancelled",startDate,endDate);
         Integer rejectedOrder = supplyRequestRepository.countAllByStatus("Rejected",startDate,endDate);
