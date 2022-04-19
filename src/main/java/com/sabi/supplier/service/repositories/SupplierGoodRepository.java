@@ -19,9 +19,9 @@ public interface SupplierGoodRepository extends JpaRepository<SupplierGood, Long
     SupplierGood findByVariantIdAndSupplierId(Long variantId,Long supplierId);
 
         @Query("select sum(t.supplierId) from SupplierGood t where ( t.supplierId = ?1) AND (  t.createdDate BETWEEN  ?2 and ?3)")
-    int countAllBySupplierId(Long supplierId,LocalDateTime startDate, LocalDateTime endDate);
+        Integer countAllBySupplierId(Long supplierId,LocalDateTime startDate, LocalDateTime endDate);
 
-    int countAllBySupplierId(Long supplierId);
+    Integer countAllBySupplierId(Long supplierId);
 
     @Query("SELECT s FROM SupplierGood s WHERE ((:isActive IS NULL) OR (:isActive IS NOT NULL AND s.isActive = :isActive))" +
             " AND ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND s.supplierId = :supplierId)) order by s.id desc ")

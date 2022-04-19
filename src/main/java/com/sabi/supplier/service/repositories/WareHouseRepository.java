@@ -66,9 +66,9 @@ public interface WareHouseRepository extends JpaRepository<WareHouse, Long>, Jpa
     Boolean existsByAddress(String address);
 
         @Query("select sum(t.supplierId) from WareHouse t where ( t.supplierId = ?1) AND (  t.createdDate BETWEEN  ?2 and ?3)")
-    int countAllBySupplierId(Long id, LocalDateTime startDate, LocalDateTime endDate);
+    Integer countAllBySupplierId(Long id, LocalDateTime startDate, LocalDateTime endDate);
 
-    int countAllBySupplierId(Long id);
+    Integer countAllBySupplierId(Long id);
 
 
 
