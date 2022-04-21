@@ -1,5 +1,6 @@
 package com.sabi.supplier.service.repositories;
 
+import com.sabi.suppliers.core.models.Shipment;
 import com.sabi.suppliers.core.models.SupplyRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +19,21 @@ import java.util.List;
 @Repository
 public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, Long>, JpaSpecificationExecutor<SupplyRequest> {
     List<SupplyRequest> findByIsActiveOrderByIdDesc(Boolean isActive);
+
+
+    @Query("select s from Shipment s inner join WareHouse pt on s.warehouseId = pt.id where ( pt.supplierId = ?1) AND (  pt.createdDate BETWEEN  ?2 and ?3)")
+    List<Shipment>findShipmentBySupplierId(@Param("supplierId")Long supplierId,
+                                           @Param("startDate") LocalDateTime startDate,
+                                           @Param("endDate") LocalDateTime endDate);
+
+
+    @Query("select s from SupplyRequest s where ( s.status = ?1) AND  (s.expireTime BETWEEN  ?2 and ?3)")
+    List<SupplyRequest> findSupplyRequest(@Param("status") String status,
+                                          @Param("startDate") LocalDateTime startDate,
+                                           @Param("endDate") LocalDateTime endDate);
+
+//    @Query("SELECT d FROM SupplyRequest d WHERE ( d.status = ?1) AND (  d.expireTime BETWEEN  ?2 and ?3)")
+//    List<SupplyRequest> findSupplyRequest(@Param("status") String status, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     Boolean existsByReferenceNo(String referenceNo);
 
