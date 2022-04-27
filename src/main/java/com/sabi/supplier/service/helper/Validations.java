@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @SuppressWarnings("All")
 @Slf4j
 @Service
@@ -352,10 +354,23 @@ public class Validations {
     public void validateSupplyRequest(SupplyRequestRequest request) {
         productRepository.findById(request.getProductId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                 " Enter a valid PRODUCT ID!"));
-        if (request.getWarehouseId() != null) {
-            wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                    " Enter a valid Warehouse ID!"));
+        if (request.getSupplierId() != null){
+            supplierRepository.findById(request.getSupplierId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    " Enter a valid Supplier ID!"));
+         List<WareHouse> savedWarehouse = wareHouseRepository.findBySupplierId(request.getSupplierId());
+//         savedWarehouse.forEach(wareHouse -> {
+//             wareHouseRepository.findById(wareHouse.getId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                     " Enter a valid Warehouse ID!"));
+//         });
+            if (savedWarehouse .isEmpty()){
+                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                     " Enter a valid Warehouse ID!");
+            }
         }
+//        if (request.getWarehouseId() != null) {
+//            wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                    " Enter a valid Warehouse ID!"));
+//        }
         if (request.getStatus() == null || request.getStatus().isEmpty() )
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Delivery Status cannot be empty");
         if (!("Awaiting_Shippment".equalsIgnoreCase(request.getStatus()) || "Shipped".equalsIgnoreCase(request.getStatus()) || "Cancelled".equalsIgnoreCase(request.getStatus()) ||"Opened".equalsIgnoreCase(request.getStatus())||"Accepted".equalsIgnoreCase(request.getStatus()) ||"Pending".equalsIgnoreCase(request.getStatus()) ||"Rejected".equalsIgnoreCase(request.getStatus())))

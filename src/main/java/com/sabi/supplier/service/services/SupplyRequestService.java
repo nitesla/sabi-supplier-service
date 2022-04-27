@@ -197,7 +197,8 @@ public class SupplyRequestService {
         log.info("ExpiryTime ::::::::::::::::::::::::::::::::::::::: " + presentTime);
         log.info("Result Of Fetch ::::::::::::::::::::::::::::::::::::::: " + supplyRequests);
         supplyRequests.forEach(supplyRequest -> {
-            supplyRequest.setWarehouseId(1l);
+            supplyRequest.setWarehouseId(0l);
+            supplyRequest.setSupplierId(0l);
             supplyRequestRepository.save(supplyRequest);
         });
         if (supplyRequests == null) {
