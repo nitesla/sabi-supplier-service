@@ -8,7 +8,6 @@ import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.PreviousPasswords;
 import com.sabi.framework.models.User;
-import com.sabi.framework.models.UserRole;
 import com.sabi.framework.notification.requestDto.NotificationRequestDto;
 import com.sabi.framework.notification.requestDto.RecipientRequest;
 import com.sabi.framework.notification.requestDto.WhatsAppRequest;
@@ -30,7 +29,9 @@ import com.sabi.suppliers.core.dto.request.CompleteSignUpDto;
 import com.sabi.suppliers.core.dto.request.PartnerAssetTypeRequest;
 import com.sabi.suppliers.core.dto.request.SupplierRequestDto;
 import com.sabi.suppliers.core.dto.request.SupplierSignUpRequestDto;
-import com.sabi.suppliers.core.models.*;
+import com.sabi.suppliers.core.models.Supplier;
+import com.sabi.suppliers.core.models.SupplierLocation;
+import com.sabi.suppliers.core.models.SupplierUser;
 import com.sabi.suppliers.core.models.response.CompleteSignUpResponse;
 import com.sabi.suppliers.core.models.response.PartnerSignUpResponse;
 import com.sabi.suppliers.core.models.response.SupplierResponseDto;
@@ -144,11 +145,11 @@ public class SupplierService {
         log.debug("Create new agent user - {}"+ new Gson().toJson(user));
 
 
-        UserRole userRole = UserRole.builder()
-                .userId(user.getId())
-                .roleId(user.getRoleId())
-                .build();
-        userRoleRepository.save(userRole);
+//        UserRole userRole = UserRole.builder()
+//                .userId(user.getId())
+//                .roleId(user.getRoleId())
+//                .build();
+//        userRoleRepository.save(userRole);
 
         PreviousPasswords previousPasswords = PreviousPasswords.builder()
                 .userId(user.getId())
