@@ -9,9 +9,13 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
+import com.sabi.supplier.service.repositories.ManufacturerRepository;
+import com.sabi.supplier.service.repositories.ProductCategoryRepository;
 import com.sabi.supplier.service.repositories.ProductRepository;
 import com.sabi.suppliers.core.dto.request.ProductDto;
+import com.sabi.suppliers.core.models.Manufacturer;
 import com.sabi.suppliers.core.models.Product;
+import com.sabi.suppliers.core.models.ProductCategory;
 import com.sabi.suppliers.core.models.response.ProductResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -21,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,6 +33,10 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ManufacturerRepository manufacturerRepository;
+    @Autowired
+    private ProductCategoryRepository productCategoryRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
@@ -92,6 +101,16 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested product Id does not exist!"));
+       Manufacturer savedManufacturer = manufacturerRepository.findManufacturerById(product.getManufacturerId());
+       if (savedManufacturer == null){
+           throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,"Requested Manufacturer Id does not exist!");
+       }
+        ProductCategory savedProductCategory = productCategoryRepository.findProductCategoryById(product.getProductCategoryId());
+        if (savedProductCategory == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,"Requested product category Id does not exist!");
+        }
+        product.setProductCategoryName(savedProductCategory.getName());
+        product.setManufactureName(savedManufacturer.getName());
         return mapper.map(product,ProductResponseDto.class);
     }
 
@@ -106,6 +125,18 @@ public class ProductService {
         if(products == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
+        products.forEach(product -> {
+            Manufacturer savedManufacturer = manufacturerRepository.findManufacturerById(product.getManufacturerId());
+            if (savedManufacturer == null){
+                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,"Requested Manufacturer Id does not exist!");
+            }
+            ProductCategory savedProductCategory = productCategoryRepository.findProductCategoryById(product.getProductCategoryId());
+            if (savedProductCategory == null){
+                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,"Requested product category Id does not exist!");
+            }
+            product.setProductCategoryName(savedProductCategory.getName());
+            product.setManufactureName(savedManufacturer.getName());
+        });
         return products;
 
     }

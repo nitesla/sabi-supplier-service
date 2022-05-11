@@ -161,15 +161,21 @@ public class SupplyRequestService {
                         "Requested Supply Request Id does not exist!"));
         Product savedProduct = productRepository.findProductById(supplyRequest.getProductId());
         supplyRequest.setProductWeight(savedProduct.getWeight());
+        supplyRequest.setProductImage(savedProduct.getImage());
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 
     public Page<SupplyRequest> findAll(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice, Date startTime, Date endTime,String referenceNo,String status,Long warehouseId,Long supplierId,Boolean unassigned,PageRequest pageRequest ){
-        Page<SupplyRequest> stocks = supplyRequestRepository.findSupplyRequests(productId,productName,askingQuantity,askingPrice,startTime,endTime,referenceNo,status,warehouseId,supplierId,unassigned,pageRequest);
-        if(stocks == null){
+        Page<SupplyRequest> supplyRequests = supplyRequestRepository.findSupplyRequests(productId,productName,askingQuantity,askingPrice,startTime,endTime,referenceNo,status,warehouseId,supplierId,unassigned,pageRequest);
+        if(supplyRequests == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
-        return stocks;
+        supplyRequests.forEach(supplyRequest -> {
+            Product savedProduct = productRepository.findProductById(supplyRequest.getProductId());
+            supplyRequest.setProductWeight(savedProduct.getWeight());
+            supplyRequest.setProductImage(savedProduct.getImage());
+        });
+        return supplyRequests;
 
     }
 
