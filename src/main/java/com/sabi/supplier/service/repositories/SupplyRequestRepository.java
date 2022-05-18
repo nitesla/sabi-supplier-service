@@ -64,7 +64,9 @@ public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, Lo
             "AND ((:endTime IS NULL) OR (:endTime IS NOT NULL AND s.endTime = :endTime))" +
             "AND ((:referenceNo IS NULL) OR (:referenceNo IS NOT NULL AND s.referenceNo like %:referenceNo%))" +
             "AND ((:status IS NULL) OR (:status IS NOT NULL AND s.status = :status))" +
-            "AND ((:warehouseId IS NULL and :unassigned is null )OR (s.warehouseId IS NULL and :unassigned = true ) OR (:warehouseId IS NOT NULL AND s.warehouseId = :warehouseId))" +
+            "AND ((:warehouseId IS NULL) OR (:warehouseId IS NOT NULL AND s.warehouseId = :warehouseId))" +
+            "AND ((:unassigned IS NULL) OR (:unassigned IS NOT NULL AND s.unassigned = :unassigned))" +
+//            "AND ((:warehouseId IS NULL and :unassigned is null )OR (s.warehouseId IS NULL and :unassigned = true ) OR (:warehouseId IS NOT NULL AND s.warehouseId = :warehouseId))" +
             "AND ((:supplierId IS NULL) OR (:supplierId IS NOT NULL AND pt.supplierId = :supplierId))" +
             "AND ((:productId IS NULL) OR (:productId IS NOT NULL AND s.productId = :productId))" +
             "AND ((:status IS NULL) OR (:status IS NOT NULL AND s.status = :status)) order by s.id DESC "

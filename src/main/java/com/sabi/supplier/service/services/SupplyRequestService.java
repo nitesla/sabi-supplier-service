@@ -165,8 +165,11 @@ public class SupplyRequestService {
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 
-    public Page<SupplyRequest> findAll(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice, Date startTime, Date endTime,String referenceNo,String status,Long warehouseId,Long supplierId,Boolean unassigned,PageRequest pageRequest ){
-        Page<SupplyRequest> supplyRequests = supplyRequestRepository.findSupplyRequests(productId,productName,askingQuantity,askingPrice,startTime,endTime,referenceNo,status,warehouseId,supplierId,unassigned,pageRequest);
+    public Page<SupplyRequest> findAll(Long productId, String productName, Long askingQuantity, BigDecimal askingPrice,
+                                       Date startTime, Date endTime,String referenceNo,String status,Long warehouseId,
+                                       Long supplierId,Boolean unassigned,PageRequest pageRequest ){
+        Page<SupplyRequest> supplyRequests = supplyRequestRepository.findSupplyRequests(productId,productName,askingQuantity,askingPrice,
+                startTime,endTime,referenceNo,status,warehouseId,supplierId,unassigned,pageRequest);
         if(supplyRequests == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
@@ -196,7 +199,7 @@ public class SupplyRequestService {
     public void pushToIncomingRequest() {
         LocalDateTime presentTime = LocalDateTime.now();
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime fiveMinutesLater = LocalDateTime.now().plusMinutes(15L);
+        LocalDateTime fiveMinutesLater = LocalDateTime.now().plusMinutes(45L);
         List<SupplyRequest> supplyRequests = supplyRequestRepository.findSupplyRequest("Pending",
                 presentTime, fiveMinutesLater);
         log.info("Result Of of expire time ::::::::::::::::::::::::::::::::::::::: " + fiveMinutesLater);
@@ -205,6 +208,7 @@ public class SupplyRequestService {
         supplyRequests.forEach(supplyRequest -> {
             supplyRequest.setWarehouseId(0l);
             supplyRequest.setSupplierId(0l);
+            supplyRequest.setUnassigned(true);
             supplyRequestRepository.save(supplyRequest);
         });
         if (supplyRequests == null) {
