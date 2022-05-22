@@ -371,8 +371,8 @@ public class Validations {
 //            wareHouseRepository.findById(request.getWarehouseId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
 //                    " Enter a valid Warehouse ID!"));
 //        }
-        if (request.getStatus() == null || request.getStatus().isEmpty() )
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Delivery Status cannot be empty");
+//        if (request.getStatus() == null || request.getStatus().isEmpty() )
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Delivery Status cannot be empty");
         if (!("Awaiting_Shippment".equalsIgnoreCase(request.getStatus()) || "Shipped".equalsIgnoreCase(request.getStatus()) || "Cancelled".equalsIgnoreCase(request.getStatus()) ||"Opened".equalsIgnoreCase(request.getStatus())||"Accepted".equalsIgnoreCase(request.getStatus()) ||"Pending".equalsIgnoreCase(request.getStatus()) ||"Rejected".equalsIgnoreCase(request.getStatus())))
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Enter the correct Delivery Status");
 

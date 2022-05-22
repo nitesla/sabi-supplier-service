@@ -57,6 +57,7 @@ public class SupplyRequestService {
     }
 
     public SupplyRequestResponse createSupplyRequest(SupplyRequestRequest request) {
+        request.setStatus("Pending");
         validations.validateSupplyRequest(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplyRequest supplyRequest = mapper.map(request, SupplyRequest.class);
@@ -75,8 +76,15 @@ public class SupplyRequestService {
         }
         supplyRequest.setCreatedBy(userCurrent.getId());
         supplyRequest.setIsActive(false);
+        if (request.getWarehouseId().equals(null)){
+            supplyRequest.setUnassigned(true);
+        } else {
+            supplyRequest.setUnassigned(false);
+        }
+//        supplyRequest.setStatus("Pending");
         supplyRequest.setDeliveryStatus("Awaiting_Shipment");
         supplyRequest.setProductWeight(savedProduct.getWeight());
+        supplyRequest.setProductName(savedProduct.getName());
         supplyRequest.setExpireTime(fiveMinutesLater);
         log.info("Setting Expiry time :::::::::::::::::::::::::::: " + fiveMinutesLater);
         supplyRequest = supplyRequestRepository.save(supplyRequest);

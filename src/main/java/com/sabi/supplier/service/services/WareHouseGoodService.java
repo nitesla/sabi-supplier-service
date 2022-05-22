@@ -12,6 +12,7 @@ import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ProductVariantRepository;
 import com.sabi.supplier.service.repositories.SupplierGoodRepository;
 import com.sabi.supplier.service.repositories.WareHouseGoodRepository;
+import com.sabi.supplier.service.repositories.WareHouseRepository;
 import com.sabi.suppliers.core.dto.request.ShipmentItemDto;
 import com.sabi.suppliers.core.dto.request.WareHouseGoodDto;
 import com.sabi.suppliers.core.models.*;
@@ -36,6 +37,9 @@ public class WareHouseGoodService {
     private ProductVariantRepository productVariantRepository;
     @Autowired
     private SupplierGoodRepository supplierGoodRepository;
+
+    @Autowired
+    private WareHouseRepository wareHouseRepository;
     @Autowired
     private ModelMapper mapper;
     @Autowired
@@ -142,6 +146,8 @@ public class WareHouseGoodService {
                         "Requested warehouse goods Id does not exist!"));
         SupplierGood supplierGood = supplierGoodRepository.findSupplierGoodById(wareHouseGood.getSupplierGoodId());
         ProductVariant productVariant = productVariantRepository.findProductVariantById(supplierGood.getVariantId());
+        WareHouse savedWarehouse = wareHouseRepository.findWareHouseById(wareHouseGood.getWarehouseId());
+        wareHouseGood.setWarehouseName(savedWarehouse.getName());
         wareHouseGood.setVariantId(productVariant.getId());
         wareHouseGood.setVariantName(productVariant.getName());
         return mapper.map(wareHouseGood,WareHouseGoodResponseDto.class);
@@ -160,9 +166,11 @@ public class WareHouseGoodService {
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
         warehouseGood.forEach(wareHouseGood -> {
+            WareHouse savedWarehouse = wareHouseRepository.findWareHouseById(wareHouseGood.getWarehouseId());
             SupplierGood supplierGood = supplierGoodRepository.findSupplierGoodById(wareHouseGood.getSupplierGoodId());
             ProductVariant productVariant = productVariantRepository.findProductVariantById(supplierGood.getVariantId());
             wareHouseGood.setVariantId(productVariant.getId());
+            wareHouseGood.setWarehouseName(savedWarehouse.getName());
             wareHouseGood.setVariantName(productVariant.getName());
         });
         return warehouseGood;
