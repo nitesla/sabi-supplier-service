@@ -9,11 +9,13 @@ import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ProductRepository;
+import com.sabi.supplier.service.repositories.SupplierRepository;
 import com.sabi.supplier.service.repositories.SupplyRequestRepository;
 import com.sabi.supplier.service.repositories.SupplyRequestResponseRepository;
 import com.sabi.suppliers.core.dto.request.SupplyRequestRequest;
 import com.sabi.suppliers.core.dto.request.SupplyRequestResponseRequest;
 import com.sabi.suppliers.core.models.Product;
+import com.sabi.suppliers.core.models.Supplier;
 import com.sabi.suppliers.core.models.SupplyRequest;
 import com.sabi.suppliers.core.models.SupplyRequestResponseEntity;
 import com.sabi.suppliers.core.models.response.SupplyRequestResponse;
@@ -50,6 +52,9 @@ public class SupplyRequestService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private SupplierRepository supplierRepository;
+
     public SupplyRequestService(SupplyRequestRepository supplyRequestRepository, Validations validations, ModelMapper mapper) {
         this.supplyRequestRepository = supplyRequestRepository;
         this.validations = validations;
@@ -74,6 +79,11 @@ public class SupplyRequestService {
            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                     "Requested warehouse good Id does not exist!");
         }
+        Supplier savedSupplier = supplierRepository.findSupplierById(request.getSupplierId());
+        if (savedSupplier == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    "Requested Supplier Id does not exist!");
+        }
         supplyRequest.setCreatedBy(userCurrent.getId());
         supplyRequest.setIsActive(false);
         if (request.getWarehouseId().equals(null)){
@@ -82,6 +92,7 @@ public class SupplyRequestService {
             supplyRequest.setUnassigned(false);
         }
 //        supplyRequest.setStatus("Pending");
+        supplyRequest.setSupplierName(savedSupplier.getName());
         supplyRequest.setDeliveryStatus("Awaiting_Shipment");
         supplyRequest.setProductWeight(savedProduct.getWeight());
         supplyRequest.setProductName(savedProduct.getName());

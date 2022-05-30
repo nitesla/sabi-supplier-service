@@ -21,6 +21,8 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
 
     Supplier findByName(String name);
 
+    Supplier findSupplierById(Long id);
+
     Supplier findByUserId(Long userId);
 
     List<Supplier> findByIsActiveOrderByIdDesc(Boolean isActive);
