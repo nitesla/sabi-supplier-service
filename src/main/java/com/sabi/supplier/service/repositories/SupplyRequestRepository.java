@@ -20,6 +20,8 @@ import java.util.List;
 public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, Long>, JpaSpecificationExecutor<SupplyRequest> {
     List<SupplyRequest> findByIsActiveOrderByIdDesc(Boolean isActive);
 
+    List<SupplyRequest> findSupplyRequestByStatus(String status);
+
 
     @Query("select s from Shipment s inner join WareHouse pt on s.warehouseId = pt.id where ( pt.supplierId = ?1) AND (  pt.createdDate BETWEEN  ?2 and ?3)")
     List<Shipment>findShipmentBySupplierId(@Param("supplierId")Long supplierId,
@@ -27,10 +29,20 @@ public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, Lo
                                            @Param("endDate") LocalDateTime endDate);
 
 
-    @Query("select s from SupplyRequest s where ( s.status = ?1) AND  (s.expireTime BETWEEN  ?2 and ?3)")
-    List<SupplyRequest> findSupplyRequest(@Param("status") String status,
-                                          @Param("startDate") LocalDateTime startDate,
-                                           @Param("endDate") LocalDateTime endDate);
+//    @Query("select s from SupplyRequest s where ( s.status = ?1) AND  (s.expireTime BETWEEN  ?2 and ?3)")
+//    List<SupplyRequest> findSupplyRequest(@Param("status") String status,
+//                                          @Param("startDate") LocalDateTime startDate,
+//                                           @Param("endDate") LocalDateTime endDate);
+    //check//
+//    @Query("select s from SupplyRequest s where ( s.status = ?1) AND  (s.expireTime NOT BETWEEN  ?2 and ?3)")
+//    @Query("SELECT s FROM Stock s WHERE ((:status IS NULL) OR (:status IS NOT NULL AND s.status = :status))" +
+//            " AND ((:expiredTime IS NULL) OR (:expiredTime IS NOT NULL AND s.expiredTime = :expiredTime%))")
+
+
+    @Query("SELECT s FROM SupplyRequest s WHERE ((:status IS NULL) OR (:status IS NOT NULL AND s.status = :status))" +
+            "AND ((:expireTime IS NULL) OR (:expireTime IS NOT NULL AND  s.expiryTime = :expireTime)) ")
+    List<SupplyRequest> findSupplyRequestnew(@Param("status") String status,
+                                          @Param("expireTime") String expireTime);
 
 //    @Query("SELECT d FROM SupplyRequest d WHERE ( d.status = ?1) AND (  d.expireTime BETWEEN  ?2 and ?3)")
 //    List<SupplyRequest> findSupplyRequest(@Param("status") String status, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);

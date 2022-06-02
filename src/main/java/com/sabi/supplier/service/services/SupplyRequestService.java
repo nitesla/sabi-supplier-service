@@ -7,6 +7,7 @@ import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
+import com.sabi.framework.utils.Utility;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ProductRepository;
 import com.sabi.supplier.service.repositories.SupplierRepository;
@@ -28,8 +29,11 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -67,6 +71,7 @@ public class SupplyRequestService {
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplyRequest supplyRequest = mapper.map(request, SupplyRequest.class);
         LocalDateTime fiveMinutesLater = LocalDateTime.now().plusMinutes(15);
+        LocalDateTime presentTime = LocalDateTime.now();
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 //        LocalDateTime formatPresentDateTime = LocalDateTime.parse(fiveMinutesLater.format(formatter));
         boolean supplyRequestExists = supplyRequestRepository.existsByReferenceNo(
@@ -91,15 +96,16 @@ public class SupplyRequestService {
         } else {
             supplyRequest.setUnassigned(false);
         }
-//        supplyRequest.setStatus("Pending");
+        supplyRequest.setStartTime(presentTime);
+        supplyRequest.setEndTime(fiveMinutesLater);
         supplyRequest.setSupplierName(savedSupplier.getName());
         supplyRequest.setDeliveryStatus("Awaiting_Shipment");
         supplyRequest.setProductWeight(savedProduct.getWeight());
         supplyRequest.setProductName(savedProduct.getName());
-        supplyRequest.setExpireTime(fiveMinutesLater);
+        supplyRequest.setExpiryTime(Utility.expirationForSupplyRequest());
         log.info("Setting Expiry time :::::::::::::::::::::::::::: " + fiveMinutesLater);
         supplyRequest = supplyRequestRepository.save(supplyRequest);
-        log.debug("Create new State - {}" + new Gson().toJson(supplyRequest));
+        log.debug("Create new supply request - {}" + new Gson().toJson(supplyRequest));
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 
@@ -181,6 +187,12 @@ public class SupplyRequestService {
         Product savedProduct = productRepository.findProductById(supplyRequest.getProductId());
         supplyRequest.setProductWeight(savedProduct.getWeight());
         supplyRequest.setProductImage(savedProduct.getImage());
+        Supplier savedSupplier = null;
+        if(supplyRequest.getSupplierId() != null) {
+            System.out.println("checking");
+             savedSupplier = supplierRepository.findSupplierById(supplyRequest.getSupplierId());
+            supplyRequest.setSupplierName(savedSupplier.getName());
+        }
         return mapper.map(supplyRequest, SupplyRequestResponse.class);
     }
 
@@ -196,6 +208,16 @@ public class SupplyRequestService {
             Product savedProduct = productRepository.findProductById(supplyRequest.getProductId());
             supplyRequest.setProductWeight(savedProduct.getWeight());
             supplyRequest.setProductImage(savedProduct.getImage());
+            Supplier savedSupplier = null;
+            if(supplyRequest.getSupplierId() != null) {
+                System.out.println("checking");
+                if(supplyRequest.getSupplierId() == 0l){
+                    supplyRequest.setSupplierName("--");
+                }else if(supplyRequest.getSupplierId() != 0l) {
+                    savedSupplier = supplierRepository.findSupplierById(supplyRequest.getSupplierId());
+                    supplyRequest.setSupplierName(savedSupplier.getName());
+                }
+            }
         });
         return supplyRequests;
 
@@ -216,29 +238,53 @@ public class SupplyRequestService {
     }
 
     public void pushToIncomingRequest() {
-        LocalDateTime presentTime = LocalDateTime.now();
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime fiveMinutesLater = LocalDateTime.now().plusMinutes(45L);
-        List<SupplyRequest> supplyRequests = supplyRequestRepository.findSupplyRequest("Pending",
-                presentTime, fiveMinutesLater);
-        log.info("Result Of of expire time ::::::::::::::::::::::::::::::::::::::: " + fiveMinutesLater);
-        log.info("ExpiryTime ::::::::::::::::::::::::::::::::::::::: " + presentTime);
-        log.info("Result Of Fetch ::::::::::::::::::::::::::::::::::::::: " + supplyRequests);
+//        LocalDateTime presentTime = LocalDateTime.now();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        LocalDateTime fiveMinutesLater = LocalDateTime.now().plusMinutes(45L);
+//        Calendar calObj = Calendar.getInstance();
+//        String presentTime = df.format(calObj.getTime());
+
+//        Calendar calObj = Calendar.getInstance();
+//        String presentTime = df.format(calObj.getTime());
+
+        List<SupplyRequest> supplyRequests = supplyRequestRepository.findSupplyRequestByStatus("Pending");
         supplyRequests.forEach(supplyRequest -> {
-            supplyRequest.setWarehouseId(0l);
-            supplyRequest.setSupplierId(0l);
-            supplyRequest.setUnassigned(true);
-            supplyRequestRepository.save(supplyRequest);
-        });
+            Calendar calObj = Calendar.getInstance();
+        String presentTime = df.format(calObj.getTime());
+        if (supplyRequest.getExpiryTime() != null) {
+            String expiredTime = supplyRequest.getExpiryTime();
+            String result = String.valueOf(presentTime.compareTo(expiredTime));
+            if (!result.startsWith("-")) {
+                supplyRequest.setWarehouseId(0l);
+                supplyRequest.setSupplierId(0l);
+                supplyRequest.setUnassigned(true);
+                supplyRequestRepository.save(supplyRequest);
+            }
+        }
+//        else
+//            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,"No record Found to be updated");
+        } );
+//        String regDate =
+//        List<SupplyRequest> supplyRequests = supplyRequestRepository.findSupplyRequest("Pending",
+//                presentTime, fiveMinutesLater);
+//        log.info("Result Of of expire time ::::::::::::::::::::::::::::::::::::::: " + fiveMinutesLater);
+//        log.info("ExpiryTime ::::::::::::::::::::::::::::::::::::::: " + presentTime);
+//        log.info("Result Of Fetch ::::::::::::::::::::::::::::::::::::::: " + supplyRequests);
+//        supplyRequests.forEach(supplyRequest -> {
+//            supplyRequest.setWarehouseId(3l);
+//            supplyRequest.setSupplierId(3l);
+//            supplyRequest.setUnassigned(true);
+//            supplyRequestRepository.save(supplyRequest);
+//        });
+
         if (supplyRequests == null) {
             throw new ConflictException(CustomResponseCode.
                     CONFLICT_EXCEPTION, "Not outstanding Supply request");
         }
     }
 
-    public List<SupplyRequest> timeCheck (LocalDateTime presentTime, LocalDateTime expiredTime) {
-            List<SupplyRequest> supplyRequests = this.supplyRequestRepository.findSupplyRequest("Pending",
-                    presentTime, expiredTime);
+    public List<SupplyRequest> timeCheck () {
+            List<SupplyRequest> supplyRequests = this.supplyRequestRepository.findSupplyRequestByStatus("Pending");
         supplyRequests.forEach(supplyRequest -> {
             supplyRequest.setWarehouseId(1l);
             supplyRequest.setPhone("090505050505050");
