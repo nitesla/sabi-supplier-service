@@ -84,21 +84,23 @@ public class SupplyRequestService {
            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                     "Requested warehouse good Id does not exist!");
         }
-        Supplier savedSupplier = supplierRepository.findSupplierById(request.getSupplierId());
-        if (savedSupplier == null){
-            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                    "Requested Supplier Id does not exist!");
+        if (request.getSupplierId() != null) {
+            Supplier savedSupplier = supplierRepository.findSupplierById(request.getSupplierId());
+            if (savedSupplier == null) {
+                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested Supplier Id does not exist!");
+            }
+            supplyRequest.setSupplierName(savedSupplier.getName());
         }
         supplyRequest.setCreatedBy(userCurrent.getId());
         supplyRequest.setIsActive(false);
-        if (request.getWarehouseId().equals(null)){
+        if (request.getWarehouseId() == null){
             supplyRequest.setUnassigned(true);
         } else {
             supplyRequest.setUnassigned(false);
         }
         supplyRequest.setStartTime(presentTime);
         supplyRequest.setEndTime(fiveMinutesLater);
-        supplyRequest.setSupplierName(savedSupplier.getName());
         supplyRequest.setDeliveryStatus("Awaiting_Shipment");
         supplyRequest.setProductWeight(savedProduct.getWeight());
         supplyRequest.setProductName(savedProduct.getName());
