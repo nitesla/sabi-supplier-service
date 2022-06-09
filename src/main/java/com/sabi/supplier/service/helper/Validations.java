@@ -197,8 +197,8 @@ public class Validations {
 
         if (request.getName() == null || request.getName().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Name cannot be empty");
-        if (!Utility.validateName(request.getName().toString()))
-            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for Name ");
+//        if (!Utility.validateName(request.getName().toString()))
+//            throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Invalid data type for Name ");
 
         if (request.getCreditPeriod() == null )
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Credit Period cannot be empty");

@@ -91,6 +91,11 @@ public class ProductVariantService {
         ProductVariant supplierCategory = productVariantRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested product variable Id does not exist!"));
+        Product savedProduct = productRepository.findProductById(supplierCategory.getProductId());
+        if (savedProduct == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, "Product of this variant not found");
+        }
+        supplierCategory.setProductName(savedProduct.getName());
         return mapper.map(supplierCategory,ProductVariantResponseDto.class);
     }
 
@@ -99,6 +104,13 @@ public class ProductVariantService {
         if(productVariant == null || productVariant.isEmpty()){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
+        productVariant.forEach(prodVariant -> {
+            Product savedProduct = productRepository.findProductById(prodVariant.getProductId());
+            if (savedProduct == null){
+                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, "Product of this variant not found");
+            }
+            prodVariant.setProductName(savedProduct.getName());
+        });
         return productVariant;
     }
 

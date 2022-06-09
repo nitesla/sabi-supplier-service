@@ -120,8 +120,8 @@ public class ProductService {
      * </summary>
      * <remarks>this method is responsible for getting all records in pagination</remarks>
      */
-    public Page<Product> findAllProduct(String name, PageRequest pageRequest ){
-        Page<Product> products = productRepository.findProducts(name,pageRequest);
+    public Page<Product> findAllProduct(String name, Long productCategoryId, PageRequest pageRequest ){
+        Page<Product> products = productRepository.findProducts(name, productCategoryId,pageRequest);
         if(products == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
