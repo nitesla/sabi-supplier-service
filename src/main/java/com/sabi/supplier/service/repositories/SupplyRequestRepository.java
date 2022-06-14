@@ -51,6 +51,8 @@ public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, Lo
 
     SupplyRequest findSupplyRequestById(Long id);
 
+    List<SupplyRequest> findAllSupplyRequestById(Long id);
+
     @Query("SELECT d FROM SupplyRequest d WHERE ( d.supplierId = ?1) AND (  d.createdDate BETWEEN  ?2 and ?3)")
     List<SupplyRequest> findSupplyRequestBySupplierId(@Param("supplierId") Long supplierId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 

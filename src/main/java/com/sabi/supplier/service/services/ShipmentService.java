@@ -3,20 +3,21 @@ package com.sabi.supplier.service.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.sabi.framework.dto.requestDto.EnableDisEnableDto;
-import com.sabi.framework.exceptions.ConflictException;
 import com.sabi.framework.exceptions.NotFoundException;
 import com.sabi.framework.exceptions.ProcessingException;
 import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
-import com.sabi.supplier.service.repositories.ShipmentRepository;
-import com.sabi.supplier.service.repositories.WareHouseRepository;
+import com.sabi.supplier.service.repositories.*;
 import com.sabi.suppliers.core.dto.request.ShipmentDto;
 import com.sabi.suppliers.core.dto.request.ShipmentShipmentItemDto;
 import com.sabi.suppliers.core.dto.request.ShipmentTripRequest;
+import com.sabi.suppliers.core.models.ProductCount;
 import com.sabi.suppliers.core.models.Shipment;
 import com.sabi.suppliers.core.models.ShipmentItem;
+import com.sabi.suppliers.core.models.SupplyRequest;
+import com.sabi.suppliers.core.models.response.ProductCountResponse;
 import com.sabi.suppliers.core.models.response.ShipmentItemResponseDto;
 import com.sabi.suppliers.core.models.response.ShipmentResponseDto;
 import com.sabi.suppliers.core.models.response.ShipmentShipmentResponseDto;
@@ -30,10 +31,10 @@ import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @Service
@@ -44,7 +45,16 @@ public class ShipmentService {
     @Autowired
     private ShipmentItemService shipmentItemService;
     @Autowired
+    private ProductCountService productCountService;
+    @Autowired
+    private ProductCountRepository productCountRepository;
+    @Autowired
     private PartnerSignUpService partnerSignUpService;
+    @Autowired
+    private SupplyRequestRepository supplyRequestRepository;
+
+    @Autowired
+    private ShipmentItemRepository shipmentItemRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
@@ -88,30 +98,55 @@ public class ShipmentService {
 
     public ShipmentShipmentResponseDto createShipmentItems(ShipmentShipmentItemDto request) {
         List<ShipmentItemResponseDto> responseDtos = new ArrayList<>();
+        List<ProductCount> productCountList = new ArrayList<>();
+        List<ProductCountResponse> productCountResponseDtos = new ArrayList<>();
         validations.validateShipmentAndShipmentItem(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
-        Shipment shipment = mapper.map(request,Shipment.class);
-        ShipmentItem shipmentItem = mapper.map(request, ShipmentItem.class);
-//        Shipment shipmentExists = shipmentRepository.findShipmentById(request.getWarehouseId());
-//        if(shipmentExists != null){
-//            throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "shipment already exist");
-//        }
         generateShipmentReferenceNumbers(request);
+        Shipment shipment = mapper.map(request,Shipment.class);
         shipment.setCreatedBy(userCurrent.getId());
         shipment.setIsActive(true);
-//        shipment.setDeliveryStatus("Pending");
         shipment.setStatus("Awaiting_Shipment");
         shipment = shipmentRepository.save(shipment);
         log.debug("Create new shipment - {}"+ new Gson().toJson(shipment));
         ShipmentShipmentResponseDto orderResponseDto = mapper.map(shipment, ShipmentShipmentResponseDto.class);
         log.info("request sent ::::::::::::::::::::::::::::::::: " + request.getShipmentItemDtoList());
+        Long  shipmentId = shipment.getId();
         request.getShipmentItemDtoList().forEach(orderItemRequest ->{
-            orderItemRequest.setId(orderResponseDto.getId());
+            SupplyRequest savedSupplyRequest = supplyRequestRepository.findSupplyRequestById(orderItemRequest.getSupplierRequestId());
+            orderItemRequest.setCustomerName(savedSupplyRequest.getCustomerName());
+            orderItemRequest.setDeliveryAddress(savedSupplyRequest.getDeliveryAddress());
+            orderItemRequest.setEmail(savedSupplyRequest.getEmail());
+            orderItemRequest.setShipmentId(shipmentId);
+            orderItemRequest.setPhoneNumber(savedSupplyRequest.getPhone());
         });
+            request.getShipmentItemDtoList().forEach(requestItem ->{
+                ProductCount productCountToSave = new ProductCount();
+                List<SupplyRequest> savedSupplyRrquestsList = supplyRequestRepository.findAllSupplyRequestById(requestItem.getSupplierRequestId());
+                System.out.println("Supply Request Id : {}:::::::::::::: " + requestItem.getSupplierRequestId());
+//                AtomicLong quantity = new AtomicLong();
+                savedSupplyRrquestsList.forEach(supplyRequest -> {
+//                  Long checker =  quantity.addAndGet(1);
+//                    log.info("quantity :::::::::::::::::: {} " +quantity );
+//                    log.info("quantity :::::::::::::::::: {} " +checker );
+                    productCountToSave.setShipmentId(requestItem.getShipmentId());
+                    productCountToSave.setProductId(supplyRequest.getProductId());
+                    productCountToSave.setName(supplyRequest.getProductName());
+                    productCountToSave.setShipmentId(Long.valueOf(shipmentId));
+//                    productCountToSave.setQuantity(checker);
+//                    System.out.println("Supply Quantity  : {}:::::::::::::: " + quantity);
+                    productCountList.add(productCountToSave);
+                });
+
+                });
+
         responseDtos = shipmentItemService.createShipmentItems(request.getShipmentItemDtoList());
+        productCountResponseDtos = productCountService.createProductCount(productCountList);
         List<ShipmentItemResponseDto> finalResponseDtos = responseDtos;
+        List<ProductCountResponse> finalProductCountResponseDtos = productCountResponseDtos;
         responseDtos.forEach(orderItemResponseDto -> {
             orderResponseDto.setShipmentItemResponseDtoList(finalResponseDtos);
+            orderResponseDto.setProductCountResponseList(finalProductCountResponseDtos);
         });
         return orderResponseDto;
     }
@@ -144,10 +179,88 @@ public class ShipmentService {
      * <remarks>this method is responsible for getting a single record</remarks>
      */
     public ShipmentResponseDto findShipment(Long id){
-        Shipment state = shipmentRepository.findById(id)
+        Shipment shipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested shipment Id does not exist!"));
-        return mapper.map(state,ShipmentResponseDto.class);
+        return mapper.map(shipment,ShipmentResponseDto.class);
+    }
+
+    public ShipmentShipmentResponseDto findMasterShipment(Long id){
+        List<ProductCount> productCountList = new ArrayList<>();
+        ShipmentShipmentResponseDto responseDto = new ShipmentShipmentResponseDto();
+        Shipment shipment = shipmentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested shipment Id does not exist!"));
+        responseDto.setId(shipment.getId());
+        responseDto.setWarehouseId(shipment.getWarehouseId());
+        responseDto.setDeliveryDate(shipment.getDeliveryDate());
+        responseDto.setLogisticPartnerId(shipment.getLogisticPartnerId());
+        responseDto.setLogisticPartnerName(shipment.getLogisticPartnerName());
+        responseDto.setPhoneNumber(shipment.getPhoneNumber());
+        responseDto.setVehicle(shipment.getVehicle());
+        responseDto.setStatus(shipment.getStatus());
+        responseDto.setQuantity(shipment.getQuantity());
+        responseDto.setTotalAmount(shipment.getTotalAmount());
+        responseDto.setExpectedDeliveryDate(shipment.getExpectedDeliveryDate());
+        responseDto.setStartTime(shipment.getStartTime());
+        responseDto.setEndTime(shipment.getEndTime());
+        responseDto.setFeedStatus(shipment.getFeedStatus());
+        responseDto.setCreatedBy(shipment.getCreatedBy());
+        responseDto.setUpdatedDate(shipment.getUpdatedDate());
+        responseDto.setCreatedBy(shipment.getCreatedBy());
+//        ShipmentItem savedShipmentItem = new ShipmentItem();
+        List<ShipmentItem> savedShipmentItem = shipmentItemRepository.findShipmentItemByShipmentId(shipment.getId());
+        if (savedShipmentItem == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    "Requested shipment Id does not exist!");
+        }
+        log.info("Saved shipment item :::::::::::::::::::::: {} "+savedShipmentItem);
+//        ShipmentItem shipmentItem = new ShipmentItem();
+        List<ShipmentItemResponseDto> shipmentItemList = new ArrayList<>();
+        savedShipmentItem.forEach(item -> {
+            ShipmentItemResponseDto shipmentItem = new ShipmentItemResponseDto();
+            shipmentItem.setId(item.getId());
+            shipmentItem.setSupplierRequestId(item.getSupplierRequestId());
+            shipmentItem.setQuantity(item.getQuantity());
+            shipmentItem.setPrice(item.getPrice());
+            shipmentItem.setStatus(item.getStatus());
+            shipmentItem.setDeliveryAddress(item.getDeliveryAddress());
+            shipmentItem.setEmail(item.getEmail());
+            shipmentItem.setPhoneNumber(item.getPhoneNumber());
+            shipmentItem.setDeliveryDate(item.getDeliveryDate());
+            shipmentItem.setCreatedDate(item.getCreatedDate());
+            shipmentItem.setUpdatedDate(item.getUpdatedDate());
+            shipmentItem.setShipmentId(item.getShipmentId());
+            shipmentItem.setCreatedBy(item.getCreatedBy());
+            shipmentItemList.add(shipmentItem);
+            log.info("Checking ::::::::::: {} 123 " + shipmentItemList);
+        });
+        log.info("Shipment item single :::::::::::::: {} "+ shipmentItemList);
+        responseDto.setShipmentItemResponseDtoList(shipmentItemList);
+        List<ProductCount> savedProductCount = productCountRepository.findProductCountByShipmentId(shipment.getId());
+        if (savedProductCount == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    "Requested Product Count Id does not exist!");
+        }
+        List<ProductCountResponse> productCountResponseList = new ArrayList<>();
+        savedProductCount.forEach(productCount -> {
+            ProductCountResponse productCountResponse = new ProductCountResponse();
+            productCountResponse.setId(productCount.getId());
+            productCountResponse.setId(productCount.getId());
+            productCountResponse.setShipmentId(productCount.getQuantity());
+            productCountResponse.setProductId(productCount.getProductId());
+            productCountResponse.setName(productCount.getName());
+            productCountResponse.setQuantity(productCount.getQuantity());
+            productCountResponse.setCreatedDate(productCount.getCreatedDate());
+            productCountResponse.setUpdatedDate(productCount.getUpdatedDate());
+            productCountResponse.setCreatedBy(productCount.getCreatedBy());
+            productCountResponseList.add(productCountResponse);
+            log.info("Checking ::::::::::: {} 123 " + shipmentItemList);
+        });
+        responseDto.setProductCountResponseList(productCountResponseList);
+
+        log.info("Response :::::::::::::: {} " + responseDto);
+        return responseDto;
     }
 
 

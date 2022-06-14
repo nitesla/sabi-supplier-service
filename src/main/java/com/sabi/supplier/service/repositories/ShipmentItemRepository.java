@@ -17,6 +17,7 @@ public interface ShipmentItemRepository extends JpaRepository<ShipmentItem, Long
 //    ShipmentItem findByName(String name);
     ShipmentItem findShipmentItemById(Long id);
     ShipmentItem findShipmentItemBySupplierRequestId(Long supplyRequestId);
+    List<ShipmentItem> findShipmentItemByShipmentId(Long shiomentId);
     List<ShipmentItem> findByIsActiveOrderByIdDesc(Boolean isActive);
 
     @Query("SELECT c FROM ShipmentItem c WHERE ((:supplierRequestId IS NULL) OR (:supplierRequestId IS NOT NULL AND c.supplierRequestId = :supplierRequestId))" +

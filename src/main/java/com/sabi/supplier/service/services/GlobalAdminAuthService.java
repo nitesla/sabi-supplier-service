@@ -129,6 +129,7 @@ public class GlobalAdminAuthService {
                 SecurityContextHolder.getContext().setAuthentication(authWithToken);
                 userService.updateLogin(user.getId());
                globalAdminAuthResponse.setToken(accessToken);
+               globalAdminAuthResponse.setUserId(user.getId());
                log.info("User Access token ::::::::::::::::::::: " + globalAdminAuthResponse.getToken());
 
         }

@@ -76,10 +76,10 @@ public class ShipmentItemService {
         requests.forEach(request->{
             validations.validateShipmentItem(request);
             ShipmentItem shipmentItem = mapper.map(request,ShipmentItem.class);
-            ShipmentItem exist = repository.findShipmentItemById(request.getShipmentId());
-            if(exist !=null){
-                throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " shipment item already exist");
-            }
+//            ShipmentItem exist = repository.findShipmentItemById(request.getShipmentId());
+//            if(exist !=null){
+//                throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, " shipment item already exist");
+//            }
             shipmentItem.setCreatedBy(userCurrent.getId());
             shipmentItem.setStatus("Awaiting_Shipment");
             SupplyRequest supplyRequest = supplyRequestRepository.findSupplyRequestById(request.getSupplierRequestId());
@@ -88,6 +88,7 @@ public class ShipmentItemService {
                         "supply request Id does not exist!");
             }
             supplyRequest.setStatus("Awaiting_Shipment");
+//            supplyRequestRepository.save(supplyRequest);
             supplyRequestRepository.save(supplyRequest);
             shipmentItem.setIsActive(true);
             shipmentItem = repository.save(shipmentItem);
