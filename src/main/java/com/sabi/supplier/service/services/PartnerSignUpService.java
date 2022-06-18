@@ -7,14 +7,16 @@ import com.sabi.framework.service.TokenService;
 import com.sabi.supplier.service.repositories.SupplierUserRepository;
 import com.sabi.suppliers.core.dto.request.CompleteSignUpDto;
 import com.sabi.suppliers.core.dto.request.ShipmentTripRequest;
+import com.sabi.suppliers.core.dto.response.ExternalDetailsResponse;
+import com.sabi.suppliers.core.dto.response.PartnerSignUpResponse;
+import com.sabi.suppliers.core.dto.response.PartnerUserResponse;
+import com.sabi.suppliers.core.dto.response.ShipmentTripresponse;
 import com.sabi.suppliers.core.models.SupplierUser;
-import com.sabi.suppliers.core.models.response.ExternalDetailsResponse;
-import com.sabi.suppliers.core.models.response.PartnerSignUpResponse;
-import com.sabi.suppliers.core.models.response.ShipmentTripresponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +33,9 @@ public class PartnerSignUpService {
 
     @Value("${shipment.trip.url}")
     private String shipmentTrip;
+
+    @Value("${find.partner.url}")
+    private String partnerUser;
 
     @Autowired
     private SupplierUserRepository supplierUserRepository;
@@ -55,6 +60,17 @@ public class PartnerSignUpService {
     public ShipmentTripresponse shipmentTripRequest (ShipmentTripRequest request)   {
         Map map=new HashMap();
         ShipmentTripresponse response = api.post(shipmentTrip ,request, ShipmentTripresponse.class,map);
+        return response;
+    }
+
+
+    public PartnerUserResponse getLogisticsUser(String email)  {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(partnerUser)
+                // Add query parameter
+                .queryParam("email", email);
+
+        Map map = new HashMap();
+        PartnerUserResponse response = api.get(builder.toUriString(), PartnerUserResponse.class, map);
         return response;
     }
 

@@ -13,14 +13,14 @@ import com.sabi.supplier.service.repositories.*;
 import com.sabi.suppliers.core.dto.request.ShipmentDto;
 import com.sabi.suppliers.core.dto.request.ShipmentShipmentItemDto;
 import com.sabi.suppliers.core.dto.request.ShipmentTripRequest;
+import com.sabi.suppliers.core.dto.response.ProductCountResponse;
+import com.sabi.suppliers.core.dto.response.ShipmentItemResponseDto;
+import com.sabi.suppliers.core.dto.response.ShipmentResponseDto;
+import com.sabi.suppliers.core.dto.response.ShipmentShipmentResponseDto;
 import com.sabi.suppliers.core.models.ProductCount;
 import com.sabi.suppliers.core.models.Shipment;
 import com.sabi.suppliers.core.models.ShipmentItem;
 import com.sabi.suppliers.core.models.SupplyRequest;
-import com.sabi.suppliers.core.models.response.ProductCountResponse;
-import com.sabi.suppliers.core.models.response.ShipmentItemResponseDto;
-import com.sabi.suppliers.core.models.response.ShipmentResponseDto;
-import com.sabi.suppliers.core.models.response.ShipmentShipmentResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.modelmapper.ModelMapper;
@@ -34,7 +34,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @Service

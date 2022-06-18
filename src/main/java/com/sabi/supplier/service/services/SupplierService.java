@@ -29,13 +29,10 @@ import com.sabi.suppliers.core.dto.request.CompleteSignUpDto;
 import com.sabi.suppliers.core.dto.request.PartnerAssetTypeRequest;
 import com.sabi.suppliers.core.dto.request.SupplierRequestDto;
 import com.sabi.suppliers.core.dto.request.SupplierSignUpRequestDto;
+import com.sabi.suppliers.core.dto.response.*;
 import com.sabi.suppliers.core.models.Supplier;
 import com.sabi.suppliers.core.models.SupplierLocation;
 import com.sabi.suppliers.core.models.SupplierUser;
-import com.sabi.suppliers.core.models.response.CompleteSignUpResponse;
-import com.sabi.suppliers.core.models.response.PartnerSignUpResponse;
-import com.sabi.suppliers.core.models.response.SupplierResponseDto;
-import com.sabi.suppliers.core.models.response.SupplierSignUpResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,6 +131,59 @@ public class SupplierService {
         }else if(exist !=null && exist.getPasswordChangedOn() !=null){
             throw new ConflictException(CustomResponseCode.CONFLICT_EXCEPTION, "  user already exist");
         }
+
+        PartnerUserResponse partnerUserResponse = partnerSignUpService.getLogisticsUser(request.getEmail());
+        if(partnerUserResponse == null){
+            log.info("::::: does not have a partner profile");
+        }else if(partnerUserResponse !=null){
+            User partnerUser = new User();
+            String password = request.getPassword();
+            partnerUser.setPassword(passwordEncoder.encode(password));
+            partnerUser.setFirstName(partnerUserResponse.getFirstName());
+            partnerUser.setLastName(partnerUserResponse.getLastName());
+            partnerUser.setUsername(partnerUserResponse.getUsername());
+            partnerUser.setEmail(partnerUserResponse.getEmail());
+            partnerUser.setUserCategory(Constants.OTHER_USER);
+            partnerUser.setLoginAttempts(0);
+            partnerUser.setIsActive(false);
+            partnerUser.setCreatedBy(0l);
+            partnerUser = userRepository.save(partnerUser);
+
+            PreviousPasswords partnerPasswords = PreviousPasswords.builder()
+                    .userId(partnerUser.getId())
+                    .password(partnerUser.getPassword())
+                    .createdDate(LocalDateTime.now())
+                    .build();
+            previousPasswordRepository.save(partnerPasswords);
+
+            Supplier saveSupplierPartner = new Supplier();
+            saveSupplierPartner.setName(request.getName());
+            saveSupplierPartner.setUserId(partnerUser.getId());
+            saveSupplierPartner.setIsActive(false);
+            saveSupplierPartner.setCreatedBy(partnerUser.getId());
+            saveSupplierPartner.setPartnerUserId(partnerUserResponse.getPartnerId());
+            Supplier supplierPartnerResponse =supplierRepository.save(saveSupplierPartner);
+
+            SupplierUser supplierPartnerUser = new SupplierUser();
+            supplierPartnerUser.setSupplierId(supplierPartnerResponse.getId());
+            supplierPartnerUser.setUserId(partnerUser.getId());
+            supplierPartnerUser.setCreatedBy(0l);
+            supplierPartnerUser.setIsActive(true);
+            supplierUserRepository.save(supplierPartnerUser);
+
+            SupplierSignUpResponse supplierResponsePartner= SupplierSignUpResponse.builder()
+                    .id(partnerUser.getId())
+                    .email(partnerUser.getEmail())
+                    .firstName(partnerUser.getFirstName())
+                    .lastName(partnerUser.getLastName())
+                    .phone(partnerUser.getPhone())
+                    .username(partnerUser.getUsername())
+                    .supplierId(supplierPartnerResponse.getId())
+                    .partnerUserId(partnerUserResponse.getPartnerId())
+                    .build();
+            return supplierResponsePartner;
+        }
+
         String password = request.getPassword();
         user.setPassword(passwordEncoder.encode(password));
         user.setUserCategory(Constants.OTHER_USER);
@@ -157,7 +207,6 @@ public class SupplierService {
                 .createdDate(LocalDateTime.now())
                 .build();
         previousPasswordRepository.save(previousPasswords);
-
 
         Supplier saveSupplier = new Supplier();
         saveSupplier.setName(request.getName());

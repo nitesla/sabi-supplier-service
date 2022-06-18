@@ -4,10 +4,9 @@ import com.sabi.supplier.service.repositories.InventoryRepository;
 import com.sabi.supplier.service.repositories.SupplierUserRepository;
 import com.sabi.supplier.service.repositories.WareHouseRepository;
 import com.sabi.suppliers.core.dto.request.AnalyticsRouteRequest;
-import com.sabi.suppliers.core.models.Inventory;
+import com.sabi.suppliers.core.dto.response.AnalyticRouteResponseDto;
 import com.sabi.suppliers.core.models.SupplierUser;
 import com.sabi.suppliers.core.models.WareHouse;
-import com.sabi.suppliers.core.models.response.AnalyticRouteResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

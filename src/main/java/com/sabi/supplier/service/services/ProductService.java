@@ -13,10 +13,10 @@ import com.sabi.supplier.service.repositories.ManufacturerRepository;
 import com.sabi.supplier.service.repositories.ProductCategoryRepository;
 import com.sabi.supplier.service.repositories.ProductRepository;
 import com.sabi.suppliers.core.dto.request.ProductDto;
+import com.sabi.suppliers.core.dto.response.ProductResponseDto;
 import com.sabi.suppliers.core.models.Manufacturer;
 import com.sabi.suppliers.core.models.Product;
 import com.sabi.suppliers.core.models.ProductCategory;
-import com.sabi.suppliers.core.models.response.ProductResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service

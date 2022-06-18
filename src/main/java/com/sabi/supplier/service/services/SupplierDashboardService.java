@@ -5,9 +5,13 @@ import com.sabi.framework.models.User;
 import com.sabi.framework.service.TokenService;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.*;
-import com.sabi.suppliers.core.dto.request.SupplierDashboardRequestDto;
-import com.sabi.suppliers.core.models.*;
-import com.sabi.suppliers.core.models.response.*;
+import com.sabi.suppliers.core.dto.response.DashboardProductResponse;
+import com.sabi.suppliers.core.dto.response.DashboardWarehouseResponse;
+import com.sabi.suppliers.core.dto.response.SupplierDashbaordResponseDto;
+import com.sabi.suppliers.core.models.ProductVariant;
+import com.sabi.suppliers.core.models.Shipment;
+import com.sabi.suppliers.core.models.SupplyRequest;
+import com.sabi.suppliers.core.models.WareHouse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +55,7 @@ public class SupplierDashboardService {
         this.validations = validations;
     }
 
-    public SupplierDashbaordResponseDto createDashboardInfo(Long supplierId,LocalDateTime startDate, LocalDateTime endDate) {
+    public SupplierDashbaordResponseDto createDashboardInfo(Long supplierId, LocalDateTime startDate, LocalDateTime endDate) {
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         SupplierDashbaordResponseDto dashbaord = new SupplierDashbaordResponseDto();
         Integer warehouseCount = wareHouseRepository.countAllBySupplierId(supplierId,startDate,endDate);
@@ -117,7 +121,7 @@ public class SupplierDashboardService {
         return dashbaord;
     }
 
-    public List<DashboardProductResponse> fetchTopProduct(Long supplierId,LocalDateTime startDate, LocalDateTime endDate) {
+    public List<DashboardProductResponse> fetchTopProduct(Long supplierId, LocalDateTime startDate, LocalDateTime endDate) {
         List<DashboardProductResponse> responseDtos = new ArrayList<>();
         List<SupplyRequest> savedSupplyRequest = supplyRequestRepository.findSupplyRequestBySupplierId(supplierId,startDate,endDate);
         log.info("info fetched from supplier request {} ::::::::::::::: " + savedSupplyRequest);
@@ -151,7 +155,7 @@ public class SupplierDashboardService {
 //        return responseDtos;
 //    }
 
-    public List<DashboardWarehouseResponse> fetchWarehouseProductDate(Long productId,LocalDateTime startDate, LocalDateTime endDate) {
+    public List<DashboardWarehouseResponse> fetchWarehouseProductDate(Long productId, LocalDateTime startDate, LocalDateTime endDate) {
         List<DashboardWarehouseResponse> responseDtos = new ArrayList<>();
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         List<SupplyRequest> savedSupplyRequest = supplyRequestRepository.findSupplyRequestByProductId(productId,startDate,endDate);

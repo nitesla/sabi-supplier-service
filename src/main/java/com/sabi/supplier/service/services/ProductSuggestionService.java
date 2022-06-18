@@ -11,18 +11,14 @@ import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.ProductSuggestionRepository;
 import com.sabi.suppliers.core.dto.request.ProductSuggestionRequestDto;
-import com.sabi.suppliers.core.models.Product;
+import com.sabi.suppliers.core.dto.response.ProductSuggestionResponseDto;
 import com.sabi.suppliers.core.models.ProductSuggestion;
-import com.sabi.suppliers.core.models.response.ProductResponseDto;
-import com.sabi.suppliers.core.models.response.ProductSuggestionResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service

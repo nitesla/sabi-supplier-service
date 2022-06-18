@@ -1,15 +1,10 @@
 package com.sabi.supplier.service.services;
 
-import com.sabi.framework.dto.requestDto.LoginRequest;
-import com.sabi.framework.dto.responseDto.AccessTokenWithUserDetails;
 import com.sabi.framework.exceptions.BadRequestException;
-import com.sabi.framework.exceptions.NotFoundException;
-import com.sabi.framework.globaladminintegration.AccessTokenResponse;
 import com.sabi.framework.helpers.API;
 import com.sabi.framework.models.User;
 import com.sabi.framework.notification.requestDto.NotificationRequestDto;
 import com.sabi.framework.notification.requestDto.RecipientRequest;
-import com.sabi.framework.notification.requestDto.SmsRequest;
 import com.sabi.framework.repositories.UserRepository;
 import com.sabi.framework.security.AuthenticationWithToken;
 import com.sabi.framework.service.NotificationService;
@@ -19,8 +14,8 @@ import com.sabi.framework.service.UserService;
 import com.sabi.framework.utils.Constants;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.suppliers.core.dto.request.GlobalAdminAuthRequestDto;
-import com.sabi.suppliers.core.models.response.AuthenticateUserResponseDto;
-import com.sabi.suppliers.core.models.response.GlobalAdminAuthResponse;
+import com.sabi.suppliers.core.dto.response.AuthenticateUserResponseDto;
+import com.sabi.suppliers.core.dto.response.GlobalAdminAuthResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
