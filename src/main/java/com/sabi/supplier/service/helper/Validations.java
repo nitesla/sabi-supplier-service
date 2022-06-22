@@ -188,9 +188,9 @@ public class Validations {
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Address cannot be empty");
         if (manufacturerDto.getWebsite() == null || manufacturerDto.getWebsite().isEmpty())
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "Website cannot be empty");
-        State state =  stateRepository.findById(manufacturerDto.getStateID())
-                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
-                        " Enter a valid State!"));
+//        State state =  stateRepository.findById(manufacturerDto.getStateID())
+//                .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        " Enter a valid State!"));
     }
 
     public void validateSupplierCategory(SupplierCategoryRequestDto request) {
@@ -538,7 +538,7 @@ public class Validations {
             shipmentRepository.findById(request.getShipmentId()).orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                     " Enter a valid shipment ID!"));
         }
-        if (request.getAcceptedQuality() < 1)
+        if (request.getAcceptedQuantity() < 1)
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, " accepted quantity can not be empty");
         if (request.getDeliveryDate() == null)
             throw new BadRequestException(CustomResponseCode.BAD_REQUEST, "delivery date can not be empty");

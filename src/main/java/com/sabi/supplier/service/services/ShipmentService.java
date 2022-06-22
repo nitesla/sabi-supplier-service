@@ -17,10 +17,7 @@ import com.sabi.suppliers.core.dto.response.ProductCountResponse;
 import com.sabi.suppliers.core.dto.response.ShipmentItemResponseDto;
 import com.sabi.suppliers.core.dto.response.ShipmentResponseDto;
 import com.sabi.suppliers.core.dto.response.ShipmentShipmentResponseDto;
-import com.sabi.suppliers.core.models.ProductCount;
-import com.sabi.suppliers.core.models.Shipment;
-import com.sabi.suppliers.core.models.ShipmentItem;
-import com.sabi.suppliers.core.models.SupplyRequest;
+import com.sabi.suppliers.core.models.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.modelmapper.ModelMapper;
@@ -51,9 +48,10 @@ public class ShipmentService {
     private PartnerSignUpService partnerSignUpService;
     @Autowired
     private SupplyRequestRepository supplyRequestRepository;
-
     @Autowired
     private ShipmentItemRepository shipmentItemRepository;
+    @Autowired
+    private ProductRepository productRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
@@ -106,6 +104,8 @@ public class ShipmentService {
         shipment.setCreatedBy(userCurrent.getId());
         shipment.setIsActive(true);
         shipment.setStatus("Awaiting_Shipment");
+//        WareHouse savedWarehouse = warehouseRepository.findWareHouseById(request.getWarehouseId());
+//        shipment.setWarehouseAddress(savedWarehouse.getAddress());
         shipment = shipmentRepository.save(shipment);
         log.debug("Create new shipment - {}"+ new Gson().toJson(shipment));
         ShipmentShipmentResponseDto orderResponseDto = mapper.map(shipment, ShipmentShipmentResponseDto.class);
@@ -113,31 +113,42 @@ public class ShipmentService {
         Long  shipmentId = shipment.getId();
         request.getShipmentItemDtoList().forEach(orderItemRequest ->{
             SupplyRequest savedSupplyRequest = supplyRequestRepository.findSupplyRequestById(orderItemRequest.getSupplierRequestId());
+            if (savedSupplyRequest == null){
+                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found for supply request !");
+            }
             orderItemRequest.setCustomerName(savedSupplyRequest.getCustomerName());
             orderItemRequest.setDeliveryAddress(savedSupplyRequest.getDeliveryAddress());
             orderItemRequest.setEmail(savedSupplyRequest.getEmail());
             orderItemRequest.setShipmentId(shipmentId);
             orderItemRequest.setPhoneNumber(savedSupplyRequest.getPhone());
         });
-            request.getShipmentItemDtoList().forEach(requestItem ->{
-                ProductCount productCountToSave = new ProductCount();
-                List<SupplyRequest> savedSupplyRrquestsList = supplyRequestRepository.findAllSupplyRequestById(requestItem.getSupplierRequestId());
-                System.out.println("Supply Request Id : {}:::::::::::::: " + requestItem.getSupplierRequestId());
+        request.getShipmentItemDtoList().forEach(requestItem ->{
+            ProductCount productCountToSave = new ProductCount();
+            List<SupplyRequest> savedSupplyRrquestsList = supplyRequestRepository.findAllSupplyRequestById(requestItem.getSupplierRequestId());
+            if(savedSupplyRrquestsList == null){
+                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found for supply request !");
+            }
+            System.out.println("Supply Request Id : {}:::::::::::::: " + requestItem.getSupplierRequestId());
 //                AtomicLong quantity = new AtomicLong();
-                savedSupplyRrquestsList.forEach(supplyRequest -> {
+            savedSupplyRrquestsList.forEach(supplyRequest -> {
+                Product savedProduct = productRepository.findProductById(supplyRequest.getProductId());
+                if (savedProduct == null){
+                    throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found for product !");
+                }
 //                  Long checker =  quantity.addAndGet(1);
-//                    log.info("quantity :::::::::::::::::: {} " +quantity );
-//                    log.info("quantity :::::::::::::::::: {} " +checker );
-                    productCountToSave.setShipmentId(requestItem.getShipmentId());
-                    productCountToSave.setProductId(supplyRequest.getProductId());
-                    productCountToSave.setName(supplyRequest.getProductName());
-                    productCountToSave.setShipmentId(Long.valueOf(shipmentId));
+                log.info("Weight :::::::::::::::::: {} " +savedProduct );
+                log.info("Weight get :::::::::::::::::: {} " +savedProduct.getWeight() );
+                productCountToSave.setShipmentId(requestItem.getShipmentId());
+                productCountToSave.setProductId(supplyRequest.getProductId());
+                productCountToSave.setName(supplyRequest.getProductName());
+                productCountToSave.setShipmentId(Long.valueOf(shipmentId));
+                productCountToSave.setProductWeight(savedProduct.getWeight());
 //                    productCountToSave.setQuantity(checker);
 //                    System.out.println("Supply Quantity  : {}:::::::::::::: " + quantity);
-                    productCountList.add(productCountToSave);
-                });
+                productCountList.add(productCountToSave);
+            });
 
-                });
+        });
 
         responseDtos = shipmentItemService.createShipmentItems(request.getShipmentItemDtoList());
         productCountResponseDtos = productCountService.createProductCount(productCountList);
