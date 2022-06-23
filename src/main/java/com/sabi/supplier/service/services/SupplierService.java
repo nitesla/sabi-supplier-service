@@ -133,9 +133,9 @@ public class SupplierService {
         }
 
         PartnerUserResponse partnerUserResponse = partnerSignUpService.getLogisticsUser(request.getEmail());
-        if(partnerUserResponse == null){
+        if(partnerUserResponse.getCode().equals("02")){
             log.info("::::: does not have a partner profile");
-        }else if(partnerUserResponse !=null){
+        }else if(partnerUserResponse.getCode().equals("00")){
             User partnerUser = new User();
             String password = request.getPassword();
             partnerUser.setPassword(passwordEncoder.encode(password));
