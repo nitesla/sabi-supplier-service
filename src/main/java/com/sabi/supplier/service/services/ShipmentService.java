@@ -52,6 +52,8 @@ public class ShipmentService {
     private ShipmentItemRepository shipmentItemRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private WareHouseRepository wareHouseRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
@@ -97,15 +99,17 @@ public class ShipmentService {
         List<ShipmentItemResponseDto> responseDtos = new ArrayList<>();
         List<ProductCount> productCountList = new ArrayList<>();
         List<ProductCountResponse> productCountResponseDtos = new ArrayList<>();
+//        WareHouse savedWarehouse = warehouseRepository.findWareHouseById(request.getWarehouseId());
         validations.validateShipmentAndShipmentItem(request);
         User userCurrent = TokenService.getCurrentUserFromSecurityContext();
         generateShipmentReferenceNumbers(request);
         Shipment shipment = mapper.map(request,Shipment.class);
+//        shipment.setWarehouseAddress(savedWarehouse.getAddress());
         shipment.setCreatedBy(userCurrent.getId());
         shipment.setIsActive(true);
         shipment.setStatus("Awaiting_Shipment");
-//        WareHouse savedWarehouse = warehouseRepository.findWareHouseById(request.getWarehouseId());
-//        shipment.setWarehouseAddress(savedWarehouse.getAddress());
+        WareHouse savedWarehouse = warehouseRepository.findWareHouseById(request.getWarehouseId());
+        shipment.setWarehouseAddress(savedWarehouse.getAddress());
         shipment = shipmentRepository.save(shipment);
         log.debug("Create new shipment - {}"+ new Gson().toJson(shipment));
         ShipmentShipmentResponseDto orderResponseDto = mapper.map(shipment, ShipmentShipmentResponseDto.class);
@@ -192,6 +196,8 @@ public class ShipmentService {
         Shipment shipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested shipment Id does not exist!"));
+        WareHouse savedWarehouse = warehouseRepository.findWareHouseById(shipment.getWarehouseId());
+        shipment.setWarehouseAddress(savedWarehouse.getAddress());
         return mapper.map(shipment,ShipmentResponseDto.class);
     }
 
@@ -201,6 +207,9 @@ public class ShipmentService {
         Shipment shipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested shipment Id does not exist!"));
+        WareHouse savedWarehouse = warehouseRepository.findWareHouseById(shipment.getWarehouseId());
+//        shipment.setWarehouseAddress(savedWarehouse.getAddress());
+        responseDto.setWarehouseAddress(savedWarehouse.getAddress());
         responseDto.setId(shipment.getId());
         responseDto.setWarehouseId(shipment.getWarehouseId());
         responseDto.setDeliveryDate(shipment.getDeliveryDate());

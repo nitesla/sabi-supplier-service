@@ -9,8 +9,10 @@ import com.sabi.framework.service.TokenService;
 import com.sabi.framework.utils.CustomResponseCode;
 import com.sabi.supplier.service.helper.Validations;
 import com.sabi.supplier.service.repositories.SupplyRequestCounterOfferRepository;
+import com.sabi.supplier.service.repositories.SupplyRequestRepository;
 import com.sabi.suppliers.core.dto.request.SupplyRequestCounterOfferRequestDto;
 import com.sabi.suppliers.core.dto.response.SupplyRequestCounterOfferResponseDto;
+import com.sabi.suppliers.core.models.SupplyRequest;
 import com.sabi.suppliers.core.models.SupplyRequestCounterOffer;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,6 +30,8 @@ public class SupplyRequestCounterOfferService {
 
     @Autowired
     private SupplyRequestCounterOfferRepository repository;
+    @Autowired
+    private SupplyRequestRepository supplyRequestRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final Validations validations;
@@ -45,6 +49,14 @@ public class SupplyRequestCounterOfferService {
         supplyRequestCounterOffer.setCreatedBy(userCurrent.getId());
         supplyRequestCounterOffer.setUserId(userCurrent.getId());
         supplyRequestCounterOffer.setIsActive(true);
+        SupplyRequest savedSupplyRequest = supplyRequestRepository.findSupplyRequestById(supplyRequestCounterOffer.getSupplyRequestId());
+        if (savedSupplyRequest == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    "Requested Supply request Id does not exist!");
+        }
+        supplyRequestCounterOffer.setProductName(savedSupplyRequest.getProductName());
+        supplyRequestCounterOffer.setAskingPrice(savedSupplyRequest.getAskingPrice());
+        supplyRequestCounterOffer.setSupplierName(savedSupplyRequest.getSupplierName());
         supplyRequestCounterOffer = repository.save(supplyRequestCounterOffer);
         log.debug("Create new product suggestion - {}"+ new Gson().toJson(supplyRequestCounterOffer));
         return mapper.map(supplyRequestCounterOffer, SupplyRequestCounterOfferResponseDto.class);
@@ -70,6 +82,14 @@ public class SupplyRequestCounterOfferService {
         SupplyRequestCounterOffer supplyRequestCounterOffer = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supply request counter offer Id does not exist!"));
+        SupplyRequest savedSupplyRequest = supplyRequestRepository.findSupplyRequestById(supplyRequestCounterOffer.getSupplyRequestId());
+        if (savedSupplyRequest == null){
+            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                    "Requested Supply request Id does not exist!");
+        }
+        supplyRequestCounterOffer.setProductName(savedSupplyRequest.getProductName());
+        supplyRequestCounterOffer.setAskingPrice(savedSupplyRequest.getAskingPrice());
+        supplyRequestCounterOffer.setSupplierName(savedSupplyRequest.getSupplierName());
         return mapper.map(supplyRequestCounterOffer,SupplyRequestCounterOfferResponseDto.class);
     }
 
@@ -79,6 +99,16 @@ public class SupplyRequestCounterOfferService {
         if(supplyRequestCounterOffers == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
+        supplyRequestCounterOffers.forEach(counterOffer ->{
+            SupplyRequest savedSupplyRequest = supplyRequestRepository.findSupplyRequestById(counterOffer.getSupplyRequestId());
+            if (savedSupplyRequest == null){
+                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+                        "Requested Supply request Id does not exist!");
+            }
+            counterOffer.setProductName(savedSupplyRequest.getProductName());
+            counterOffer.setAskingPrice(savedSupplyRequest.getAskingPrice());
+            counterOffer.setSupplierName(savedSupplyRequest.getSupplierName());
+        });
         return supplyRequestCounterOffers;
 
     }
