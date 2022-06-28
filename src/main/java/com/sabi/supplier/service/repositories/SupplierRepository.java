@@ -28,8 +28,11 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     List<Supplier> findByIsActiveOrderByIdDesc(Boolean isActive);
 
 
-    @Query("SELECT s FROM Supplier s WHERE ((:name IS NULL) OR (:name IS NOT NULL AND s.name like %:name%)) order by s.id DESC ")
-    Page<Supplier> findALLSupplier(@Param("name") String name, Pageable pageable);
+    @Query("SELECT s FROM Supplier s WHERE ((:name IS NULL) OR (:name IS NOT NULL AND s.name like %:name%)) " +
+            " AND ((:isActive IS NULL) OR (:isActive IS NOT NULL AND s.isActive = :isActive)) order by s.id DESC ")
+    Page<Supplier> findALLSupplier(@Param("name") String name,
+                                   @Param("isActive") boolean isActive,
+                                   Pageable pageable);
 
 
 }

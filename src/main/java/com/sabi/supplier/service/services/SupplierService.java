@@ -431,8 +431,8 @@ public class SupplierService {
     }
 
 
-    public Page<Supplier> findAll(String name, PageRequest pageRequest ){
-        Page<Supplier> supplierProperties = supplierRepository.findALLSupplier(name,pageRequest);
+    public Page<Supplier> findAll(String name, boolean isActive, PageRequest pageRequest ){
+        Page<Supplier> supplierProperties = supplierRepository.findALLSupplier(name,isActive,pageRequest);
         if(supplierProperties == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
