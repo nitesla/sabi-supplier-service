@@ -57,6 +57,14 @@ public class PartnerSignUpService {
 
 
 
+    public ExternalDetailsResponse partnerDetailsByAdmin (Long supplierId)  {
+        Map map=new HashMap();
+        ExternalDetailsResponse response = api.get(partnerSignUp+"details/"+ supplierId, ExternalDetailsResponse.class,map);
+        return response;
+    }
+
+
+
     public ShipmentTripresponse shipmentTripRequest (ShipmentTripRequest request)   {
         Map map=new HashMap();
         ShipmentTripresponse response = api.post(shipmentTrip ,request, ShipmentTripresponse.class,map);
