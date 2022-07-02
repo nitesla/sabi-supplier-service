@@ -289,13 +289,100 @@ public class ShipmentService {
      * <remarks>this method is responsible for getting all records in pagination</remarks>
      */
     public Page<Shipment> findAll(Long warehouseId, Long logisticPartnerId, String logisticsPartnerName, String phoneNumber, String vehicle, String status, PageRequest pageRequest ){
-        Page<Shipment> state = shipmentRepository.findShipments(warehouseId,logisticPartnerId,logisticsPartnerName,phoneNumber,vehicle,status,pageRequest);
-        if(state == null){
+        Page<Shipment> shipments = shipmentRepository.findShipments(warehouseId,logisticPartnerId,logisticsPartnerName,phoneNumber,vehicle,status,pageRequest);
+        if(shipments == null){
             throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
         }
-        return state;
-
+        return shipments;
     }
+
+    /** <summary>
+     * Find all master shipment
+     * </summary>
+     * <remarks>this method is responsible for getting all master shipment  records in pagination</remarks>
+     */
+//    public Page<ShipmentShipmentResponseDto> findAllMasterShipment(Long warehouseId, Long logisticPartnerId, String logisticsPartnerName, String phoneNumber, String vehicle, String status, PageRequest pageRequest ){
+//        ShipmentShipmentResponseDto responseDto = new ShipmentShipmentResponseDto();
+//        Page<Shipment> shipments = shipmentRepository.findShipments(warehouseId,logisticPartnerId,logisticsPartnerName,phoneNumber,vehicle,status,pageRequest);
+//        if(shipments == null){
+//            throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION, " No record found !");
+//        }
+//        shipments.forEach(shipment -> {
+//            WareHouse savedWarehouse = warehouseRepository.findWareHouseById(shipment.getWarehouseId());
+////        shipment.setWarehouseAddress(savedWarehouse.getAddress());
+//            responseDto.setWarehouseAddress(savedWarehouse.getAddress());
+//            responseDto.setId(shipment.getId());
+//            responseDto.setWarehouseId(shipment.getWarehouseId());
+//            responseDto.setDeliveryDate(shipment.getDeliveryDate());
+//            responseDto.setLogisticPartnerId(shipment.getLogisticPartnerId());
+//            responseDto.setLogisticPartnerName(shipment.getLogisticPartnerName());
+//            responseDto.setPhoneNumber(shipment.getPhoneNumber());
+//            responseDto.setVehicle(shipment.getVehicle());
+//            responseDto.setStatus(shipment.getStatus());
+//            responseDto.setQuantity(shipment.getQuantity());
+//            responseDto.setTotalAmount(shipment.getTotalAmount());
+//            responseDto.setExpectedDeliveryDate(shipment.getExpectedDeliveryDate());
+//            responseDto.setStartTime(shipment.getStartTime());
+//            responseDto.setEndTime(shipment.getEndTime());
+//            responseDto.setFeedStatus(shipment.getFeedStatus());
+//            responseDto.setCreatedBy(shipment.getCreatedBy());
+//            responseDto.setUpdatedDate(shipment.getUpdatedDate());
+//            responseDto.setCreatedBy(shipment.getCreatedBy());
+////        ShipmentItem savedShipmentItem = new ShipmentItem();
+//            List<ShipmentItem> savedShipmentItem = shipmentItemRepository.findShipmentItemByShipmentId(shipment.getId());
+//            if (savedShipmentItem == null){
+//                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        "Requested shipment Id does not exist!");
+//            }
+//            log.info("Saved shipment item :::::::::::::::::::::: {} "+savedShipmentItem);
+////        ShipmentItem shipmentItem = new ShipmentItem();
+//            List<ShipmentItemResponseDto> shipmentItemList = new ArrayList<>();
+//            savedShipmentItem.forEach(item -> {
+//                ShipmentItemResponseDto shipmentItem = new ShipmentItemResponseDto();
+//                shipmentItem.setId(item.getId());
+//                shipmentItem.setSupplierRequestId(item.getSupplierRequestId());
+//                shipmentItem.setQuantity(item.getQuantity());
+//                shipmentItem.setPrice(item.getPrice());
+//                shipmentItem.setStatus(item.getStatus());
+//                shipmentItem.setDeliveryAddress(item.getDeliveryAddress());
+//                shipmentItem.setEmail(item.getEmail());
+//                shipmentItem.setPhoneNumber(item.getPhoneNumber());
+//                shipmentItem.setDeliveryDate(item.getDeliveryDate());
+//                shipmentItem.setCreatedDate(item.getCreatedDate());
+//                shipmentItem.setUpdatedDate(item.getUpdatedDate());
+//                shipmentItem.setShipmentId(item.getShipmentId());
+//                shipmentItem.setCreatedBy(item.getCreatedBy());
+//                shipmentItemList.add(shipmentItem);
+//                log.info("Checking ::::::::::: {} 123 " + shipmentItemList);
+//            });
+//            log.info("Shipment item single :::::::::::::: {} "+ shipmentItemList);
+//            responseDto.setShipmentItemResponseDtoList(shipmentItemList);
+//            List<ProductCount> savedProductCount = productCountRepository.findProductCountByShipmentId(shipment.getId());
+//            if (savedProductCount == null){
+//                throw new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
+//                        "Requested Product Count Id does not exist!");
+//            }
+//            List<ProductCountResponse> productCountResponseList = new ArrayList<>();
+//            savedProductCount.forEach(productCount -> {
+//                ProductCountResponse productCountResponse = new ProductCountResponse();
+//                productCountResponse.setId(productCount.getId());
+//                productCountResponse.setId(productCount.getId());
+//                productCountResponse.setShipmentId(productCount.getQuantity());
+//                productCountResponse.setProductId(productCount.getProductId());
+//                productCountResponse.setName(productCount.getName());
+//                productCountResponse.setQuantity(productCount.getQuantity());
+//                productCountResponse.setCreatedDate(productCount.getCreatedDate());
+//                productCountResponse.setUpdatedDate(productCount.getUpdatedDate());
+//                productCountResponse.setCreatedBy(productCount.getCreatedBy());
+//                productCountResponseList.add(productCountResponse);
+//                log.info("Checking ::::::::::: {} 123 " + shipmentItemList);
+//            });
+//            responseDto.setProductCountResponseList(productCountResponseList);
+//
+//            log.info("Response :::::::::::::: {} " + responseDto);
+//        });
+//        return responseDto;
+//    }
 
 
     /** <summary>
