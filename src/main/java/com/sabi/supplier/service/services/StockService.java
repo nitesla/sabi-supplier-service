@@ -136,7 +136,7 @@ public class StockService {
         Stock stock = stockRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested State Id does not exist!"));
-        stock.setIsActive(request.isActive());
+        stock.setIsActive(request.getIsActive());
         stock.setUpdatedBy(userCurrent.getId());
         stockRepository.save(stock);
 
