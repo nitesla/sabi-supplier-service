@@ -250,6 +250,7 @@ public class ShipmentService {
             shipmentItem.setUpdatedDate(item.getUpdatedDate());
             shipmentItem.setShipmentId(item.getShipmentId());
             shipmentItem.setCreatedBy(item.getCreatedBy());
+            shipmentItem.setCustomerName(item.getCustomerName());
             shipmentItemList.add(shipmentItem);
             log.info("Checking ::::::::::: {} 123 " + shipmentItemList);
         });
@@ -353,6 +354,7 @@ public class ShipmentService {
                 shipmentItem.setUpdatedDate(item.getUpdatedDate());
                 shipmentItem.setShipmentId(item.getShipmentId());
                 shipmentItem.setCreatedBy(item.getCreatedBy());
+                shipmentItem.setCustomerName(item.getCustomerName());
 //                shipment.getShipmentItemResponseDtoList().add(shipmentItem);
                 shipmentItemList.add(shipmentItem);
                 log.info("shipment Item List :::::::::::: {} " + shipmentItemList);
