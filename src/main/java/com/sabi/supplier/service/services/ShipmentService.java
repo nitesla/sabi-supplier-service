@@ -400,7 +400,7 @@ public class ShipmentService {
         Shipment state = shipmentRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested shipment Id does not exist!"));
-        state.setIsActive(request.isActive());
+        state.setIsActive(request.getIsActive());
         state.setUpdatedBy(userCurrent.getId());
         shipmentRepository.save(state);
 

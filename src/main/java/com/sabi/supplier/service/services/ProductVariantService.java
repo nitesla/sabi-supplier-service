@@ -119,7 +119,7 @@ public class ProductVariantService {
         ProductVariant product = productVariantRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested product variable Id does not exist!"));
-        product.setIsActive(request.isActive());
+        product.setIsActive(request.getIsActive());
         product.setUpdatedBy(userCurrent.getId());
         productVariantRepository.save(product);
 

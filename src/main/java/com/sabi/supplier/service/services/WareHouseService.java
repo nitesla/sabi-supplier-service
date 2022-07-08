@@ -160,7 +160,7 @@ public class WareHouseService {
         WareHouse wareHouse = wareHouseRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested State Id does not exist!"));
-        wareHouse.setIsActive(request.isActive());
+        wareHouse.setIsActive(request.getIsActive());
         wareHouse.setUpdatedBy(userCurrent.getId());
         wareHouseRepository.save(wareHouse);
     }
