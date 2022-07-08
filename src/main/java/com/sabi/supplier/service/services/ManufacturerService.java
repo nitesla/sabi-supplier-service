@@ -136,7 +136,7 @@ public class ManufacturerService {
         Manufacturer manufacturer = manufacturerRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested manufacturer Id does not exist!"));
-        manufacturer.setIsActive(request.getIsActive());
+        manufacturer.setIsActive(request.isActive());
         manufacturer.setUpdatedBy(userCurrent.getId());
         manufacturerRepository.save(manufacturer);
 

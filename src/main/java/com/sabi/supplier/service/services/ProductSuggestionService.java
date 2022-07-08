@@ -116,7 +116,7 @@ public class ProductSuggestionService {
         ProductSuggestion productSuggestion = productSuggestionRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested product suggestion Id does not exist!"));
-        productSuggestion.setIsActive(request.getIsActive());
+        productSuggestion.setIsActive(request.isActive());
         productSuggestion.setUpdatedBy(userCurrent.getId());
         productSuggestionRepository.save(productSuggestion);
 

@@ -119,7 +119,7 @@ public class SupplyRequestCounterOfferService {
         SupplyRequestCounterOffer supplyRequestCounterOffers = repository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested product suggestion Id does not exist!"));
-        supplyRequestCounterOffers.setIsActive(request.getIsActive());
+        supplyRequestCounterOffers.setIsActive(request.isActive());
         supplyRequestCounterOffers.setUpdatedBy(userCurrent.getId());
         repository.save(supplyRequestCounterOffers);
 

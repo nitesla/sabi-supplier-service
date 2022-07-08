@@ -480,7 +480,7 @@ public class SupplierService {
         Supplier supplier = supplierRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Supplier Id does not exist!"));
-        supplier.setIsActive(request.getIsActive());
+        supplier.setIsActive(request.isActive());
         supplier.setUpdatedBy(userCurrent.getId());
 
         auditTrailService

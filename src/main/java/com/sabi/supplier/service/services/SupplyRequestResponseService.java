@@ -79,7 +79,7 @@ public class SupplyRequestResponseService {
         SupplyRequestResponseEntity supplyRequestResponse = supplyRequestResponseRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested State Id does not exist!"));
-        supplyRequestResponse.setIsActive(request.getIsActive());
+        supplyRequestResponse.setIsActive(request.isActive());
         supplyRequestResponse.setUpdatedBy(userCurrent.getId());
         supplyRequestResponseRepository.save(supplyRequestResponse);
     }

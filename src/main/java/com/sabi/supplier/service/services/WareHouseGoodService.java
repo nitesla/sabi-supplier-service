@@ -190,7 +190,7 @@ public class WareHouseGoodService {
         WareHouseGood warehouseGood = repository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested  warehouse goods Id does not exist!"));
-        warehouseGood.setIsActive(request.getIsActive());
+        warehouseGood.setIsActive(request.isActive());
         warehouseGood.setUpdatedBy(userCurrent.getId());
         repository.save(warehouseGood);
 

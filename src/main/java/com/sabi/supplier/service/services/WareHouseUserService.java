@@ -122,7 +122,7 @@ public class WareHouseUserService {
         WareHouseUser wareHouseUser = wareHouseUserRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested State Id does not exist!"));
-        wareHouseUser.setIsActive(request.getIsActive());
+        wareHouseUser.setIsActive(request.isActive());
         wareHouseUser.setUpdatedBy(userCurrent.getId());
         wareHouseUserRepository.save(wareHouseUser);
     }

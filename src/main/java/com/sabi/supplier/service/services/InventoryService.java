@@ -136,7 +136,7 @@ public class InventoryService {
         Inventory country = repository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested Inventory Id does not exist!"));
-        country.setIsActive(request.getIsActive());
+        country.setIsActive(request.isActive());
         country.setUpdatedBy(userCurrent.getId());
         repository.save(country);
 

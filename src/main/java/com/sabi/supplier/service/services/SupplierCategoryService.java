@@ -155,7 +155,7 @@ public class SupplierCategoryService {
         SupplierCategory supplierCategory = supplierCategoryRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested supplier Category Id does not exist!"));
-        supplierCategory.setIsActive(request.getIsActive());
+        supplierCategory.setIsActive(request.isActive());
         supplierCategory.setUpdatedBy(userCurrent.getId());
         supplierCategoryRepository.save(supplierCategory);
 

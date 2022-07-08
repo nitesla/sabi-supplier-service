@@ -135,7 +135,7 @@ public class SupplierLocationService {
         SupplierLocation supplierLocation = supplierLocationRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested supplier location Id does not exist!"));
-        supplierLocation.setIsActive(request.getIsActive());
+        supplierLocation.setIsActive(request.isActive());
         supplierLocation.setUpdatedBy(userCurrent.getId());
         supplierLocationRepository.save(supplierLocation);
 

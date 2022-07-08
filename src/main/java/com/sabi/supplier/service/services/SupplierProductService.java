@@ -85,7 +85,7 @@ public class SupplierProductService {
         SupplierProduct product = supplierProductRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested supplier product Id does not exist!"));
-        product.setIsActive(request.getIsActive());
+        product.setIsActive(request.isActive());
         product.setUpdatedBy(userCurrent.getId());
         supplierProductRepository.save(product);
 

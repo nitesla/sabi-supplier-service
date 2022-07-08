@@ -130,7 +130,7 @@ public class SupplierBankService {
         SupplierBank supplierBank = supplierBankRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested supplierBank Id does not exist!"));
-        supplierBank.setIsActive(request.getIsActive());
+        supplierBank.setIsActive(request.isActive());
         supplierBank.setUpdatedBy(userCurrent.getId());
         supplierBankRepository.save(supplierBank);
 

@@ -106,7 +106,7 @@ public class SupplierGoodService {
         SupplierGood goods = supplierGoodRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested supplier goods Id does not exist!"));
-        goods.setIsActive(request.getIsActive());
+        goods.setIsActive(request.isActive());
         goods.setUpdatedBy(userCurrent.getId());
         supplierGoodRepository.save(goods);
 
