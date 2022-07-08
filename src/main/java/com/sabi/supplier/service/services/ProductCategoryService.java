@@ -117,7 +117,7 @@ public class ProductCategoryService {
         ProductCategory productCategory = productCategoryRepository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException(CustomResponseCode.NOT_FOUND_EXCEPTION,
                         "Requested product category Id does not exist!"));
-        productCategory.setIsActive(request.isActive());
+        productCategory.setIsActive(request.getIsActive());
         productCategory.setUpdatedBy(userCurrent.getId());
         productCategoryRepository.save(productCategory);
 
