@@ -115,17 +115,7 @@
 			<version>2.3.2</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.sabi.framework</groupId>
-			<artifactId>sabi-framework</artifactId>
-			<version>1.0</version>
-		</dependency>
 
-		<dependency>
-			<groupId>com.sabi.core</groupId>
-			<artifactId>sabi-agent-core</artifactId>
-			<version>1.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
